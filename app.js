@@ -285,6 +285,7 @@ var roomData = mongoose.Schema({
     full: { type: String },
     delete: { type: String },
     start: { type: String },
+    select_board: { type: String },
     player: [],
     currentTurn: { type: Number },
     action: { type: Number },
@@ -350,6 +351,7 @@ app.post('/roomCreat', function(req, res) {
             full: "no",
             delete: "no",
             start: "대기",
+            select_board: "아직",
             boss: 150,
             round: 1,
             gameover: 0
@@ -431,7 +433,7 @@ app.post('/startRoom', function(req, res) {
         	//턴 순서 정하고 플레이어 초기값 입력 저장
         	roomValue.member = DoShuffle(roomValue.member, roomValue.member.length);
             for (var max = roomValue.member.length, i = 0; i < max; i++) {
-                Room.update({ _id: roomId }, { $push: { player: { nick: roomValue.member[i], gold: 500, energy: 50, incGold: 0, incEnergy: 0, damage: 0, score: 0, pass: false, BuildingBuiltThisTurn: 0 } } }, function(err) {});
+                Room.update({ _id: roomId }, { $push: { player: { nick: roomValue.member[i], gold: 500, energy: 50, incGold: 0, incEnergy: 0, damage: 0, score: 2, pass: false, BuildingBuiltThisTurn: 0 } } }, function(err) {});
             }
 
             //라운드 미션 타일 랜덤 배치

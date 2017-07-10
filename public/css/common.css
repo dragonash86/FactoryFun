@@ -78,15 +78,15 @@ h3{padding:20px 0}
 .layer_action.show{display:block}
 .box{float:left;border:1px solid #272822;margin-right:10px;padding:10px}
 .box h3{padding:0;padding-bottom:10px}
-.box_round li{float:left;overflow:hidden;width:100px;height:100px;border:1px solid #272822;margin:0 10px 10px 0;padding:7px 10px}
-.box_round li .b{color:#FF0000}
-.box_round li h3{padding:0;padding-bottom:10px}
-.boss{clear:left;overflow:hidden;border: 1px solid #272822;width:100px;background:#fff;text-align:center;margin:auto;padding:10px}
-.boss h3{padding:0;padding-bottom:10px}
 .player0{color:#FF0000}
 .player1{color:#0000FF}
 .ball{display:inline-block;border:1px solid #34C91C;background:#34C91C;border-radius:20px;width:20px;height:20px;vertical-align:-5px;margin:0 3px}
 
 /* board */ /* 나중에 백단에서도 접근 못하게 막아야함 */
+.select_board h3{padding:30px 0}
+.select_board li{float:left;margin:0 10px 10px 0}
+.select_board li p{text-align:center;font-weight:bold;padding-bottom:5px}
+.select_board li .random img{width:310px;height:310px;border:1px solid #000}
 .board_a tr:nth-child(1) td:nth-child(1),.board_a tr:nth-child(2) td:nth-child(1){border:0}
-.board_a tr:nth-child(1) td:nth-child(1) a,.board_a tr:nth-child(2) td:nth-child(1) a{display:none}
+.board_a tr:nth-child(1) td:nth-child(1) a,.board_a tr:nth-child(2) td:nth-child(1) a,.board_a tr:nth-child(5) td:nth-child(6) a,.board_a tr:nth-child(9),.board_a tr:nth-child(10){display:none}
+.board_a tr:nth-child(5) td:nth-child(6){background:#c7c7c7}

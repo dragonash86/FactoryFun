@@ -40,36 +40,24 @@
 		<% } if (room.admin === user.user_nick && room.start !== "진행 중") { %>
 			<form action="/deleteRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="방폭" /></form>
 		<% } %>
+	<% } else if (room.select_board === "아직") { %>
+		<div class="select_board">
+			<h3>판떼기 고르기</h3>
+			<ul>
+				<li><a href="#n"><p>A타입 클래식</p><img src="/images/board_a_classic.jpg" alt="A타입 클래식" /></a></li>
+				<li><a href="#n" class="random"><p>클래식에서 랜덤</p><img src="/images/board_random.jpg" alt="A타입 클래식" /></a></li>
+				<li><a href="#n" class="random"><p>익스퍼트에서 랜덤</p><img src="/images/board_random.jpg" alt="A타입 클래식" /></a></li>
+				<li><a href="#n" class="random"><p>아몰랑 다 랜덤</p><img src="/images/board_random.jpg" alt="A타입 클래식" /></a></li>
+			</ul>
+		</div>
 	<% } else { %>
 		<h3>현재 라운드 : <%= room.player[(room.currentTurn-1)%room.member.length].nick %></h3>
-		<!--ul class="box_round">
-		<% for (i = 0; i < room.rmt.length; i++) { %>
-			<li class="roundbox">
-				<h3 class="<% if (i === room.round - 1) {%> b <% } %>">Round <%= i + 1 %></h3>
-					<% switch (room.rmt[i]) {
-						case 1 : %> 1단계 대포를 지으면 지을때마다 3점
-						<% break;
-						case 2 : %> 2단계 대포를 지으면 지을때마다 3점
-						<% break;
-						case 3 : %> 3단계 대포를 지으면 지을때마다 5점
-						<% break;
-						case 4 : %> 20데미지 달성시 10점(미구현)
-						<% break;
-						case 5 : %> 건물 5개 지으면 10점
-						<% break;
-					} %>
-			</li>
-		<% } %>
-		</ul-->
 		<div class="status">
 			<% for (i=0; i<room.player.length; i++) {%>
 				<div class="box">
-					<h3 class="player<%= i %>">Player <%= i+1 %> : <%= room.player[i].nick %></h3>
+					<h3 class="player<%= i %>"><%= room.player[i].nick %></h3>
 					<ul>
-						<li><%= room.player[i].gold %> G <%= room.player[i].energy %> E</li>
 						<li>점수 : <%= room.player[i].score %></li>
-						<li>수입 : <%= room.player[i].incGold %>G <%= room.player[i].incEnergy %>E</li>
-						<li>화력 : <%= room.player[i].damage %></li>
 					</ul>
 				</div>
 			<% } %>
@@ -93,12 +81,6 @@
 					<form action="/pass?roomId=<%= room._id %>" id="pass" method="post" style="padding:10px 0"><input type="submit" value="라운드 패스" class="btn m_clear" /></form>
 				<% } %>
 			<% } %>
-		</div>
-		<div class="boss">
-			<h3>B O S S </h3>
-			<ul>
-				<li>체력 : <%=room.boss%></li>
-			</ul>
 		</div>
 		<table class="board board_a"><!-- 보드판에 따라 타입 클래스 적용 -->
 			<% for (var i = 1; i <= 10; i++) { %>
