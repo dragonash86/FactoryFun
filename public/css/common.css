@@ -1,0 +1,92 @@
+@charset "utf-8";
+html{overflow-x:hidden;height:100%}
+html,body,div,p,img,span,a,em,strong,pre,h1,h2,h3,h4,h5,h6,ul,ol,li,dl,dt,dd,table,tbody,thead,tfoot,tr,th,td,form,fieldset,legend,caption,input,textarea,button,select,object,video,iframe{margin:0;padding:0;border-radius:5px}
+body{font-family:'맑은 고딕',Malgun Gothic,'돋움',dotum,'굴림',gulim,Arial,AppleGothic,verdana,sans-serif,helvetica;letter-spacing:-1px;font-size:14px;color:#111;width:100%;height:100%}
+h1,h2,h3,h4,h5,h6{font-size:14px}
+img,fieldset,button{border:0}
+table{border-collapse:collapse;border-spacing:0}
+ul,ol{list-style:none}
+em,address{font-style:normal}
+a,a:link{text-decoration:none;color:#111}
+a:hover{text-decoration:underline}
+hr{display:none}
+legend,caption,.blind{position:absolute;top:-9999px;font-size:0;line-height:0}
+label{cursor:pointer}
+*{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}
+
+/** common **/
+h2{padding:30px 0}
+h3{padding:20px 0}
+.blind{overflow:hidden;position:absolute;top:-9999px;left:-9999px;width:1px;height:1px;font-size:1px;height:1px}
+.btn{display:block;width:158px;height:40px;line-height:36px;font-size:16px;text-align:center;color:#1c2833;border:1px solid #1c2833;cursor:pointer;margin:30px auto}
+.btn:hover{color:#fff;background:#1c2833;text-decoration:none}
+.m_clear{margin:0}
+.container{width:1160px;padding:50px 20px;margin:0 auto}
+@media (max-width:1200px) {
+	.container{width:100%}
+}
+.border_layout{border-top:1px solid #111;border-bottom:1px solid #ddd;padding:15px 0}
+/* layer */
+.layer{display:none}
+.layer.on{display:block;position:absolute;right:0;min-width:300px;min-height:300px;left:0;right:0;background:#fff;border:1px solid #000;padding:20px}
+.layer .close{position:absolute;top:-1px;right:-1px;display:block;border:1px solid #000;background:#fff;padding:5px}
+/* header */
+.header li{float:left;margin-right:15px}
+.header li.setting{float:right}
+.header li li{float:none}
+
+
+/* 회원가입 */
+.join li label{display:inline-block;width:25.64%;font-weight:normal;color:#111;padding:27px 0}
+.join li input{width:280px;height:36px;border:1px solid #ddd;padding:9px 15px}
+.join li span{color:#EA4836;padding:0 10px}
+@media (max-width:768px) {
+	.join li{position:relative;padding-bottom:30px}
+	.join li input{width:100%}
+	.join li label{width:100%;padding:13px 0}
+	.join li span{position:absolute;padding:0;margin-top:10px}
+}
+/* 로그인 */
+.login fieldset{width:280px;margin:0 auto;padding-top:100px}
+.login label{display:none}
+.login input{display:block;width:100%;height:50px;line-height:50px;border:1px solid #E0E0E0;padding:15px;margin:0 auto 10px}
+.login input.btn{cursor:pointer;font-size:20px;line-height:20px;font-weight:bold}
+.login ul{padding-top:10px}
+.login li{float:left}
+.login li:last-child{float:right}
+.login li span{color:#EA4836;padding:0 10px}
+/* 메인 */
+.main .list{overflow:hidden}
+.main .list li{float:left}
+.main .list li a{display:inline-block;border:1px solid #9DA098;padding:15px;margin:0 5px 5px 0}
+.main .list li li{float:none;padding:5px 0}
+.main .list li.last{padding:0px}
+.main .list li.last input{width:143px;height:144px}
+/* 게임 */
+.room{padding:20px}
+.status{clear:left;padding-top:20px}
+.board{margin:30px auto}
+.board td{position:relative;border:1px solid #272822;width:50px;height:50px}
+.board td.active{border:1px dashed #36D136}
+.board a{display:block;width:50px;height:50px}
+.board td span{position:absolute;top:-2px;left:2px;font-size:10px}
+.board td p{position:absolute;top:15px;left:15px; font-weight:bold;}
+.board .lv_1{position:absolute;left:14px;top:15px;border:1px solid red;border-radius:20px;width:20px;height:20px}
+.board .lv_2{position:absolute;left:10px;top:10px;border:15px solid red;border-radius:20px;width:20px;height:20px}
+.layer_action{display:none;position:absolute;border:1px solid #272822;background:#fff;padding:10px}
+.layer_action a{display:inline-block;border:1px solid #272822;text-align:center;padding:5px;margin:10px auto 0}
+.layer_action.show{display:block}
+.box{float:left;border:1px solid #272822;margin-right:10px;padding:10px}
+.box h3{padding:0;padding-bottom:10px}
+.box_round li{float:left;overflow:hidden;width:100px;height:100px;border:1px solid #272822;margin:0 10px 10px 0;padding:7px 10px}
+.box_round li .b{color:#FF0000}
+.box_round li h3{padding:0;padding-bottom:10px}
+.boss{clear:left;overflow:hidden;border: 1px solid #272822;width:100px;background:#fff;text-align:center;margin:auto;padding:10px}
+.boss h3{padding:0;padding-bottom:10px}
+.player0{color:#FF0000}
+.player1{color:#0000FF}
+.ball{display:inline-block;border:1px solid #34C91C;background:#34C91C;border-radius:20px;width:20px;height:20px;vertical-align:-5px;margin:0 3px}
+
+/* board */ /* 나중에 백단에서도 접근 못하게 막아야함 */
+.board_a tr:nth-child(1) td:nth-child(1),.board_a tr:nth-child(2) td:nth-child(1){border:0}
+.board_a tr:nth-child(1) td:nth-child(1) a,.board_a tr:nth-child(2) td:nth-child(1) a{display:none}
