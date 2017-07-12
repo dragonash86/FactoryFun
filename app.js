@@ -296,9 +296,19 @@ app.get('/room', function(req, res) {
     if (req.user) {
         if (req.query.roomId != null) {
             Room.find({ _id: req.query.roomId }, function(err, roomValue) {
+                //판떼기 안골랐는지 체크
+                if (roomValue[0].select_board !== "모두 고름") {
+                    var count = 0;
+                    for (var i = 0; i < roomValue[0].player.length; i++) {
+                        if (roomValue[0].player[i].board !== "아직") {
+                            count = count + 1;
+                            if (count === roomValue[0].member.length) {
+                                Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { select_board: "모두 고름" } }, function(err) {});
+                            }
+                        }
+                    }
+                }
                 res.render('room', { room: roomValue[0], user: req.user });
-                //console.log(roomValue[0].board);
-                //console.log(roomValue[0]);
             });
         } else {
             res.send('<script>alert("잘못된 요청");location.href="/main";</script>');
@@ -363,9 +373,11 @@ app.post('/selectBoard', function(req, res) {
                 Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': randBoard }, $inc: { 'player.$.score': 2 } }, function(err) {});
             } else if (req.query.board === "random_2") {
                 randNum = Math.floor(Math.random() * 10);
+                randBoard = roomValue[0].board[randNum];
                 Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': randBoard }, $inc: { 'player.$.score': 3 } }, function(err) {});
             } else if (req.query.board === "random_3") {
                 randNum = Math.floor(Math.random() * 5) + 5;
+                randBoard = roomValue[0].board[randNum];
                 Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': randBoard }, $inc: { 'player.$.score': 4 } }, function(err) {});
             } else {
                 Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': req.query.board } }, function(err) {});

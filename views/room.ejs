@@ -41,61 +41,66 @@
 			<form action="/deleteRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="방폭" /></form>
 		<% } %>
 	<% } else if (room.select_board === "아직") { %>
-		<% if (room.player[0].board === "아직") { %>
-		<div class="select_board">
-			<h3>판떼기 고르기</h3>
-			<ul>
-				<% for (i = 0; i < room.board.length; i++) { %>
-				<li class="<%= room.board[i] %>"><a href="#n"><p>Type 
-				<strong>
-				<% if (i === 0 || i === 5) { %>
-					A
-				<% } else if (i === 1 || i === 6) { %>
-					B
-				<% } else if (i === 2 || i === 7) { %>
-					C
-				<% } else if (i === 3 || i === 8) { %>
-					D
-				<% } else if (i === 4 || i === 9) { %>
-					E
-				<% } %>
-				</strong>
-				<span>
-				<% if (i === 0 || i === 2 || i === 4 || i === 6 || i === 8) { %>
-					Classic
-				<% } else if (i === 1 || i === 3 || i === 5 || i === 7 || i === 9) { %>
-					Expert
-				<% } %>
-				</span></p><img src="/images/<%= room.board[i] %>.jpg" alt="<%= room.board[i] %>" /></a></li>
-				<% } %>
-				<li class="random_1"><a href="#n"><p>Classic Random (+2 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
-				<li class="random_2"><a href="#n"><p>All Random(+3 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
-				<li class="radnom_3"><a href="#n"><p>Expert Random(+4 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
-			</ul>
-			<form action="/selectBoard?roomId=<%= room._id %>" method="post" class="layer_start"><input type="submit" value="시작" /></form>
-		</div>
-		<% } else { %>
-		<%
-	        for (var i = 0; i < room.player.length; i++) {
-	            var count = 0;
-	            if (room.player[i].board !== "아직") {
-	                count = count + 1;
-	                //console.log(count);
-	                if (count === room.member.length) {
-
-	                    //Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: user_nick } } }, { $set: { select_board: "준비 완료" } }, function(err) {});
-	                    %>
-	                    1111
-	                    <%
-	                }
-	            }
-	        }
-
+		<% 
+			for (var i = 0; i < room.player.length; i++) {
+                if (room.player[i].nick === user.user_nick) {
+                    if (room.player[i].board === "아직") {
+		%>
+						<div class="select_board">
+							<h3>판떼기 고르기</h3>
+							<ul>
+								<% for (i = 0; i < room.board.length; i++) { %>
+								<li class="<%= room.board[i] %>"><a href="#n"><p>Type 
+								<strong>
+								<% if (i === 0 || i === 5) { %>
+									A
+								<% } else if (i === 1 || i === 6) { %>
+									B
+								<% } else if (i === 2 || i === 7) { %>
+									C
+								<% } else if (i === 3 || i === 8) { %>
+									D
+								<% } else if (i === 4 || i === 9) { %>
+									E
+								<% } %>
+								</strong>
+								<span>
+								<% if (i === 0 || i === 2 || i === 4 || i === 6 || i === 8) { %>
+									Classic
+								<% } else if (i === 1 || i === 3 || i === 5 || i === 7 || i === 9) { %>
+									Expert
+								<% } %>
+								</span></p><img src="/images/<%= room.board[i] %>.jpg" alt="<%= room.board[i] %>" /></a></li>
+								<% } %>
+								<li class="random_1"><a href="#n"><p>Classic Random (+2 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
+								<li class="random_2"><a href="#n"><p>All Random(+3 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
+								<li class="radnom_3"><a href="#n"><p>Expert Random(+4 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
+							</ul>
+							<form action="/selectBoard?roomId=<%= room._id %>" method="post" class="layer_start"><input type="submit" value="시작" /></form>
+						</div>
+				<%	}
+				}
+			}
 		%>
 		<div>
-
+			<% 
+				for (var i = 0; i < room.player.length; i++) {
+                    var count = 0;
+                    if (room.player[i].board !== "아직") {
+                        count = count + 1;
+                        var yet = room.member.length - count;
+                        if (count === room.member.length) {
+                        	
+            %>
+            <script>location.href = "";</script>
+            <% 
+                        }
+                    }
+                }
+			%>
+			<p class="t_c p_t_20">아직 <%= yet %>명이 판떼기를 안골랐습니다.</p>
+			<a href="" class="btn">새로고침</a>
 		</div>
-		<% } %>
 	<% } else { %>
 		<h3>현재 라운드 : <%= room.player[(room.currentTurn-1)%room.member.length].nick %></h3>
 		<div class="status">
