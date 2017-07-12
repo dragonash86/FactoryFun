@@ -92,16 +92,8 @@ var userData = mongoose.Schema({
     user_id: { type: String, unique: true },
     user_pw: { type: String },
     user_nick: { type: String, unique: true },
-    lv: { type: Number },
-    max_exp: { type: Number },
-    exp: { type: Number },
     win: { type: Number },
     lose: { type: Number },
-    gold: { type: Number },
-    pearl: { type: Number },
-    log: [String],
-    log_buy: [String],
-    read_log: [String],
     email: { type: String },
     sns: { type: String },
     created_at: { type: Date, default: Date.now },
@@ -122,16 +114,8 @@ app.post('/joinForm', function(req, res) {
         user_id: req.body.userId,
         user_pw: req.body.userPw,
         user_nick: req.body.userNick,
-        lv: 1,
-        max_exp: 10,
-        exp: 0,
         win: 0,
         lose: 0,
-        gold: 0,
-        pearl: 0,
-        log: [],
-        log_buy: [],
-        read_log: [],
         email: "",
         sns: "",
         socketID: null
@@ -182,16 +166,8 @@ passport.use(new NaverStrategy({
     User.findOne({ email: profile._json.email }, function(err, user) {
         if (!user) {
             var user = new User({
-                lv: 1,
-                max_exp: 10,
-                exp: 0,
                 win: 0,
                 lose: 0,
-                gold: 0,
-                pearl: 0,
-                log: [],
-                log_buy: [],
-                read_log: [],
                 email: profile.emails[0].value,
                 sns: "naver"
             });
@@ -236,47 +212,6 @@ app.get('/login', function(req, res) {
         res.render('login');
     }
 });
-app.get('/buy', function(req, res) {
-    if (req.user) {
-        var buy = req.query.buy;
-        var log;
-        if (buy === "buy_1") {
-            if (req.user.pearl >= 10) {
-                log = Date() + " 10진주로 10,000골드 구매";
-                User.update({ _id: req.user._id }, { $inc: { gold: 10000, pearl: -10 }, $push: { log_buy: log } }, function(err) {
-                    res.redirect('/main');
-                    return;
-                });
-            } else {
-                res.send('<script>alert("진주가 부족합니다.");location.href="/main";</script>');
-            }
-        } else if (buy === "buy_2") {
-            if (req.user.pearl >= 50) {
-                log = Date() + " 50진주로 55,000골드 구매";
-                User.update({ _id: req.user._id }, { $inc: { gold: 55000, pearl: -50 }, $push: { log_buy: log } }, function(err) {
-                    res.redirect('/main');
-                    return;
-                });
-            } else {
-                res.send('<script>alert("진주가 부족합니다.");location.href="/main";</script>');
-            }
-        } else if (buy === "buy_3") {
-            if (req.user.pearl >= 100) {
-                log = Date() + " 100진주로 120,000골드 구매";
-                User.update({ _id: req.user._id }, { $inc: { gold: 120000, pearl: -100 }, $push: { log_buy: log } }, function(err) {
-                    res.redirect('/main');
-                    return;
-                });
-            } else {
-                res.send('<script>alert("진주가 부족합니다.");location.href="/main";</script>');
-            }
-        } else {
-            res.send('<script>alert("잘못된 요청 입니다.");location.href="/main";</script>');
-        }
-    } else {
-        res.render('login');
-    }
-});
 //게임 전역 스키마 생성
 var roomData = mongoose.Schema({
     name: { type: String },
@@ -287,29 +222,15 @@ var roomData = mongoose.Schema({
     start: { type: String },
     select_board: { type: String },
     player: [],
+    board: [],
     currentTurn: { type: Number },
-    action: { type: Number },
     member: { type: [String] },
-    player_1: {},
-    player_2: {},
     build: [],
-    boss: { type: Number },
     round: { type: Number },
     gameover: { type: Number },
-    rmt: { type: Array },
     created_at: { type: Date, default: Date.now }
 });
 var Room = mongoose.model('roomData', roomData);
-
-//랭킹 전역 스키마 생성
-var rankingData = mongoose.Schema({
-    user_nick: { type: String, unique: true },
-    rank: { type: Number },
-    win: {type: Number},
-    lose: {type: Number},
-    winRate: { type: Number }
-});
-var Ranking = mongoose.model('rankingData', rankingData);
 
 app.get('/main', function(req, res) {
     if (req.user) {
@@ -335,24 +256,20 @@ app.post('/roomCreat', function(req, res) {
             var num = num + '';
             return num.length < 2 ? '0' + num : num;
         }
-        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) +
-            ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+        return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
     }
     if (req.user) {
         var room = new Room({
             name: now,
             admin: req.user.user_nick,
-            maxMember: 2,
+            maxMember: 5,
             member: [req.user.user_nick],
-            player_1: { nick: req.user.user_nick, gold: 200, energy: 30, action: 1 },
-            player_2: { nick: null, gold: 200, energy: 30, action: 1 },
             currentTurn: 1,
-            action: 2,
+            board: ["board_a_classic","board_b_classic","board_c_classic","board_d_classic","board_e_classic","board_a_expert","board_b_expert","board_c_expert","board_d_expert","board_e_expert"],
             full: "no",
             delete: "no",
             start: "대기",
             select_board: "아직",
-            boss: 150,
             round: 1,
             gameover: 0
         });
@@ -377,9 +294,8 @@ app.post('/roomCreat', function(req, res) {
 });
 app.get('/room', function(req, res) {
     if (req.user) {
-        var roomId = req.query.roomId;
-        if (roomId != null) {
-            Room.find({ _id: roomId }, function(err, roomValue) {
+        if (req.query.roomId != null) {
+            Room.find({ _id: req.query.roomId }, function(err, roomValue) {
                 res.render('room', { room: roomValue[0], user: req.user });
                 //console.log(roomValue[0].board);
                 //console.log(roomValue[0]);
@@ -394,9 +310,8 @@ app.get('/room', function(req, res) {
 //참가하기
 app.post('/joinRoom', function(req, res) {
     if (req.user) {
-        var roomId = req.query.roomId;
-        Room.update({ _id: roomId }, { $push: { member: req.user.user_nick }, $set: { 'player_2.nick': req.user.user_nick } }, function(err) {
-            res.redirect('/room?roomId=' + roomId);
+        Room.update({ _id: req.query.roomId }, { $push: { member: req.user.user_nick } }, function(err) {
+            res.redirect('/room?roomId=' + req.query.roomId);
         });
     } else {
         res.render('login');
@@ -405,9 +320,8 @@ app.post('/joinRoom', function(req, res) {
 //나가기
 app.post('/leaveRoom', function(req, res) {
     if (req.user) {
-        var roomId = req.query.roomId;
-        Room.update({ _id: roomId }, { $pull: { member: req.user.user_nick }, $set: { 'player_2.nick': null } }, function(err) {
-            res.redirect('/room?roomId=' + roomId);
+        Room.update({ _id: req.query.roomId }, { $pull: { member: req.user.user_nick } }, function(err) {
+            res.redirect('/room?roomId=' + req.query.roomId);
         });
     } else {
         res.render('login');
@@ -427,318 +341,38 @@ app.post('/deleteRoom', function(req, res) {
 //시작 
 app.post('/startRoom', function(req, res) {
     if (req.user) {
-        var roomId = req.query.roomId;
-
-        Room.findOneAndUpdate({ _id: roomId }, { $set: { start: "진행 중" } }, function(err, roomValue) {
-        	//턴 순서 정하고 플레이어 초기값 입력 저장
-        	roomValue.member = DoShuffle(roomValue.member, roomValue.member.length);
+        Room.findOneAndUpdate({ _id: req.query.roomId }, { $set: { start: "진행 중" } }, function(err, roomValue) {
+        	//플레이어 초기값 입력 저장
             for (var max = roomValue.member.length, i = 0; i < max; i++) {
-                Room.update({ _id: roomId }, { $push: { player: { nick: roomValue.member[i], gold: 500, energy: 50, incGold: 0, incEnergy: 0, damage: 0, score: 2, pass: false, BuildingBuiltThisTurn: 0 } } }, function(err) {});
+                Room.update({ _id: req.query.roomId }, { $push: { player: { nick: roomValue.member[i], board: "아직", engine: 10, option_tile: 1, white_tile: 3, energy_1: 1, energy_2: 1, energy_3: 1, energy_4: 1, score: 2, pass: false } } }, function(err) {});
             }
-
-            //라운드 미션 타일 랜덤 배치
-            var rmt = [1, 2, 3, 4, 5];
-            rmt = DoShuffle(rmt, rmt.length);
-            console.log(rmt);
-            Room.update({ _id: roomId }, { $set: { rmt: rmt } }, function(err) {});
-
-            res.redirect('/room?roomId=' + roomId);
+            res.redirect('/room?roomId=' + req.query.roomId);
         });
     } else {
         res.render('login');
     }
 });
-//생산
-app.get('/produce', function(req, res) {
+//보드판 고르기
+app.post('/selectBoard', function(req, res) {
     if (req.user) {
-        var roomId = req.query.roomId;
-        var locIndex = parseInt(req.query.locIndex);
-        var level = parseInt(req.query.level);
-        var reqEnergy;
-        var reqGold;
-        var incGold;
-        var incEnergy;
-        var damage;
-
-        if (level === 1) {
-            reqGold = 10;
-            reqEnergy = 2;
-            incGold = 2;
-            incEnergy = 2;
-            damage = 2;
-        } else if (level === 2) {
-            reqGold = 20;
-            reqEnergy = 3;
-            incGold = 3 - 2;
-            incEnergy = 3 - 2;
-            damage = 3 - 2;
-        } else if (level === 3) {
-            reqGold = 50;
-            reqEnergy = 5;
-            incGold = 5 - 3;
-            incEnergy = 5 - 3;
-            damage = 5 - 3;
-        }
-
-        Room.findOne({ _id: roomId, build: { $elemMatch: { locIndex: locIndex } } }, { action: true, player_1: true, player_2: true, player: true, build: { $elemMatch: { locIndex: locIndex } } }, function(err, roomValue) {
-
-            if ((req.user.user_nick === roomValue.build[0].owner) || (roomValue.build[0].owner === null) || (roomValue.build[0].owner === undefined)) {
-                if (roomValue.action > 0) {
-                    if (req.user.user_nick === roomValue.player[0].nick) {
-                        var factor = { $set: { 'build.$.level': level, 'build.$.owner': req.user.user_nick } };
-                        var factor2 = { $inc: { 'player.$.gold': -reqGold, 'player.$.energy': -reqEnergy, 'player.$.incGold': incGold, 'player.$.incEnergy': incEnergy, 'player.$.damage': damage, action: -1 } };
-                        var currentEnergy = roomValue.player[0].energy;
-                        var currentGold = roomValue.player[0].gold;
-                    } else if (req.user.user_nick === roomValue.player[1].nick) {
-                        var factor = { $set: { 'build.$.level': level, 'build.$.owner': req.user.user_nick } };
-                        var factor2 = { $inc: { 'player.$.gold': -reqGold, 'player.$.energy': -reqEnergy, 'player.$.incGold': incGold, 'player.$.incEnergy': incEnergy, 'player.$.damage': damage, action: -1 } };
-                        var currentEnergy = roomValue.player[1].energy;
-                        var currentGold = roomValue.player[1].gold;
-                    }
-                    if (currentEnergy >= reqEnergy) {
-                        if (currentGold >= reqGold) {
-                            Room.findOneAndUpdate({ _id: roomId, build: { $elemMatch: { locIndex: locIndex } } }, factor, { new: true }, function(err, room) {
-                                Room.findOneAndUpdate({ _id: roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, factor2, function(err, room) {});
-                                var row = parseInt(locIndex / 10);
-                                var col = locIndex % 10
-
-                                if (locIndex === 1) {
-                                    //+1, +9, +10
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 1);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 9);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 10);
-                                } else if (locIndex === 10) {
-                                    //-1, +9, +10
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -1);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 9);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 10);
-                                } else if (locIndex === 91) {
-                                    //-10, -9, +1
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -10);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -9);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 1);
-                                } else if (locIndex === 100) {
-                                    //-10,-11, -1
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -11);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -10);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -1);
-                                } else if (col === 0) {
-                                    //-10, -11, -1, +9, +10
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -11);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -10);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -1);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 9);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 10);
-                                } else if (col === 1) {
-                                    //-10, -9, +1, +10, +11
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 11);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 10);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 1);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -9);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -10);
-                                } else if (row === 0) {
-                                    //-1, +1, +9, +10, +11
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 11);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 10);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 1);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 9);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -1);
-                                } else if (row === 9) {
-                                    //-1, +1, -9, -10, -11
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -11);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -10);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -9);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -1);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 1);
-                                } else {
-                                    //+1, -1, +9,10,11 -9,10,11
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -11);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -10);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -9);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, -1);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 1);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 9);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 10);
-                                    SLandS(room, roomId, req.user.user_nick, locIndex, 11);
-                                }
-                                RMT(room, roomId, req.user.user_nick, level);
-                                res.redirect('/room?roomId=' + roomId);
-                            });
-                        } else {
-                            res.send('<script>alert("골드가 부족합니다.");location.href="/room?roomId=' + roomId + '";</script>');
-                        }
-                    } else {
-                        res.send('<script>alert("에너지가 부족합니다.");location.href="/room?roomId=' + roomId + '";</script>');
-                    }
-                } else {
-                    res.send('<script>alert("액션포인트가 부족합니다.");location.href="/room?roomId=' + roomId + '";</script>');
-                }
+        var randBoard, randNum;
+        Room.find({ _id: req.query.roomId }, function(err, roomValue) {
+            if (req.query.board === "random_1") {
+                randNum = Math.floor(Math.random() * 5);
+                randBoard = roomValue[0].board[randNum];
+                Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': randBoard }, $inc: { 'player.$.score': 2 } }, function(err) {});
+            } else if (req.query.board === "random_2") {
+                randNum = Math.floor(Math.random() * 10);
+                Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': randBoard }, $inc: { 'player.$.score': 3 } }, function(err) {});
+            } else if (req.query.board === "random_3") {
+                randNum = Math.floor(Math.random() * 5) + 5;
+                Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': randBoard }, $inc: { 'player.$.score': 4 } }, function(err) {});
             } else {
-                res.send('<script>alert("생산할 수 없는 지역입니다.");location.href="/room?roomId=' + roomId + '";</script>');
+                Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': req.query.board } }, function(err) {});
             }
+            res.redirect('/room?roomId=' + req.query.roomId);
         });
     } else {
         res.render('login');
     }
 });
-//턴넘기기
-app.post('/turnEnd', function(req, res) {
-    if (req.user) {
-        console.log('이게 턴엔드 메시지');
-        var roomId = req.query.roomId;
-        Room.findOne({ _id: roomId }, function(err, room) {
-            room.currentTurn++;
-            while (room.player[(room.currentTurn - 1) % room.member.length].pass) {
-                room.currentTurn++;
-            }
-            console.log(room.currentTurn);
-            Room.update({ _id: roomId }, { $set: { action: 2, currentTurn: room.currentTurn } }, function(err) {});
-            Rndld = room.player[(room.currentTurn - 1) % room.member.length].nick;
-            res.redirect('/room?roomId=' + roomId);
-        });
-    } else {
-        res.render('login');
-    }
-});
-//턴넘기기
-app.get('/turnEnd', function(req, res) {
-    if (req.user) {
-        console.log('이게 턴엔드 메시지');
-        var roomId = req.query.roomId;
-        Room.findOne({ _id: roomId }, function(err, room) {
-            room.currentTurn++;
-            while (room.player[(room.currentTurn - 1) % room.member.length].pass) {
-                room.currentTurn++;
-            }
-            console.log(room.currentTurn);
-            Room.update({ _id: roomId }, { $set: { action: 2, currentTurn: room.currentTurn } }, function(err) {});
-            Rndld = room.player[(room.currentTurn - 1) % room.member.length].nick;
-            res.redirect('/room?roomId=' + roomId);
-        });
-    } else {
-        res.render('login');
-    }
-});
-//패스
-app.post('/pass', function(req, res) {
-    if (req.user) {
-        var roomId = req.query.roomId;
-        Room.findOneAndUpdate({ _id: roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.pass': true, action: 2 } }, { new: true }, function(err, room) {
-            for (var i = 0, j = 0; i < room.player.length; i++) {
-                if (!room.player[i].pass) {
-                    j++;
-                }
-            }
-            if (j === 0) {
-                //라운드 종료
-                for (var i = 0, damage = 0; i < room.player.length; i++) {
-                    room.player[i].gold += room.player[i].incGold;
-                    room.player[i].energy += room.player[i].incEnergy;
-                    room.player[i].pass = false;
-                    damage += room.player[i].damage;
-                }
-                console.log(room.round, "라운드")
-                if ((room.boss - damage) <= 0) {
-                    Room.update({ _id: roomId }, { $set: { gameover: 1 } }, function(err) {});
-                    for (var ri=0; ri<room.member.lenght;i++) {
-                        Ranking.update({ user_nick : room.member[ri] },{$inc :{ win : 1}}, function(err){});  
-                    }
-                    Ranking.sort({ win: 'desc' });    
-                } else if (room.round > 4) {
-                    Room.update({ _id: roomId }, { $set: { gameover: -1 } }, function(err) {});
-                    for (var ri=0; ri<room.member.lenght;i++) {
-                        Ranking.update({ user_nick : room.member[ri] },{$inc :{ lose : 1}}, function(err){});
-                    }
-                    Ranking.sort({ win: 'desc' });
-                }
-                Room.update({ _id: roomId }, { $set: { player: room.player }, $inc: { round: 1, boss: -damage } }, function(err) {});
-            }
-            console.log(room.player);
-            res.redirect('/turnEnd?roomId=' + roomId);
-        });
-    } else {
-        res.render('login');
-    }
-});
-
-//랭킹
-app.get('/ranking', function(req,res){
-    Ranking.find(function(err, rankingValue) {
-            res.render('ranking', { ranking: rankingValue});
-                //console.log(roomValue[0].board);
-                //console.log(roomValue[0]);
-            });
-});
-
-//파워
-function SLandS(room, roomId, user_nick, locIndex, n) { 
-    if (room.build[locIndex + n].owner !== null && room.build[locIndex + n].owner !== user_nick) {
-        if (room.build[locIndex + n].level == 1) {
-            var bonEnergy = 2;
-        } else if (room.build[locIndex + n].level == 2) {
-            var bonEnergy = 3;
-        } else if (room.build[locIndex + n].level == 3) {
-            var bonEnergy = 5;
-        }
-        Room.update({ _id: roomId, player: { $elemMatch: { nick: room.build[locIndex + n].owner } } }, { $inc: { 'player.$.energy': bonEnergy } }, function(err) {});
-        console.log(room.build[locIndex + n].owner, "는 파워를 받으라", room.build[locIndex + n].owner !== room.build[locIndex].owner, user_nick, room.build[locIndex + n].owner);
-    }
-}
-
-//라운드 미션 타일
-function RMT(room, roomId, user_nick, level) {
-    if (room.rmt[room.round - 1] === 1) {
-        //1단계 대포를 지으면 지을 때마다 3점
-        if (level === 1) {
-            Room.update({ _id: roomId, player: { $elemMatch: { nick: user_nick } } }, { $inc: { 'player.$.score': 3 } }, function(err) {});
-        }
-    } else if (room.rmt[room.round - 1] === 2) {
-        //2단계 대포를 지으면 지을 때마다 3점
-        if (level === 2) {
-            Room.update({ _id: roomId, player: { $elemMatch: { nick: user_nick } } }, { $inc: { 'player.$.score': 3 } }, function(err) {});
-        }
-    } else if (room.rmt[room.round - 1] === 3) {
-        //3단계 대포를 지으면 지을 때마다 5점
-        if (level === 3) {
-            Room.update({ _id: roomId, player: { $elemMatch: { nick: user_nick } } }, { $inc: { 'player.$.score': 5 } }, function(err) {});
-        }
-    } else if (room.rmt[room.round - 1] === 4) {
-        //20 데미지 달성 시 10점(미구현)
-        /*
-        for (var i = 0; i < room.player.length ; i++) {
-        	if ( room.player[i].nick === user_nick ) {
-        		if (room.player[i].damage >= 20) {
-        			Room.update({_id : roomId, player : {$elemMatch : {nick : user_nick}}}, {$inc : {'player.$.score' : 10}}, function(err){});
-        		}
-        		break;
-        	}
-        }
-        */
-    } else if (room.rmt[room.round - 1] === 5) {
-        //건물 5개 지으면 10점
-        for (var i = 0; i < room.player.length; i++) {
-            if (room.player[i].nick === user_nick) {
-                room.player[i].BuildingBuiltThisTurn++;
-                Room.update({ _id: roomId, player: { $elemMatch: { nick: user_nick } } }, { $inc: { 'player.$.BuildingBuiltThisTurn': 1 } }, function(err) {});
-                if (room.player[i].BuildingBuiltThisTurn === 5) {
-                    Room.update({ _id: roomId, player: { $elemMatch: { nick: user_nick } } }, { $inc: { 'player.$.score': 10 } }, function(err) {});
-                }
-                break;
-            }
-        }
-    }
-    console.log("RMT(", room.rmt[room.round - 1], ")실행");
-}
-
-//셔플 알고리즘 : Fisher–Yates Shuffle 
-//Doshuffle(셔플할 배열, 배열의 길이)
-function DoShuffle(xArray, xLength)
-{
-	for (var i = 0, j, temp; i < xLength; i++) {
-		j = Math.floor(Math.random() * (xLength - i));
-		temp = xArray[i];
-		xArray[i] = xArray[i+j];
-		xArray[i+j] = temp;
-	}
-	return xArray;
-}

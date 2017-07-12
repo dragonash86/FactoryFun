@@ -9,7 +9,7 @@
 	<div class="container room">
 	<% if (room.start === "대기") { %>
 		<h2>생성 시간 : <%= room.name %></h2>
-		<ul>
+		<ul class="room_info">
 			<li>방장 : <%= room.admin %></li>
 			<li>참여인원 : <%= room.member.length %>/<%= room.maxMember %></li>
 			<li>참가자 :
@@ -41,19 +41,65 @@
 			<form action="/deleteRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="방폭" /></form>
 		<% } %>
 	<% } else if (room.select_board === "아직") { %>
+		<% if (room.player[0].board === "아직") { %>
 		<div class="select_board">
 			<h3>판떼기 고르기</h3>
 			<ul>
-				<li><a href="#n"><p>A타입 클래식</p><img src="/images/board_a_classic.jpg" alt="A타입 클래식" /></a></li>
-				<li><a href="#n" class="random" title="+2점"><p>클래식에서 랜덤</p><img src="/images/board_random.jpg" alt="?" /></a></li>
-				<li><a href="#n" class="random" title="+5점"><p>익스퍼트에서 랜덤</p><img src="/images/board_random.jpg" alt="" /></a></li>
-				<li><a href="#n" class="random" title="+4점"><p>아몰랑 다 랜덤</p><img src="/images/board_random.jpg" alt="" /></a></li>
+				<% for (i = 0; i < room.board.length; i++) { %>
+				<li class="<%= room.board[i] %>"><a href="#n"><p>Type 
+				<strong>
+				<% if (i === 0 || i === 5) { %>
+					A
+				<% } else if (i === 1 || i === 6) { %>
+					B
+				<% } else if (i === 2 || i === 7) { %>
+					C
+				<% } else if (i === 3 || i === 8) { %>
+					D
+				<% } else if (i === 4 || i === 9) { %>
+					E
+				<% } %>
+				</strong>
+				<span>
+				<% if (i === 0 || i === 2 || i === 4 || i === 6 || i === 8) { %>
+					Classic
+				<% } else if (i === 1 || i === 3 || i === 5 || i === 7 || i === 9) { %>
+					Expert
+				<% } %>
+				</span></p><img src="/images/<%= room.board[i] %>.jpg" alt="<%= room.board[i] %>" /></a></li>
+				<% } %>
+				<li class="random_1"><a href="#n"><p>Classic Random (+2 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
+				<li class="random_2"><a href="#n"><p>All Random(+3 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
+				<li class="radnom_3"><a href="#n"><p>Expert Random(+4 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
 			</ul>
+			<form action="/selectBoard?roomId=<%= room._id %>" method="post" class="layer_start"><input type="submit" value="시작" /></form>
 		</div>
+		<% } else { %>
+		<%
+	        for (var i = 0; i < room.player.length; i++) {
+	            var count = 0;
+	            if (room.player[i].board !== "아직") {
+	                count = count + 1;
+	                //console.log(count);
+	                if (count === room.member.length) {
+
+	                    //Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: user_nick } } }, { $set: { select_board: "준비 완료" } }, function(err) {});
+	                    %>
+	                    1111
+	                    <%
+	                }
+	            }
+	        }
+
+		%>
+		<div>
+
+		</div>
+		<% } %>
 	<% } else { %>
 		<h3>현재 라운드 : <%= room.player[(room.currentTurn-1)%room.member.length].nick %></h3>
 		<div class="status">
-			<% for (i=0; i<room.player.length; i++) {%>
+			<% for (i = 0; i < room.player.length; i++) { %>
 				<div class="box">
 					<h3 class="player<%= i %>"><%= room.player[i].nick %></h3>
 					<ul>
@@ -97,7 +143,6 @@
 			<p></p>
 			<a href="#n" class="cancel">취소</a>
 		</div>
-		
 	<% } %>
 	</div>
 	<script src="/socket.io/socket.io.js"></script>
@@ -139,7 +184,15 @@
 				e.preventDefault();
 				$(".layer_action").fadeOut(200);
 			});
-				
+			$(".select_board a").click(function(e) {
+				e.preventDefault();
+				$(".select_board a").removeClass("on");
+				$(this).addClass("on");
+				console.log($(this).parent().attr("class"));
+				$(".layer_start").fadeIn(200);
+				$(".layer_start").css({"top":$(this).offset().top + 73, "left":$(this).offset().left + 50},100);
+				$(".layer_start").attr("action","/selectBoard?roomId=<%= room._id %>&board="+$(this).parent().attr("class"));
+			});
 		});
 		//소켓;턴넘길때 소리 재생
 		
