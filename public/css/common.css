@@ -1,7 +1,7 @@
 @charset "utf-8";
 html{overflow-x:hidden;height:100%}
 html,body,div,p,img,span,a,em,strong,pre,h1,h2,h3,h4,h5,h6,ul,ol,li,dl,dt,dd,table,tbody,thead,tfoot,tr,th,td,form,fieldset,legend,caption,input,textarea,button,select,object,video,iframe{margin:0;padding:0;border-radius:5px}
-body{font-family:'맑은 고딕',Malgun Gothic,'돋움',dotum,'굴림',gulim,Arial,AppleGothic,verdana,sans-serif,helvetica;letter-spacing:-1px;font-size:14px;color:#111;width:100%;height:100%}
+body{font-family:'맑은 고딕',Malgun Gothic,'돋움',dotum,'굴림',gulim,Arial,AppleGothic,verdana,sans-serif,helvetica;font-size:14px;color:#111;width:100%;height:100%}
 h1,h2,h3,h4,h5,h6{font-size:14px}
 img,fieldset,button{border:0}
 table{border-collapse:collapse;border-spacing:0}
@@ -22,7 +22,10 @@ h3{padding:20px 0}
 .btn:hover{color:#fff;background:#1c2833;text-decoration:none}
 .m_clear{margin:0}
 .t_c{text-align:center}
+.m_t_20{margin-top:20px}
+.m_b_20{margin-bottom:20px}
 .p_t_20{padding-top:20px}
+.p_b_20{padding-bottom:20px}
 .container{width:1200px;padding:50px 20px;margin:0 auto}
 @media (max-width:1200px) {
 	.container{width:100%}
@@ -76,10 +79,12 @@ h3{padding:20px 0}
 .box h3{padding:0;padding-bottom:10px}
 .player0{color:#FF0000}
 .player1{color:#0000FF}
-.ball{display:inline-block;border:1px solid #34C91C;background:#34C91C;border-radius:20px;width:20px;height:20px;vertical-align:-5px;margin:0 3px}
+.ball{display:inline-block;border:1px solid #34C91C;background:#34C91C;border-radius:15px;width:22px;height:22px;font-size:13px;vertical-align:1px;text-align:center;margin:0 3px;padding-right:2px}
 
 /* board */ /* 나중에 백단에서도 접근 못하게 막아야함 */
-.board{margin:30px auto}
+.board{display:block;padding:120px 0}
+.board ul{clear:both}
+.board li{display:inline-block;margin-right:50px}
 .board td{position:relative;border:1px solid #272822;width:50px;height:50px}
 .board td.active{border:1px dashed #36D136}
 .board a{display:block;width:50px;height:50px}
@@ -98,6 +103,6 @@ h3{padding:20px 0}
 .select_board li a.on img{border:2px solid #7D2232}
 .layer_start{display:none;position:absolute}
 .layer_start input{background:rgba(0,0,0,.5);color:#fff;border:0;cursor:pointer;width:100px;height:100px;font-size:30px}
-.board_a tr:nth-child(1) td:nth-child(1),.board_a tr:nth-child(2) td:nth-child(1){border:0}
-.board_a tr:nth-child(1) td:nth-child(1) a,.board_a tr:nth-child(2) td:nth-child(1) a,.board_a tr:nth-child(5) td:nth-child(6) a,.board_a tr:nth-child(9),.board_a tr:nth-child(10){display:none}
-.board_a tr:nth-child(5) td:nth-child(6){background:#c7c7c7}
+.board_a_classic tr:nth-child(1) td:nth-child(1),.board_a_classic tr:nth-child(2) td:nth-child(1){border:0}
+.board_a_classic tr:nth-child(1) td:nth-child(1) a,.board_a_classic tr:nth-child(2) td:nth-child(1) a,.board_a_classic tr:nth-child(5) td:nth-child(6) a,.board_a_classic tr:nth-child(9),.board_a_classic tr:nth-child(10){display:none}
+.board_a_classic tr:nth-child(5) td:nth-child(6){background:#c7c7c7;border-radius:0}

@@ -102,7 +102,6 @@
 			<a href="" class="btn">새로고침</a>
 		</div>
 	<% } else { %>
-		<h3>현재 라운드 : <%= room.player[(room.currentTurn-1)%room.member.length].nick %></h3>
 		<div class="status">
 			<% for (i = 0; i < room.player.length; i++) { %>
 				<div class="box">
@@ -123,26 +122,41 @@
 				<% } %>
 				<% if (user) { %>
 					<ul>
-						<li>남은 행동 : <% for (i = 0; i < room.action; i++) { %><span class="ball"></span><% } %><li>
-						<!--li>총 턴 수 : <%= room.currentTurn %></li-->
+						<li>남은 엔진 : <% for (var i = 0; i < room.player[0].engine; i++) { %><span class="ball"><%= i+1 %></span><% } %><li>
 					</ul>
-					<% if (room.action === 0) { %>
-						<form action="/turnEnd?roomId=<%= room._id %>" id="endTurn" method="post" style="padding-top:10px"><input type="submit" value="턴 넘기기" class="btn m_clear" /></form>
-					<% } %>
-					<form action="/pass?roomId=<%= room._id %>" id="pass" method="post" style="padding:10px 0"><input type="submit" value="라운드 패스" class="btn m_clear" /></form>
 				<% } %>
 			<% } %>
 		</div>
-		<table class="board board_a"><!-- 보드판에 따라 타입 클래스 적용 -->
-			<% for (var i = 1; i <= 10; i++) { %>
-				<tr>
-					<% for (var j = 1; j <= 10; j++) { %>
-						<td><a href="#n" class="p_<%= i %>_<%= j %>"><span><%= i %>-<%= j %></span><br />
-						<p class="<% for (var k=0;k<room.player.length;k++){if (room.build[(i-1)*10+j].owner === room.player[k].nick){%>player<%= k %><% }} %>"><%= room.build[(i-1)*10+j].level %></p></a></td>
-					<% } %>
-				</tr>
+		<div class="board">
+			<ul>
+				<% for (var k = 0; k < room.member.length; k++) { %>
+				<li>
+					<strong><%= room.member[k] %></strong><% var board = room.player[k].board.replace('board_', 'Type ').replace('_', ' ').toUpperCase();%>
+					<strong>(<%= board %>)</strong><br /><br />
+					<% for (var m = 0; m < room.player[k].tile_white; m++) { %>배출용기<!-- <img src="./images/tile_white.jpg" alt="배출용기" /> --><% } %>
+					<% for (var o = 0; o < room.player[k].tile_energy_1; o++) { %>녹색공급용기<!-- <img src="./images/tile_energy_1.jpg" alt="녹색공급용기" /> --><% } %>
+					<% for (var p = 0; p < room.player[k].tile_energy_2; p++) { %>빨강공급용기<!-- <img src="./images/tile_energy_2.jpg" alt="빨강공급용기" /> --><% } %>
+					<% for (var q = 0; q < room.player[k].tile_energy_3; q++) { %>파랑공급용기<!-- <img src="./images/tile_energy_3.jpg" alt="파랑공급용기" /> --><% } %>
+					<% for (var r = 0; r < room.player[k].tile_energy_4; r++) { %>주황공급용기<!-- <img src="./images/tile_energy_4.jpg" alt="주황공급용기" /> --><% } %>
+					<% for (var s = 0; s < room.player[k].tile_option; s++) { %>대각교차타일<!-- <img src="./images/tile_option.jpg" alt="대각교차타일" /> --><% } %>
+					<table class="<%= room.player[k].board %> m_t_20">
+						<% for (var i = 1; i <= 10; i++) { %>
+						<tr>
+							<% for (var j = 1; j <= 10; j++) { %>
+								<td>
+									<a href="#n" class="p_<%= i %>_<%= j %>">
+										<span><%= i %>-<%= j %></span><br />
+										<p class=""></p>
+									</a>
+								</td>
+							<% } %>
+						</tr>
+						<% } %>
+					</table>
+				</li>
 			<% } %>
-		</table>
+			</ul>
+		</div>
 		<div class="layer_action">
 			<span></span>
 			<p></p>
