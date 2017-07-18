@@ -122,8 +122,15 @@
 				<% } %>
 				<% if (user) { %>
 					<ul>
-						<li>남은 엔진 : <% for (var i = 0; i < room.player[0].engine; i++) { %><span class="ball"><%= i+1 %></span><% } %><li>
+						<li>라운드 : <%= room.round %><li>
+						<li>남은 엔진 : <% for (var i = 0; i < room.player[0].tile_engine.length; i++) { %><span class="ball"><%= i+1 %></span><% } %><li>
 					</ul>
+					<% if (room.player[0].select_engine === "아직") { %>
+						<div class="select_engine">
+							<a href="#n"><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.png" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></a>
+							<form action="/selectEngine?roomId=<%= room._id %>" method="post" class="layer_start"><input type="submit" value="선택" /></form>
+						</div>
+					<% } %>
 				<% } %>
 			<% } %>
 		</div>
@@ -133,12 +140,16 @@
 				<li>
 					<strong><%= room.member[k] %></strong><% var board = room.player[k].board.replace('board_', 'Type ').replace('_', ' ').toUpperCase();%>
 					<strong>(<%= board %>)</strong><br /><br />
-					<% for (var m = 0; m < room.player[k].tile_white; m++) { %>배출용기<!-- <img src="./images/tile_white.jpg" alt="배출용기" /> --><% } %>
-					<% for (var o = 0; o < room.player[k].tile_energy_1; o++) { %>녹색공급용기<!-- <img src="./images/tile_energy_1.jpg" alt="녹색공급용기" /> --><% } %>
-					<% for (var p = 0; p < room.player[k].tile_energy_2; p++) { %>빨강공급용기<!-- <img src="./images/tile_energy_2.jpg" alt="빨강공급용기" /> --><% } %>
-					<% for (var q = 0; q < room.player[k].tile_energy_3; q++) { %>파랑공급용기<!-- <img src="./images/tile_energy_3.jpg" alt="파랑공급용기" /> --><% } %>
-					<% for (var r = 0; r < room.player[k].tile_energy_4; r++) { %>주황공급용기<!-- <img src="./images/tile_energy_4.jpg" alt="주황공급용기" /> --><% } %>
-					<% for (var s = 0; s < room.player[k].tile_option; s++) { %>대각교차타일<!-- <img src="./images/tile_option.jpg" alt="대각교차타일" /> --><% } %>
+					<% for (var m = 0; m < room.player[k].tile_white; m++) { %><img src="/images/tile_white.1jpg" class="drag tile" alt="배출용기" /><% } %>
+					<% for (var o = 0; o < room.player[k].tile_energy_1; o++) { %><img src="/images/tile_energy_1.1jpg" class="drag tile" alt="녹색공급용기" /><% } %>
+					<% for (var p = 0; p < room.player[k].tile_energy_2; p++) { %><img src="/images/tile_energy_2.1jpg" class="drag tile" alt="빨강공급용기" /><% } %>
+					<% for (var q = 0; q < room.player[k].tile_energy_3; q++) { %><img src="/images/tile_energy_3.1jpg" class="drag tile" alt="파랑공급용기" /><% } %>
+					<% for (var r = 0; r < room.player[k].tile_energy_4; r++) { %><img src="/images/tile_energy_4.1jpg" class="drag tile" alt="주황공급용기" /><% } %>
+					<% for (var s = 0; s < room.player[k].tile_option; s++) { %><img src="/images/tile_option.1jpg" class="drag tile" alt="대각교차타일" /><% } %>
+					<% if (room.player[0].select_engine !== "아직") { %>
+						<a href="#n"><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.1png" class="drag tile_engine" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></a>
+					<% } %>
+					<form action="/saveTile?roomId=<%= room._id %>" method="post"><input type="submit" value="배치 완료" /></form>
 					<table class="<%= room.player[k].board %> m_t_20">
 						<% for (var i = 1; i <= 10; i++) { %>
 						<tr>
@@ -165,56 +176,40 @@
 	<% } %>
 	</div>
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="/js/jquery.event.drag-2.2.js"></script>
+	<script src="/js/jquery.event.drop-2.2.js"></script>
 	<script>
 		$(function() {
-			$(".board .active a").click(function(e) {
-				e.preventDefault();
-				var location = this.getElementsByTagName('span')[0].innerText;
-				var level = this.getElementsByTagName('p')[0].innerText;
-				var row = parseInt(location.substring(0,this.text.indexOf('-')));
-				var col = parseInt(location.substring(this.text.indexOf('-') + 1,this.text.indexOf('-') + 3));
-				var locIndex=(row - 1) * 10 + col;
-				//if ( === )
-				var test = "."+$(this)[0].className+" p";
-				var num= <% for (var i = 0; i < room.player.length; i++) {
-					if ( user.user_nick === room.player[i].nick ) {
-						%><%=i%>
-					<%}}%>;
-						//alert(i);
-				if ($(test)[0].className === "player"+num || $(test)[0].className === ""){
-					//alert('성공');
-					$(".layer_action").fadeIn(200);
-	      				$(".layer_action").css({"top":$(this).offset().top + 30, "left":$(this).offset().left + 30},100);
-	      				$(".layer_action span").html(location);
-	      				$(".layer_action span").removeAttr("class");
-					$(".layer_action span").addClass($(this)[0].className + " lv_"+level);
-					if ($(".layer_action span").hasClass("lv_0")) {
-	      					$(".layer_action p").html('<a href="/produce?roomId=<%=room._id%>&level=1&locIndex='+locIndex+'" class="build">생산</a> 비용 : 10골드 + 2에너지');
-	      				} else if ($(".layer_action span").hasClass("lv_1")) {
-	      					$(".layer_action p").html('<a href="/produce?roomId=<%=room._id%>&level=2&locIndex='+locIndex+'" class="build">업그레이드</a> 비용 : 20골드 + 3에너지');
-	      				} else if ($(".layer_action span").hasClass("lv_2")) {
-	      					$(".layer_action p").html('<a href="/produce?roomId=<%=room._id%>&level=3&locIndex='+locIndex+'" class="build">업그레이드</a> 비용 : 50골드 + 5에너지');
-					}
-				}
-				else;
-					//alert('실패'+$(test)[0].className);
-			});
-			$(".layer_action a.cancel").click(function(e) {
-				e.preventDefault();
-				$(".layer_action").fadeOut(200);
-			});
 			$(".select_board a").click(function(e) {
 				e.preventDefault();
 				$(".select_board a").removeClass("on");
 				$(this).addClass("on");
-				console.log($(this).parent().attr("class"));
 				$(".layer_start").fadeIn(200);
-				$(".layer_start").css({"top":$(this).offset().top + 73, "left":$(this).offset().left + 50},100);
+				$(".layer_start").css({"top":$(this).offset().top + 73, "left":$(this).offset().left + 50}, 100);
 				$(".layer_start").attr("action","/selectBoard?roomId=<%= room._id %>&board="+$(this).parent().attr("class"));
 			});
+			$(".select_engine a").click(function(e) {
+				e.preventDefault();
+				$(".layer_start").fadeIn(200);
+				$(".layer_start").css({"top":$(this).offset().top + 33, "left":$(this).offset().left + 20}, 100);
+				$(".layer_start").attr("action","/selectEngine?roomId=<%= room._id %>&engine="+$(this).find("img").attr("alt"));
+			});
+			var posTop = 307;
+			var posLeft = 373;
+			var posValue = 70;
+			$('.drag').drag(function(ev, dd){
+				$(this).css({
+					top: Math.round( dd.offsetY / posValue ) * posValue + 27,
+					left: Math.round( dd.offsetX / posValue ) * posValue + 23
+				});
+			});
+			$('.drag').drop(function(ev, dd){
+				$(this).attr("id","");
+				$(this).attr("id",(((parseInt($(this).css("top")) - posTop) / posValue + 1) + "_" + ((parseInt($(this).css("left")) - posLeft) / posValue + 1)));
+			});
+				
 		});
 		//소켓;턴넘길때 소리 재생
-		
 		var socket = io.connect('http://localhost:3000');
 		socket.emit('send id', '<%=user.user_nick%>');
 		/*
@@ -227,7 +222,7 @@
 		socket.on('alert', function(e){
 			var audio = new Audio('https://player.bgmstore.net/k9l2X/mp4');
 			audio.play();
-			setTimeout(function(){location.href="/room?roomId=<%=room._id%>";},3000);
+			setTimeout(function(){location.href="/room?roomId=<%=room._id%>"}, 500);
 			//location.href="/room?roomId=<%=room._id%>";
 		});
 	</script>

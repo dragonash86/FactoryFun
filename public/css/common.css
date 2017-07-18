@@ -85,7 +85,7 @@ h3{padding:20px 0}
 .board{display:block;padding:120px 0}
 .board ul{clear:both}
 .board li{display:inline-block;margin-right:50px}
-.board td{position:relative;border:1px solid #272822;width:50px;height:50px}
+.board td{position:relative;border:1px solid #272822;width:70px;height:70px}
 .board td.active{border:1px dashed #36D136}
 .board a{display:block;width:50px;height:50px}
 .board td span{position:absolute;top:-2px;left:2px;font-size:10px}
@@ -106,3 +106,6 @@ h3{padding:20px 0}
 .board_a_classic tr:nth-child(1) td:nth-child(1),.board_a_classic tr:nth-child(2) td:nth-child(1){border:0}
 .board_a_classic tr:nth-child(1) td:nth-child(1) a,.board_a_classic tr:nth-child(2) td:nth-child(1) a,.board_a_classic tr:nth-child(5) td:nth-child(6) a,.board_a_classic tr:nth-child(9),.board_a_classic tr:nth-child(10){display:none}
 .board_a_classic tr:nth-child(5) td:nth-child(6){background:#c7c7c7;border-radius:0}
+.tile{width:70px;height:70px}
+.tile_engine{width:140px;height:70px}
+.drag{position:absolute;z-index:50;cursor:move}
