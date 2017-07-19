@@ -4,7 +4,7 @@ html,body,div,p,img,span,a,em,strong,pre,h1,h2,h3,h4,h5,h6,ul,ol,li,dl,dt,dd,tab
 body{font-family:'맑은 고딕',Malgun Gothic,'돋움',dotum,'굴림',gulim,Arial,AppleGothic,verdana,sans-serif,helvetica;font-size:14px;color:#111;width:100%;height:100%}
 h1,h2,h3,h4,h5,h6{font-size:14px}
 img,fieldset,button{border:0}
-table{border-collapse:collapse;border-spacing:0}
+table{border-spacing:0}
 ul,ol{list-style:none}
 em,address{font-style:normal}
 a,a:link{text-decoration:none;color:#111}
@@ -82,16 +82,17 @@ h3{padding:20px 0}
 .ball{display:inline-block;border:1px solid #34C91C;background:#34C91C;border-radius:15px;width:22px;height:22px;font-size:13px;vertical-align:1px;text-align:center;margin:0 3px;padding-right:2px}
 
 /* board */ /* 나중에 백단에서도 접근 못하게 막아야함 */
-.board{display:block;padding:120px 0}
-.board ul{clear:both}
-.board li{display:inline-block;margin-right:50px}
+.board{display:block;padding:63px 0}
+.board table{clear:both}
 .board td{position:relative;border:1px solid #272822;width:70px;height:70px}
-.board td.active{border:1px dashed #36D136}
-.board a{display:block;width:50px;height:50px}
 .board td span{position:absolute;top:-2px;left:2px;font-size:10px}
-.board td p{position:absolute;top:15px;left:15px; font-weight:bold;}
 .board .lv_1{position:absolute;left:14px;top:15px;border:1px solid red;border-radius:20px;width:20px;height:20px}
 .board .lv_2{position:absolute;left:10px;top:10px;border:15px solid red;border-radius:20px;width:20px;height:20px}
+.board .wrap_tile ul{overflow:hidden;}
+.board .wrap_tile li{float:left;width:100px;height:106px}
+.board .wrap_tile .tile{width:70px;height:70px}
+.board .wrap_tile .tile_engine,.select_engine img{width:140px;height:70px}
+.board .drag{position:absolute;z-index:50;cursor:move}
 .layer_action{display:none;position:absolute;border:1px solid #272822;background:#fff;padding:10px}
 .layer_action a{display:inline-block;border:1px solid #272822;text-align:center;padding:5px;margin:10px auto 0}
 .layer_action.show{display:block}
@@ -103,9 +104,6 @@ h3{padding:20px 0}
 .select_board li a.on img{border:2px solid #7D2232}
 .layer_start{display:none;position:absolute}
 .layer_start input{background:rgba(0,0,0,.5);color:#fff;border:0;cursor:pointer;width:100px;height:100px;font-size:30px}
-.board_a_classic tr:nth-child(1) td:nth-child(1),.board_a_classic tr:nth-child(2) td:nth-child(1){border:0}
-.board_a_classic tr:nth-child(1) td:nth-child(1) a,.board_a_classic tr:nth-child(2) td:nth-child(1) a,.board_a_classic tr:nth-child(5) td:nth-child(6) a,.board_a_classic tr:nth-child(9),.board_a_classic tr:nth-child(10){display:none}
-.board_a_classic tr:nth-child(5) td:nth-child(6){background:#c7c7c7;border-radius:0}
-.tile{width:70px;height:70px}
-.tile_engine{width:140px;height:70px}
-.drag{position:absolute;z-index:50;cursor:move}
+.board_d_classic tr:nth-child(1) td:nth-child(1),.board_d_classic tr:nth-child(2) td:nth-child(1){border:0}
+.board_d_classic tr:nth-child(1) td:nth-child(1) span,.board_d_classic tr:nth-child(2) td:nth-child(1) span,.board_d_classic tr:nth-child(5) td:nth-child(6) span,.board_d_classic tr:nth-child(9),.board_d_classic tr:nth-child(10){display:none}
+.board_d_classic tr:nth-child(5) td:nth-child(6){background:#c7c7c7}

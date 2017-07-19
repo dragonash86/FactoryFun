@@ -1,25 +1,26 @@
 <% include include/header.ejs %>
-<% if (room.gameover === 1) { %>
-	승리!!!
+<% if (room.gameover === "끝") { %>
+<div>
+	<ul>
+		<li>1위 : 닉네임</li>
+	</ul>
 	<a href="/">메인으로 가기</a>
-<%} else if (room.gameover === -1) { %>
-	패배!!!
-	<a href="/">메인으로 가기</a>
-<%} else { %>
-	<div class="container room">
-	<% if (room.start === "대기") { %>
-		<h2>생성 시간 : <%= room.name %></h2>
-		<ul class="room_info">
-			<li>방장 : <%= room.admin %></li>
-			<li>참여인원 : <%= room.member.length %>/<%= room.maxMember %></li>
-			<li>참가자 :
-				<% for (i = 0; i < room.member.length; i++) { %>
-				<%= room.member[i] + " " %>
-				<% } %>
-			</li>
-			<li>상태 : <%= room.start %></li>
-		</ul>
-		<%
+</div>
+<% } else { %>
+<div class="container room">
+<% if (room.start === "대기") { %>
+	<h2>생성 시간 : <%= room.name %></h2>
+	<ul class="room_info">
+		<li>방장 : <%= room.admin %></li>
+		<li>참여인원 : <%= room.member.length %>/<%= room.maxMember %></li>
+		<li>참가자 :
+			<% for (i = 0; i < room.member.length; i++) { %>
+			<%= room.member[i] + " " %>
+			<% } %>
+		</li>
+		<li>상태 : <%= room.start %></li>
+	</ul>
+	<%
 		if (user) {
 		    var count = 0;
 		    for (i = 0; i < room.member.length; i++) {
@@ -28,203 +29,187 @@
 		        }
 		    }
 		}
-	   	 %>
-		<% if (room.member.length !== room.maxMember && count === 0) { %>
-			<form action="/joinRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="참가하기" /></form>
-		<% } else if (count !== 0 && room.admin !== user.user_nick) { %>
-			<form action="/leaveRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="나가기" /></form>
-		<% } if (room.admin === user.user_nick && room.member.length > 1 && room.start !== "진행 중") { %>
-			<form action="/startRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="시작" /></form>
-		<% } if (room.admin === user.user_nick && room.member.length === 1 && room.start !== "진행 중") { %>
-			<form action="/startRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="싱글플레이" /></form>
-		<% } if (room.admin === user.user_nick && room.start !== "진행 중") { %>
-			<form action="/deleteRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="방폭" /></form>
-		<% } %>
-	<% } else if (room.select_board === "아직") { %>
+   	%>
+	<% if (room.member.length !== room.maxMember && count === 0) { %>
+		<form action="/joinRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="참가하기" /></form>
+	<% } else if (count !== 0 && room.admin !== user.user_nick) { %>
+		<form action="/leaveRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="나가기" /></form>
+	<% } if (room.admin === user.user_nick && room.member.length > 1 && room.start !== "진행 중") { %>
+		<form action="/startRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="시작" /></form>
+	<% } if (room.admin === user.user_nick && room.member.length === 1 && room.start !== "진행 중") { %>
+		<form action="/startRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="싱글플레이" /></form>
+	<% } if (room.admin === user.user_nick && room.start !== "진행 중") { %>
+		<form action="/deleteRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="방폭" /></form>
+	<% } %>
+<% } else if (room.select_board === "아직") { %>
+	<% for (var i = 0; i < room.player.length; i++) {
+            if (room.player[i].nick === user.user_nick) {
+                if (room.player[i].board === "아직") { %>
+					<div class="select_board">
+						<h3>판떼기 고르기</h3>
+						<ul>
+							<% for (i = 0; i < room.board.length; i++) { %>
+							<li class="<%= room.board[i] %>"><a href="#n"><p>Type 
+							<strong>
+							<% if (i === 0 || i === 5) { %>
+								A
+							<% } else if (i === 1 || i === 6) { %>
+								B
+							<% } else if (i === 2 || i === 7) { %>
+								C
+							<% } else if (i === 3 || i === 8) { %>
+								D
+							<% } else if (i === 4 || i === 9) { %>
+								E
+							<% } %>
+							</strong>
+							<span>
+							<% if (i < 5) { %>
+								Classic
+							<% } else if (i > 4) { %>
+								Expert
+							<% } %>
+							</span></p><img src="/images/<%= room.board[i] %>.jpg" alt="<%= room.board[i] %>" /></a></li>
+							<% } %>
+							<li class="random_1"><a href="#n"><p>Classic Random (+2 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
+							<li class="random_2"><a href="#n"><p>All Random(+3 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
+							<li class="random_3"><a href="#n"><p>Expert Random(+4 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
+						</ul>
+						<form action="/selectBoard?roomId=<%= room._id %>" method="post" class="layer_start"><input type="submit" value="시작" /></form>
+					</div>
+			<%	}
+			}
+		}
+	%>
+	<div>
 		<% 
 			for (var i = 0; i < room.player.length; i++) {
-                if (room.player[i].nick === user.user_nick) {
-                    if (room.player[i].board === "아직") {
-		%>
-						<div class="select_board">
-							<h3>판떼기 고르기</h3>
-							<ul>
-								<% for (i = 0; i < room.board.length; i++) { %>
-								<li class="<%= room.board[i] %>"><a href="#n"><p>Type 
-								<strong>
-								<% if (i === 0 || i === 5) { %>
-									A
-								<% } else if (i === 1 || i === 6) { %>
-									B
-								<% } else if (i === 2 || i === 7) { %>
-									C
-								<% } else if (i === 3 || i === 8) { %>
-									D
-								<% } else if (i === 4 || i === 9) { %>
-									E
-								<% } %>
-								</strong>
-								<span>
-								<% if (i === 0 || i === 2 || i === 4 || i === 6 || i === 8) { %>
-									Classic
-								<% } else if (i === 1 || i === 3 || i === 5 || i === 7 || i === 9) { %>
-									Expert
-								<% } %>
-								</span></p><img src="/images/<%= room.board[i] %>.jpg" alt="<%= room.board[i] %>" /></a></li>
-								<% } %>
-								<li class="random_1"><a href="#n"><p>Classic Random (+2 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
-								<li class="random_2"><a href="#n"><p>All Random(+3 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
-								<li class="radnom_3"><a href="#n"><p>Expert Random(+4 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
-							</ul>
-							<form action="/selectBoard?roomId=<%= room._id %>" method="post" class="layer_start"><input type="submit" value="시작" /></form>
-						</div>
-				<%	}
-				}
-			}
-		%>
-		<div>
-			<% 
-				for (var i = 0; i < room.player.length; i++) {
-                    var count = 0;
-                    if (room.player[i].board !== "아직") {
-                        count = count + 1;
-                        var yet = room.member.length - count;
-                        if (count === room.member.length) {
-                        	
-            %>
-            <script>location.href = "";</script>
-            <% 
-                        }
+                var count = 0;
+                if (room.player[i].board !== "아직") {
+                    count = count + 1;
+                    var yet = room.member.length - count;
+                    if (count === room.member.length) {
+                    	
+        %>
+        <script>location.href = "";</script>
+        <% 
                     }
                 }
-			%>
-			<p class="t_c p_t_20">아직 <%= yet %>명이 판떼기를 안골랐습니다.</p>
-			<a href="" class="btn">새로고침</a>
-		</div>
-	<% } else { %>
-		<div class="status">
-			<% for (i = 0; i < room.player.length; i++) { %>
-				<div class="box">
-					<h3 class="player<%= i %>"><%= room.player[i].nick %></h3>
-					<ul>
-						<li>점수 : <%= room.player[i].score %></li>
-					</ul>
-				</div>
-			<% } %>
-			<% if (room.player[(room.currentTurn-1)%room.member.length].nick === user.user_nick) { %>
-				<% if (room.action > 0) { %>
-				<script>
-					$(function() {
-						//현재 턴
-						$(".board td").addClass("active");
-					});
-				</script>
-				<% } %>
-				<% if (user) { %>
-					<ul>
-						<li>라운드 : <%= room.round %><li>
-						<li>남은 엔진 : <% for (var i = 0; i < room.player[0].tile_engine.length; i++) { %><span class="ball"><%= i+1 %></span><% } %><li>
-					</ul>
-					<% if (room.player[0].select_engine === "아직") { %>
-						<div class="select_engine">
-							<a href="#n"><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.png" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></a>
-							<form action="/selectEngine?roomId=<%= room._id %>" method="post" class="layer_start"><input type="submit" value="선택" /></form>
-						</div>
-					<% } %>
-				<% } %>
-			<% } %>
-		</div>
-		<div class="board">
-			<ul>
-				<% for (var k = 0; k < room.member.length; k++) { %>
-				<li>
-					<strong><%= room.member[k] %></strong><% var board = room.player[k].board.replace('board_', 'Type ').replace('_', ' ').toUpperCase();%>
-					<strong>(<%= board %>)</strong><br /><br />
-					<% for (var m = 0; m < room.player[k].tile_white; m++) { %><img src="/images/tile_white.1jpg" class="drag tile" alt="배출용기" /><% } %>
-					<% for (var o = 0; o < room.player[k].tile_energy_1; o++) { %><img src="/images/tile_energy_1.1jpg" class="drag tile" alt="녹색공급용기" /><% } %>
-					<% for (var p = 0; p < room.player[k].tile_energy_2; p++) { %><img src="/images/tile_energy_2.1jpg" class="drag tile" alt="빨강공급용기" /><% } %>
-					<% for (var q = 0; q < room.player[k].tile_energy_3; q++) { %><img src="/images/tile_energy_3.1jpg" class="drag tile" alt="파랑공급용기" /><% } %>
-					<% for (var r = 0; r < room.player[k].tile_energy_4; r++) { %><img src="/images/tile_energy_4.1jpg" class="drag tile" alt="주황공급용기" /><% } %>
-					<% for (var s = 0; s < room.player[k].tile_option; s++) { %><img src="/images/tile_option.1jpg" class="drag tile" alt="대각교차타일" /><% } %>
-					<% if (room.player[0].select_engine !== "아직") { %>
-						<a href="#n"><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.1png" class="drag tile_engine" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></a>
-					<% } %>
-					<form action="/saveTile?roomId=<%= room._id %>" method="post"><input type="submit" value="배치 완료" /></form>
-					<table class="<%= room.player[k].board %> m_t_20">
-						<% for (var i = 1; i <= 10; i++) { %>
-						<tr>
-							<% for (var j = 1; j <= 10; j++) { %>
-								<td>
-									<a href="#n" class="p_<%= i %>_<%= j %>">
-										<span><%= i %>-<%= j %></span><br />
-										<p class=""></p>
-									</a>
-								</td>
-							<% } %>
-						</tr>
-						<% } %>
-					</table>
-				</li>
-			<% } %>
-			</ul>
-		</div>
-		<div class="layer_action">
-			<span></span>
-			<p></p>
-			<a href="#n" class="cancel">취소</a>
-		</div>
-	<% } %>
+            }
+		%>
+		<p class="t_c p_t_20">아직 <%= yet %>명이 판떼기를 안골랐습니다.</p>
+		<a href="" class="btn">새로고침</a>
 	</div>
-	<script src="/socket.io/socket.io.js"></script>
-	<script src="/js/jquery.event.drag-2.2.js"></script>
-	<script src="/js/jquery.event.drop-2.2.js"></script>
-	<script>
-		$(function() {
-			$(".select_board a").click(function(e) {
-				e.preventDefault();
-				$(".select_board a").removeClass("on");
-				$(this).addClass("on");
-				$(".layer_start").fadeIn(200);
-				$(".layer_start").css({"top":$(this).offset().top + 73, "left":$(this).offset().left + 50}, 100);
-				$(".layer_start").attr("action","/selectBoard?roomId=<%= room._id %>&board="+$(this).parent().attr("class"));
-			});
-			$(".select_engine a").click(function(e) {
-				e.preventDefault();
-				$(".layer_start").fadeIn(200);
-				$(".layer_start").css({"top":$(this).offset().top + 33, "left":$(this).offset().left + 20}, 100);
-				$(".layer_start").attr("action","/selectEngine?roomId=<%= room._id %>&engine="+$(this).find("img").attr("alt"));
-			});
-			var posTop = 307;
-			var posLeft = 373;
-			var posValue = 70;
-			$('.drag').drag(function(ev, dd){
-				$(this).css({
-					top: Math.round( dd.offsetY / posValue ) * posValue + 27,
-					left: Math.round( dd.offsetX / posValue ) * posValue + 23
-				});
-			});
-			$('.drag').drop(function(ev, dd){
-				$(this).attr("id","");
-				$(this).attr("id",(((parseInt($(this).css("top")) - posTop) / posValue + 1) + "_" + ((parseInt($(this).css("left")) - posLeft) / posValue + 1)));
-			});
-				
+<% } else { %>
+	<div class="status">
+		<% for (i = 0; i < room.player.length; i++) { %>
+			<div class="box">
+				<h3 class="player<%= i %>"><%= room.player[i].nick %></h3>
+				<ul>
+					<li>점수 : <%= room.player[i].score %></li>
+				</ul>
+			</div>
+		<% } %>
+		<ul>
+			<li>라운드 : <%= room.round %><li>
+			<li>남은 엔진 : <% for (var i = 0; i < room.player[0].rest_engine; i++) { %><span class="ball"><%= i+1 %></span><% } %><li>
+		</ul>
+		<% if (room.player[0].select_engine === "아직") { %>
+			<div class="select_engine">
+				<a href="#n"><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.png" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></a>
+				<form action="/selectEngine?roomId=<%= room._id %>" method="post" class="layer_start"><input type="submit" value="선택" /></form>
+			</div>
+		<% } %>
+	</div>
+	<div class="board">
+			<% for (var k = 0; k < room.member.length; k++) { %>
+			<div class="wrap_tile">
+				<ul>
+					<% for (var m = 0; m < room.player[k].tile_white; m++) { %>
+					<li><img src="/images/tile_white.jpg1" class="drag tile" alt="배출용기" /></li>
+					<% } %>
+					<% for (var o = 0; o < room.player[k].tile_energy_1; o++) { %>
+					<li><img src="/images/tile_energy_1.jpg1" class="drag tile" alt="녹색공급용기" /></li>
+					<% } %>
+					<% for (var p = 0; p < room.player[k].tile_energy_2; p++) { %>
+					<li><img src="/images/tile_energy_2.jpg1" class="drag tile" alt="빨강공급용기" /></li>
+					<% } %>
+					<% for (var q = 0; q < room.player[k].tile_energy_3; q++) { %>
+					<li><img src="/images/tile_energy_3.jpg1" class="drag tile" alt="파랑공급용기" /></li>
+					<% } %>
+					<% for (var r = 0; r < room.player[k].tile_energy_4; r++) { %>
+					<li><img src="/images/tile_energy_4.jpg1" class="drag tile" alt="주황공급용기" /></li>
+					<% } %>
+					<% for (var s = 0; s < room.player[k].tile_option; s++) { %>
+					<li><img src="/images/tile_option.jpg1" class="drag tile_engine" alt="대각교차타일" /></li>
+					<% } %>
+					<% if (room.player[0].select_engine !== "아직") { %>
+					<li><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.jpg1" class="drag tile_engine" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></li>
+					<% } %>
+				</ul>
+			</div>
+			<div>
+				<h3><%= room.member[k] %><% var board = room.player[k].board.replace('board_', 'Type ').replace('_', ' ').toUpperCase(); %>(<%= board %>)</h3>
+				<table class="<%= room.player[k].board %>">
+					<% for (var i = 1; i <= 10; i++) { %>
+					<tr>
+						<% for (var j = 1; j <= 10; j++) { %>
+						<td><span><%= i %>-<%= j %></span></td>
+						<% } %>
+					</tr>
+					<% } %>
+				</table>
+				<% if (room.player[0].select_engine !== "아직") { %>
+				<a href="#n" class="btn complete">배치완료</a>
+				<form action="/giveUp?roomId=<%= room._id %>" method="post"><input type="submit" value="포기하기" class="btn" /></form>
+				<% } %>
+			</div>
+			<% } %>
+		</ul>
+	</div>
+	<div class="layer_action">
+		<span></span>
+		<p></p>
+		<a href="#n" class="cancel">취소</a>
+	</div>
+<% } %>
+</div>
+<script src="/js/jquery.event.drag-2.2.js"></script>
+<script src="/js/jquery.event.drop-2.2.js"></script>
+<script>
+	$(function() {
+		$(".select_board a").click(function(e) {
+			e.preventDefault();
+			$(".select_board a").removeClass("on");
+			$(this).addClass("on");
+			$(".layer_start").fadeIn(200);
+			$(".layer_start").css({"top":$(this).offset().top + 73, "left":$(this).offset().left + 50}, 100);
+			$(".layer_start").attr("action","/selectBoard?roomId=<%= room._id %>&board="+$(this).parent().attr("class"));
 		});
-		//소켓;턴넘길때 소리 재생
-		var socket = io.connect('http://localhost:3000');
-		socket.emit('send id', '<%=user.user_nick%>');
-		/*
-		$('#endTurn').on('submit', function(e){
-			<% if(room.player.length) {%>
-				socket.emit('end turn', '<%=room.player[room.currentTurn%room.member.length].nick%>');
-			<%}%>
+		$(".select_engine a").click(function(e) {
+			e.preventDefault();
+			$(".layer_start").fadeIn(200);
+			$(".layer_start").css({"top":$(this).offset().top + 33, "left":$(this).offset().left + 20}, 100);
+			$(".layer_start").attr("action","/selectEngine?roomId=<%= room._id %>&engine="+$(this).find("img").attr("alt"));
 		});
-		*/
-		socket.on('alert', function(e){
-			var audio = new Audio('https://player.bgmstore.net/k9l2X/mp4');
-			audio.play();
-			setTimeout(function(){location.href="/room?roomId=<%=room._id%>"}, 500);
-			//location.href="/room?roomId=<%=room._id%>";
+		var posTop = 307;
+		var posLeft = 372;
+		var posValue = 70;
+		$('.drag').drag(function(ev, dd){
+			$(this).css({
+				top: Math.round( dd.offsetY / posValue ) * posValue + 27,
+				left: Math.round( dd.offsetX / posValue ) * posValue + 22
+			});
 		});
-	</script>
+		$('.drag').drop(function(ev, dd){
+			$(this).attr("id", "");
+			$(this).attr("id", (((parseInt($(this).css("top")) - posTop) / posValue + 1) + "_" + ((parseInt($(this).css("left")) - posLeft) / posValue + 1)));
+		});
+		$(".complete").click(function(e) {
+			e.preventDefault();
+			
+		});
+	});
+</script>
 <% } %>
 <% include include/footer.ejs %>

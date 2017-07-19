@@ -271,7 +271,7 @@ app.post('/roomCreat', function(req, res) {
             start: "대기",
             select_board: "아직",
             round: 1,
-            game_over: "no"
+            game_over: "아직"
         });
         room.tile_engine[0] = { name: "tile_engine_0", score: 8, bonus: "", top_1: "", top_2: "", bottom_1: "2_blue_input", bottom_2: "", left: "2_red_input", right: "black" };
         room.tile_engine[1] = { name: "tile_engine_1", score: 9, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_green_input", right: "black" };
@@ -410,7 +410,7 @@ app.post('/startRoom', function(req, res) {
                 build[j] = { index: j, value: 0, row: row, col: col };
             }    
             for (var i = 0; i < roomValue.member.length; i++) {
-                Room.update({ _id: req.query.roomId }, { $push: { player: { nick: roomValue.member[i], board: "아직", select_engine: "아직", build: build, tile_option: 1, tile_white: 3, tile_energy_1: 1, tile_energy_2: 1, tile_energy_3: 1, tile_energy_4: 1, score: 2, pass: false } } }, function(err) {});
+                Room.update({ _id: req.query.roomId }, { $push: { player: { nick: roomValue.member[i], board: "아직", select_engine: "아직", build: build, rest_engine: 10, tile_option: 1, tile_white: 3, tile_energy_1: 1, tile_energy_2: 1, tile_energy_3: 1, tile_energy_4: 1, score: 2 } } }, function(err) {});
             }
             res.redirect('/room?roomId=' + req.query.roomId);
         });
@@ -440,6 +440,7 @@ app.post('/selectBoard', function(req, res) {
             }
             var num = new Array();
             var randEngine = new Array();
+            //중복되지 않게 처리해야함.
             for (var i = 0; i < 10; i++) {
                 num[i] = Math.floor(Math.random() * 54);
                 randEngine[i] = roomValue[0].tile_engine[num[i]];
@@ -454,7 +455,7 @@ app.post('/selectBoard', function(req, res) {
 //엔진 고르기
 app.post('/selectEngine', function(req, res) {
     if (req.user) {
-        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': req.query.engine } }, function(err) {});
+        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': req.query.engine }, $inc: { 'player.$.rest_engine': -1 } }, function(err) {});
         res.redirect('/room?roomId=' + req.query.roomId);
     } else {
         res.render('login');
@@ -464,6 +465,22 @@ app.post('/saveTile', function(req, res) {
     if (req.user) {
         // Room.findOneAndUpdate({ _id: roomId, build: { $elemMatch: { locIndex: locIndex } } }, factor, { new: true }, function(err, room) {
         // Room.update({ _id: req.query.roomId, build: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.build': req.query.engine } }, function(err) {});
+        res.redirect('/room?roomId=' + req.query.roomId);
+    } else {
+        res.render('login');
+    }
+});
+app.post('/giveUp', function(req, res) {
+    if (req.user) {
+        Room.find({ _id: req.query.roomId }, function(err, roomValue) {
+            console.log(roomValue);
+
+            //roomValue.player[].score
+            //Room.findOneAndUpdate({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': -5 } }, function(err, roomValue) {
+            // if (roomValue.player[0].score < 1) {
+            //     Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.score': 1 } }, function(err) {});       
+            // }
+        });
         res.redirect('/room?roomId=' + req.query.roomId);
     } else {
         res.render('login');
