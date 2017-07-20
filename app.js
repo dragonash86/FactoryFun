@@ -425,33 +425,39 @@ app.post('/selectEngine', function(req, res) {
         res.render('login');
     }
 });
-app.post('/saveTile', function(req, res) {
-    if (req.user) {
-        // Room.findOneAndUpdate({ _id: roomId, build: { $elemMatch: { locIndex: locIndex } } }, factor, { new: true }, function(err, room) {
-        // Room.update({ _id: req.query.roomId, build: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.build': req.query.engine } }, function(err) {});
-        res.redirect('/room?roomId=' + req.query.roomId);
-    } else {
-        res.render('login');
-    }
-});
 app.post('/giveUp', function(req, res) {
     if (req.user) {
         Room.update({ 
             _id: req.query.roomId,
             player: { $elemMatch: { nick: req.user.user_nick } }
         }, { 
-            $inc: { 'player.$.score': -5 }
+            $inc: { 'player.$.score': -5 },
+            $set: { 'player.$.select_engine': "아직" }
         }, function(err) {
             Room.update({
                 _id: req.query.roomId,
                 player: { $elemMatch: { nick: req.user.user_nick }},
-                "player.score": { $lt : 0 },
+                'player.score': { $lt : 0 }
             }, { 
                 $set: { 'player.$.score': 1 }
             }, function(err) {
                 res.redirect('/room?roomId=' + req.query.roomId);  
             });    
         });
+    } else {
+        res.render('login');
+    }
+});
+app.post('/saveTile', function(req, res) {
+    if (req.user) {
+        console.log(req.query.complete.length);
+        for (var i=0; i < req.query.complete.length; i++) {
+            console.log(req.query.complete[i]);    
+        }
+        
+        // Room.findOneAndUpdate({ _id: roomId, build: { $elemMatch: { locIndex: locIndex } } }, factor, { new: true }, function(err, room) {
+        // Room.update({ _id: req.query.roomId, build: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.build': req.query.engine } }, function(err) {});
+        res.redirect('/room?roomId=' + req.query.roomId);
     } else {
         res.render('login');
     }

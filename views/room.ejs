@@ -160,7 +160,7 @@
 					<% } %>
 				</table>
 				<% if (room.player[0].select_engine !== "아직") { %>
-				<a href="#n" class="btn complete">배치완료</a>
+				<form method="post"><input type="submit" value="배치완료" class="btn complete" /></form>
 				<form action="/giveUp?roomId=<%= room._id %>" method="post"><input type="submit" value="포기하기" class="btn" /></form>
 				<% } %>
 			</div>
@@ -203,12 +203,22 @@
 		});
 		$('.drag').drop(function(ev, dd){
 			$(this).attr("id", "");
-			$(this).attr("id", (((parseInt($(this).css("top")) - posTop) / posValue + 1) + "_" + ((parseInt($(this).css("left")) - posLeft) / posValue + 1)));
+			$(this).attr("id", "<%=user.user_id%>_"+(((parseInt($(this).css("top")) - posTop) / posValue + 1) + "_" + ((parseInt($(this).css("left")) - posLeft) / posValue + 1)));
 		});
 		$(".complete").click(function(e) {
 			e.preventDefault();
-			
+			var complete = new Array();
+			for (var i = 0; i < $(".wrap_tile li img").length; i++) {
+				if ($(".wrap_tile li img")[i].id) {
+					complete.push({ "tile": $(".wrap_tile li img")[i].alt, "id": $(".wrap_tile li img")[i].id.split("_")[0], "row": $(".wrap_tile li img")[i].id.split("_")[1], "col": $(".wrap_tile li img")[i].id.split("_")[2]});
+				}
+			}
+			console.log(complete);
+			$(this).parent().attr("action","/saveTile?roomId=<%= room._id %>&complete="+complete);
+			//$(this).parent().submit();
+
 		});
+			
 	});
 </script>
 <% } %>
