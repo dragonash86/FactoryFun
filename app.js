@@ -364,11 +364,11 @@ app.post('/startRoom', function(req, res) {
         Room.findOneAndUpdate({ _id: req.query.roomId }, { $set: { start: "진행 중" } }, function(err, roomValue) {
         	//플레이어 초기값 입력 저장
             var build = [];
-            for (var j = 0, row, col; j < 100; j++) {
+            for (var j = 0, row, col; j <= 90; j++) {
                 row = parseInt(j / 10) + 1;
                 col = j % 10;
                 if (col === 0) {
-                    row -= 1;
+                    row = row - 1;
                     col = 10;
                 }
                 build[j] = { index: j, value: 0, row: row, col: col };
@@ -450,15 +450,50 @@ app.post('/giveUp', function(req, res) {
 });
 app.post('/saveTile', function(req, res) {
     if (req.user) {
-        console.log(req.query.complete.length);
-        for (var i=0; i < req.query.complete.length; i++) {
-            console.log(req.query.complete[i]);    
-        }
-        
-        // Room.findOneAndUpdate({ _id: roomId, build: { $elemMatch: { locIndex: locIndex } } }, factor, { new: true }, function(err, room) {
-        // Room.update({ _id: req.query.roomId, build: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.build': req.query.engine } }, function(err) {});
+        console.log(req.query.complete);
+
+        //tile_white-1-3,tile_white-2-3,tile_white-1-4
+        var playerQuery = { 
+            _id: req.query.roomId,
+            player: { $elemMatch: { nick: req.user.user_nick } },
+            'player.$.build': { $elemMatch: { row: req.user.user_nick } }
+        };
+        var buildQuery = { $set: { 'player.$.build': "아직" } };
+        Room.update(playerQuery, buildQuery, function(err) {});
         res.redirect('/room?roomId=' + req.query.roomId);
     } else {
         res.render('login');
     }
 });
+        var playerQuery = { 
+            _id: "597096c608f63733d8da73b7",
+            player: { $elemMatch: { nick: "팩펀쨔응", row: 1, col: 2 } }
+        };
+        var buildQuery = { $set: { 'player.$.build.$.value': 3 } };
+        // Room.update(playerQuery, buildQuery, function(err, value) {});
+        // Room.find({ _id: "597096c608f63733d8da73b7" }, ).find();
+        // Room.find(playerQuery, function(err, value) {
+        //     console.log(value);
+        // });
+        // Room.findelemMatch('comment', { author: 'autobot', votes: {$gte: 5}})
+        Room.findById("597096c608f63733d8da73b7").exec(function(err, Customer) {
+            console.log(Customer);
+        //evaluate the worth of customer using given formula
+        //var worth = Customer.accountBalance + stocksHeldAmount - stockShortedAmount - Customer.loan.amount;
+        // console.log(worth, portfolio);
+        
+        });
+
+// .findById(req.user._id)
+// .populate('stockHoldings.company')
+// .populate('stockShorted.company')
+// .exec(function(err, Customer) {
+// if (err){
+// console.log(err);
+// res.send("unable to fetch customer details");
+// }else {
+// //evaluate the worth of customer using given formula
+// //var worth = Customer.accountBalance + stocksHeldAmount - stockShortedAmount - Customer.loan.amount;
+// // console.log(worth, portfolio);
+// res.json(Customer);
+// }

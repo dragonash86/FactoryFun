@@ -126,22 +126,22 @@
 			<div class="wrap_tile">
 				<ul>
 					<% for (var m = 0; m < room.player[k].tile_white; m++) { %>
-					<li><img src="/images/tile_white.jpg1" class="drag tile" alt="배출용기" /></li>
+					<li><img src="/images/tile_white.jpg1" class="drag tile" alt="tile_white" /></li>
 					<% } %>
 					<% for (var o = 0; o < room.player[k].tile_energy_1; o++) { %>
-					<li><img src="/images/tile_energy_1.jpg1" class="drag tile" alt="녹색공급용기" /></li>
+					<li><img src="/images/tile_energy_1.jpg1" class="drag tile" alt="tile_energy_1" /></li>
 					<% } %>
 					<% for (var p = 0; p < room.player[k].tile_energy_2; p++) { %>
-					<li><img src="/images/tile_energy_2.jpg1" class="drag tile" alt="빨강공급용기" /></li>
+					<li><img src="/images/tile_energy_2.jpg1" class="drag tile" alt="tile_energy_2" /></li>
 					<% } %>
 					<% for (var q = 0; q < room.player[k].tile_energy_3; q++) { %>
-					<li><img src="/images/tile_energy_3.jpg1" class="drag tile" alt="파랑공급용기" /></li>
+					<li><img src="/images/tile_energy_3.jpg1" class="drag tile" alt="tile_energy_3" /></li>
 					<% } %>
 					<% for (var r = 0; r < room.player[k].tile_energy_4; r++) { %>
-					<li><img src="/images/tile_energy_4.jpg1" class="drag tile" alt="주황공급용기" /></li>
+					<li><img src="/images/tile_energy_4.jpg1" class="drag tile" alt="tile_energy_4" /></li>
 					<% } %>
 					<% for (var s = 0; s < room.player[k].tile_option; s++) { %>
-					<li><img src="/images/tile_option.jpg1" class="drag tile_engine" alt="대각교차타일" /></li>
+					<li><img src="/images/tile_option.jpg1" class="drag tile_engine" alt="tile_option" /></li>
 					<% } %>
 					<% if (room.player[0].select_engine !== "아직") { %>
 					<li><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.jpg1" class="drag tile_engine" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></li>
@@ -203,22 +203,22 @@
 		});
 		$('.drag').drop(function(ev, dd){
 			$(this).attr("id", "");
-			$(this).attr("id", "<%=user.user_id%>_"+(((parseInt($(this).css("top")) - posTop) / posValue + 1) + "_" + ((parseInt($(this).css("left")) - posLeft) / posValue + 1)));
+			$(this).attr("id", (((parseInt($(this).css("top")) - posTop) / posValue + 1) + "-" + ((parseInt($(this).css("left")) - posLeft) / posValue + 1)));
 		});
 		$(".complete").click(function(e) {
 			e.preventDefault();
 			var complete = new Array();
 			for (var i = 0; i < $(".wrap_tile li img").length; i++) {
 				if ($(".wrap_tile li img")[i].id) {
-					complete.push({ "tile": $(".wrap_tile li img")[i].alt, "id": $(".wrap_tile li img")[i].id.split("_")[0], "row": $(".wrap_tile li img")[i].id.split("_")[1], "col": $(".wrap_tile li img")[i].id.split("_")[2]});
+					complete.push($(".wrap_tile li img")[i].alt+"-"+$(".wrap_tile li img")[i].id);
 				}
 			}
 			console.log(complete);
-			$(this).parent().attr("action","/saveTile?roomId=<%= room._id %>&complete="+complete);
-			//$(this).parent().submit();
-
+			var arrStr = complete.join(", ");
+			console.log(arrStr);
+			$(this).parent().attr("action", "/saveTile?roomId=<%= room._id %>&complete="+complete);
+			$(this).parent().submit();
 		});
-			
 	});
 </script>
 <% } %>
