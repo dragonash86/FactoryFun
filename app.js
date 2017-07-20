@@ -371,7 +371,7 @@ app.post('/startRoom', function(req, res) {
                     row = row - 1;
                     col = 10;
                 }
-                build[j] = { index: j, value: 0, row: row, col: col };
+                build[j] = { index: j, tile: "", row: row, col: col };
             }    
             for (var i = 0; i < roomValue.member.length; i++) {
                 Room.update({ _id: req.query.roomId }, { $push: { player: { nick: roomValue.member[i], board: "아직", select_engine: "아직", build: build, rest_engine: 10, tile_option: 1, tile_white: 3, tile_energy_1: 1, tile_energy_2: 1, tile_energy_3: 1, tile_energy_4: 1, score: 2 } } }, function(err) {});
@@ -450,50 +450,58 @@ app.post('/giveUp', function(req, res) {
 });
 app.post('/saveTile', function(req, res) {
     if (req.user) {
-        console.log(req.query.complete);
+        // console.log(req.query.complete);
 
-        //tile_white-1-3,tile_white-2-3,tile_white-1-4
-        var playerQuery = { 
-            _id: req.query.roomId,
-            player: { $elemMatch: { nick: req.user.user_nick } },
-            'player.$.build': { $elemMatch: { row: req.user.user_nick } }
-        };
-        var buildQuery = { $set: { 'player.$.build': "아직" } };
-        Room.update(playerQuery, buildQuery, function(err) {});
+        // //tile_white-1-3,tile_white-2-3,tile_white-1-4
+        // var row = new Array();
+
+        // //req.query.complete;
+        // var playerQuery = { 
+        //     _id: req.query.roomId,
+        //     player: { $elemMatch: { nick: req.user.user_nick, row: 1, col: 2 } }
+        // };
+        // var buildQuery = { $set: { 'player.$.build.$.value': 3 } };
+        // Room.update(playerQuery, buildQuery, function(err) {});
         res.redirect('/room?roomId=' + req.query.roomId);
     } else {
         res.render('login');
     }
 });
-        var playerQuery = { 
-            _id: "597096c608f63733d8da73b7",
-            player: { $elemMatch: { nick: "팩펀쨔응", row: 1, col: 2 } }
+        // var playerQuery = { 
+        //     _id: "5970d62fea1f8a21942e127c",
+        //     player: { 
+        //         $elemMatch: { nick: "팩펀쨔응" } 
+        //     }
+        // };
+        // var test = { 
+        //     player: { 
+        //         $elemMatch: { 
+        //             $elemMatch: { 
+        //                 $in: ['carrot'] 
+        //             } 
+        //         } 
+        //     } 
+        // }
+        // var playerQuery = {
+        //     _id: "5970d62fea1f8a21942e127c",
+        //     player: {
+        //         $elemMatch: {
+        //             nick: "팩펀쨔응",
+        //             build: {
+        //                 $elemMatch: {
+        //                     row: 1,
+        //                     col: 2    
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        // var buildQuery = { $set: { 'build.$.value': 3 } };
+        var playerQuery = { _id: "5970f5d9d05a6624bc9c7463" };
+        var buildQuery = { 
+            $set: { 'player.0.build.1.tile': "tile_energy_4" } 
         };
-        var buildQuery = { $set: { 'player.$.build.$.value': 3 } };
-        // Room.update(playerQuery, buildQuery, function(err, value) {});
-        // Room.find({ _id: "597096c608f63733d8da73b7" }, ).find();
-        // Room.find(playerQuery, function(err, value) {
-        //     console.log(value);
+        Room.update(playerQuery, buildQuery, function(err) {});
+        // Room.find(playerQuery, function(err, roomValue) {
+        //     console.log(roomValue[0].player[0].build[3].col);
         // });
-        // Room.findelemMatch('comment', { author: 'autobot', votes: {$gte: 5}})
-        Room.findById("597096c608f63733d8da73b7").exec(function(err, Customer) {
-            console.log(Customer);
-        //evaluate the worth of customer using given formula
-        //var worth = Customer.accountBalance + stocksHeldAmount - stockShortedAmount - Customer.loan.amount;
-        // console.log(worth, portfolio);
-        
-        });
-
-// .findById(req.user._id)
-// .populate('stockHoldings.company')
-// .populate('stockShorted.company')
-// .exec(function(err, Customer) {
-// if (err){
-// console.log(err);
-// res.send("unable to fetch customer details");
-// }else {
-// //evaluate the worth of customer using given formula
-// //var worth = Customer.accountBalance + stocksHeldAmount - stockShortedAmount - Customer.loan.amount;
-// // console.log(worth, portfolio);
-// res.json(Customer);
-// }
