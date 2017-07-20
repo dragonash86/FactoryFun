@@ -8,7 +8,6 @@ var NaverStrategy = require('passport-naver').Strategy;
 var flash = require('connect-flash');
 var app = express();
 var server = require('http').Server(app);
-var io = require('socket.io')(server);
 var Rndld = null;
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -54,39 +53,6 @@ db.on("error", function(err) {
 server.listen(3000);
 
 
-//socket.io
-io.on('connection', function(socket) {
-    //console.log('user connected: ', socket.id);
-    if (Rndld !== null) {
-        User.findOne({ user_nick: Rndld }, function(err, user) {
-            console.log(Rndld);
-            Rndld = null;
-            io.to(user.socketID).emit('alert', "message");
-        });
-    }
-    socket.on('send id', function(userNick) {
-        User.findOneAndUpdate({ user_nick: userNick }, { $set: { 'socketID': socket.id } }, function(err) {});
-    });
-    /*
-    socket.on('end turn', function(thisTurnUser){
-        //console.log(thisTurnUser);
-        console.log("이게 소켓 메시지");
-        User.findOne({user_nick : thisTurnUser}, function(err, user){
-        io.to(user.socketID).emit('alert', "message");
-    });
-
-    });
-    */
-    socket.on('hey', function(hey) {
-        console.log(hey);
-    });
-    var name = "user";
-    io.to(socket.id).emit('change name', name);
-    socket.on('disconnect', function() {
-        //console.log('user disconnected: ', socket.id);
-    });
-});
-
 //유저전역 스키마 생성
 var userData = mongoose.Schema({
     user_id: { type: String, unique: true },
@@ -97,8 +63,7 @@ var userData = mongoose.Schema({
     email: { type: String },
     sns: { type: String },
     created_at: { type: Date, default: Date.now },
-    last_logout: { type: Date },
-    socketID: { type: String, unique: true }
+    last_logout: { type: Date }
 });
 //패스워드 비교 userData를 User에 담기 전에 이걸 써넣어야 로그인 사용가능
 userData.methods.validPassword = function(password) {
@@ -117,8 +82,7 @@ app.post('/joinForm', function(req, res) {
         win: 0,
         lose: 0,
         email: "",
-        sns: "",
-        socketID: null
+        sns: ""
     });
     user.save(function(err) {
         if (err) {
@@ -472,16 +436,22 @@ app.post('/saveTile', function(req, res) {
 });
 app.post('/giveUp', function(req, res) {
     if (req.user) {
-        Room.find({ _id: req.query.roomId }, function(err, roomValue) {
-            console.log(roomValue);
-
-            //roomValue.player[].score
-            //Room.findOneAndUpdate({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': -5 } }, function(err, roomValue) {
-            // if (roomValue.player[0].score < 1) {
-            //     Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.score': 1 } }, function(err) {});       
-            // }
+        Room.update({ 
+            _id: req.query.roomId,
+            player: { $elemMatch: { nick: req.user.user_nick } }
+        }, { 
+            $inc: { 'player.$.score': -5 }
+        }, function(err) {
+            Room.update({
+                _id: req.query.roomId,
+                player: { $elemMatch: { nick: req.user.user_nick }},
+                "player.score": { $lt : 0 },
+            }, { 
+                $set: { 'player.$.score': 1 }
+            }, function(err) {
+                res.redirect('/room?roomId=' + req.query.roomId);  
+            });    
         });
-        res.redirect('/room?roomId=' + req.query.roomId);
     } else {
         res.render('login');
     }
