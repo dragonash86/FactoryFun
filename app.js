@@ -198,9 +198,9 @@ var Room = mongoose.model('roomData', roomData);
 
 app.get('/main', function(req, res) {
     if (req.user) {
-        User.find({ _id: req.user._id }, { _id: 0, last_logout: 0, user_id: 0, user_pw: 0, __v: 0 }, function(err, userValue) {
+        User.findOne({ _id: req.user._id }, { _id: 0, last_logout: 0, user_id: 0, user_pw: 0, __v: 0 }, function(err, userValue) {
             Room.find({ full: "no", delete: "no" }, function(err, roomValue) {
-                res.render('main', { user: userValue[0], room: roomValue });
+                res.render('main', { user: userValue, room: roomValue });
             });
         });
     } else {
@@ -305,20 +305,20 @@ app.post('/roomCreat', function(req, res) {
 app.get('/room', function(req, res) {
     if (req.user) {
         if (req.query.roomId != null) {
-            Room.find({ _id: req.query.roomId }, function(err, roomValue) {
+            Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
                 //판떼기 안골랐는지 체크
-                if (roomValue[0].select_board !== "모두 고름") {
+                if (roomValue.select_board !== "모두 고름") {
                     var count = 0;
-                    for (var i = 0; i < roomValue[0].player.length; i++) {
-                        if (roomValue[0].player[i].board !== "아직") {
+                    for (var i = 0; i < roomValue.player.length; i++) {
+                        if (roomValue.player[i].board !== "아직") {
                             count = count + 1;
-                            if (count === roomValue[0].member.length) {
+                            if (count === roomValue.member.length) {
                                 Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { select_board: "모두 고름" } }, function(err) {});
                             }
                         }
                     }
                 }
-                res.render('room', { room: roomValue[0], user: req.user });
+                res.render('room', { room: roomValue, user: req.user });
             });
         } else {
             res.send('<script>alert("잘못된 요청");location.href="/main";</script>');
@@ -386,18 +386,18 @@ app.post('/startRoom', function(req, res) {
 app.post('/selectBoard', function(req, res) {
     if (req.user) {
         var randBoard, randNum;
-        Room.find({ _id: req.query.roomId }, function(err, roomValue) {
+        Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
             if (req.query.board === "random_1") {
                 randNum = Math.floor(Math.random() * 5);
-                randBoard = roomValue[0].board[randNum];
+                randBoard = roomValue.board[randNum];
                 Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': randBoard }, $inc: { 'player.$.score': 2 } }, function(err) {});
             } else if (req.query.board === "random_2") {
                 randNum = Math.floor(Math.random() * 10);
-                randBoard = roomValue[0].board[randNum];
+                randBoard = roomValue.board[randNum];
                 Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': randBoard }, $inc: { 'player.$.score': 3 } }, function(err) {});
             } else if (req.query.board === "random_3") {
                 randNum = Math.floor(Math.random() * 5) + 5;
-                randBoard = roomValue[0].board[randNum];
+                randBoard = roomValue.board[randNum];
                 Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': randBoard }, $inc: { 'player.$.score': 4 } }, function(err) {});
             } else {
                 Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': req.query.board } }, function(err) {});
@@ -407,7 +407,7 @@ app.post('/selectBoard', function(req, res) {
             //중복되지 않게 처리해야함.
             for (var i = 0; i < 10; i++) {
                 num[i] = Math.floor(Math.random() * 54);
-                randEngine[i] = roomValue[0].tile_engine[num[i]];
+                randEngine[i] = roomValue.tile_engine[num[i]];
             }
             Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.tile_engine': randEngine } }, function(err) {});
             res.redirect('/room?roomId=' + req.query.roomId);
@@ -450,58 +450,48 @@ app.post('/giveUp', function(req, res) {
 });
 app.post('/saveTile', function(req, res) {
     if (req.user) {
-        // console.log(req.query.complete);
-
-        // //tile_white-1-3,tile_white-2-3,tile_white-1-4
-        // var row = new Array();
-
-        // //req.query.complete;
-        // var playerQuery = { 
-        //     _id: req.query.roomId,
-        //     player: { $elemMatch: { nick: req.user.user_nick, row: 1, col: 2 } }
-        // };
-        // var buildQuery = { $set: { 'player.$.build.$.value': 3 } };
-        // Room.update(playerQuery, buildQuery, function(err) {});
+        var completeArray = new Array();
+        completeArray = req.query.complete.split('@');
+        Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
+            for (var j = 0; j < completeArray.length; j++) {
+                var tileValue = completeArray[j].split('-')[0];
+                var rowValue = completeArray[j].split('-')[1];
+                var colValue = completeArray[j].split('-')[2];
+                var indexValue = parseInt(10 * (rowValue - 1) + colValue);
+                var memberValue = 0;
+                for (var i = 0; i < roomValue.member.length; i++) {
+                    if (roomValue.member[i] === req.user.user_nick ) {
+                        memberValue = i;
+                    }
+                }
+                var tileQuery = "player." + memberValue + ".build." + indexValue + ".tile";
+                var setQuery = {};
+                setQuery[tileQuery] = tileValue;
+                Room.update({ _id: req.query.roomId }, { $set: setQuery }, function(err) {});
+            }
+        });
         res.redirect('/room?roomId=' + req.query.roomId);
     } else {
         res.render('login');
     }
 });
-        // var playerQuery = { 
-        //     _id: "5970d62fea1f8a21942e127c",
-        //     player: { 
-        //         $elemMatch: { nick: "팩펀쨔응" } 
-        //     }
-        // };
-        // var test = { 
-        //     player: { 
-        //         $elemMatch: { 
-        //             $elemMatch: { 
-        //                 $in: ['carrot'] 
-        //             } 
-        //         } 
-        //     } 
-        // }
-        // var playerQuery = {
-        //     _id: "5970d62fea1f8a21942e127c",
-        //     player: {
-        //         $elemMatch: {
-        //             nick: "팩펀쨔응",
-        //             build: {
-        //                 $elemMatch: {
-        //                     row: 1,
-        //                     col: 2    
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        // var buildQuery = { $set: { 'build.$.value': 3 } };
-        var playerQuery = { _id: "5970f5d9d05a6624bc9c7463" };
-        var buildQuery = { 
-            $set: { 'player.0.build.1.tile': "tile_energy_4" } 
-        };
-        Room.update(playerQuery, buildQuery, function(err) {});
-        // Room.find(playerQuery, function(err, roomValue) {
-        //     console.log(roomValue[0].player[0].build[3].col);
+        
+        // var playerQuery = { _id: "59719c9f6c344a2e40b877f5" };
+        // Room.findOne(playerQuery, function(err, roomValue) {
+        //     var memberValue = 0;
+        //     var indexValue = 2;
+        //     var tileValue = "qweqw54125";
+        //     var tileQuery = "player." + memberValue + ".build." + indexValue + ".tile";
+        //     var setQuery = {};
+        //     setQuery[tileQuery] = tileValue;
+        //     Room.update(playerQuery, { $set: setQuery }, function(err) {
+        //         console.log(roomValue.player[0].build[2].tile); 
+        //     });
+        //     //var memberValue = 0;
+        //     // for (var i = 0; i < roomValue.member.length; i++) {
+        //     //     if (roomValue.member[i] === "팩펀쨔응") {
+        //     //         memberValue = i;
+        //     //     }
+        //     // }
         // });
+        // 

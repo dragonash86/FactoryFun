@@ -154,7 +154,12 @@
 					<% for (var i = 1; i <= 10; i++) { %>
 					<tr>
 						<% for (var j = 1; j <= 10; j++) { %>
-						<td><span><%= i %>-<%= j %></span></td>
+						<td>
+							<span><%= i %>-<%= j %></span>
+							<% if (room.player[0].build[].tile !== "") { %>
+							<img src="/images/<%= room.player[0].build[].name %>.jpg" class="drag tile_engine" alt="<%= room.player[0].tile_engine[room.round - 1].name %>
+							<% } %>
+						</td>
 						<% } %>
 					</tr>
 					<% } %>
@@ -213,10 +218,10 @@
 					complete.push($(".wrap_tile li img")[i].alt+"-"+$(".wrap_tile li img")[i].id);
 				}
 			}
+			var arrStr = complete.join("@");
 			console.log(complete);
-			var arrStr = complete.join(", ");
 			console.log(arrStr);
-			$(this).parent().attr("action", "/saveTile?roomId=<%= room._id %>&complete="+complete);
+			$(this).parent().attr("action", "/saveTile?roomId=<%= room._id %>&complete="+arrStr);
 			$(this).parent().submit();
 		});
 	});
