@@ -409,8 +409,9 @@ app.post('/selectBoard', function(req, res) {
                 num[i] = Math.floor(Math.random() * 54);
                 randEngine[i] = roomValue.tile_engine[num[i]];
             }
-            Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.tile_engine': randEngine } }, function(err) {});
-            res.redirect('/room?roomId=' + req.query.roomId);
+            Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.tile_engine': randEngine } }, function(err) {
+                res.redirect('/room?roomId=' + req.query.roomId); 
+            });
         });
     } else {
         res.render('login');
@@ -419,8 +420,9 @@ app.post('/selectBoard', function(req, res) {
 //엔진 고르기
 app.post('/selectEngine', function(req, res) {
     if (req.user) {
-        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': req.query.engine }, $inc: { 'player.$.rest_engine': -1 } }, function(err) {});
-        res.redirect('/room?roomId=' + req.query.roomId);
+        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': req.query.engine }, $inc: { 'player.$.rest_engine': -1 } }, function(err) {
+            res.redirect('/room?roomId=' + req.query.roomId);
+        });
     } else {
         res.render('login');
     }
@@ -464,13 +466,19 @@ app.post('/saveTile', function(req, res) {
                         memberValue = i;
                     }
                 }
-                var tileQuery = "player." + memberValue + ".build." + indexValue + ".tile";
+                var setKey = "player." + memberValue + ".build." + indexValue + ".tile";
                 var setQuery = {};
-                setQuery[tileQuery] = tileValue;
-                Room.update({ _id: req.query.roomId }, { $set: setQuery }, function(err) {});
+                setQuery[setKey] = tileValue;
+                Room.update({ _id: req.query.roomId }, { $set: setQuery }, function(err) {
+                    var incKey = "player." + memberValue + "." + tileValue;
+                    var incQuery = {};
+                    incQuery[incKey] = -1;
+                    Room.update({ _id: req.query.roomId }, { $inc: incQuery }, function(err) {
+                        res.redirect('/room?roomId=' + req.query.roomId);
+                    });
+                });
             }
         });
-        res.redirect('/room?roomId=' + req.query.roomId);
     } else {
         res.render('login');
     }

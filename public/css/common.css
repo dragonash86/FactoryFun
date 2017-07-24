@@ -88,15 +88,21 @@ h3{padding:20px 0}
 .board td span{position:absolute;top:-2px;left:2px;font-size:10px}
 .board .lv_1{position:absolute;left:14px;top:15px;border:1px solid red;border-radius:20px;width:20px;height:20px}
 .board .lv_2{position:absolute;left:10px;top:10px;border:15px solid red;border-radius:20px;width:20px;height:20px}
-.board .wrap_tile ul{overflow:hidden;}
+.board .wrap_tile ul{overflow:hidden;height:106px}
 .board .wrap_tile li{float:left;width:100px;height:106px}
 .board .wrap_tile .tile{width:70px;height:70px}
 .board .wrap_tile .tile_engine,.select_engine img{width:140px;height:70px}
+.board .wrap_tile .selected_engine{top:307px;left:790px}
 .board .drag{position:absolute;z-index:50;cursor:move}
 .layer_action{display:none;position:absolute;border:1px solid #272822;background:#fff;padding:10px}
 .layer_action a{display:inline-block;border:1px solid #272822;text-align:center;padding:5px;margin:10px auto 0}
 .layer_action.show{display:block}
 
+.rotate_1{transform:rotate(90deg)}
+.rotate_2{transform:rotate(180deg)}
+.rotate_3{transform:rotate(270deg)}
+.tile_engine.rotate_1,.tile_option.rotate_1{transform:rotate(90deg) translate(35px,35px)}
+.tile_engine.rotate_3,.tile_option.rotate_3{transform:rotate(270deg) translate(-35px,-35px)}
 .select_board h3{padding:30px 0}
 .select_board li{display:inline-block;margin:0 10px 10px 0}
 .select_board li p{text-align:center;font-weight:bold;padding-bottom:5px}
