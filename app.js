@@ -181,17 +181,14 @@ var roomData = mongoose.Schema({
     name: { type: String },
     admin: { type: String },
     maxMember: { type: Number },
-    full: { type: String },
     delete: { type: String },
     start: { type: String },
     select_board: { type: String },
     player: [],
     board: [],
     tile_engine: [],
-    currentTurn: { type: Number },
     member: { type: [String] },
     round: { type: Number },
-    game_over: { type: String },
     created_at: { type: Date, default: Date.now }
 });
 var Room = mongoose.model('roomData', roomData);
@@ -199,7 +196,7 @@ var Room = mongoose.model('roomData', roomData);
 app.get('/main', function(req, res) {
     if (req.user) {
         User.findOne({ _id: req.user._id }, { _id: 0, last_logout: 0, user_id: 0, user_pw: 0, __v: 0 }, function(err, userValue) {
-            Room.find({ full: "no", delete: "no" }, function(err, roomValue) {
+            Room.find({ delete: "no" }, function(err, roomValue) {
                 res.render('main', { user: userValue, room: roomValue });
             });
         });
@@ -207,8 +204,6 @@ app.get('/main', function(req, res) {
         res.redirect('/login');
     }
 });
-
-
 
 //방만들기
 app.post('/roomCreat', function(req, res) {
@@ -228,14 +223,11 @@ app.post('/roomCreat', function(req, res) {
             admin: req.user.user_nick,
             maxMember: 5,
             member: [req.user.user_nick],
-            currentTurn: 1,
             board: ["board_a_classic","board_b_classic","board_c_classic","board_d_classic","board_e_classic","board_a_expert","board_b_expert","board_c_expert","board_d_expert","board_e_expert"],
-            full: "no",
             delete: "no",
             start: "대기",
             select_board: "아직",
-            round: 1,
-            game_over: "아직"
+            round: 1
         });
         room.tile_engine[0] = { name: "tile_engine_0", score: 8, bonus: "", top_1: "", top_2: "", bottom_1: "2_blue_input", bottom_2: "", left: "2_red_input", right: "black" };
         room.tile_engine[1] = { name: "tile_engine_1", score: 9, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_green_input", right: "black" };
@@ -371,7 +363,7 @@ app.post('/startRoom', function(req, res) {
                     row = row - 1;
                     col = 10;
                 }
-                build[j] = { index: j, tile: "", row: row, col: col };
+                build[j] = { index: j, tile: "", rotate: 0, row: row, col: col };
             }    
             for (var i = 0; i < roomValue.member.length; i++) {
                 Room.update({ _id: req.query.roomId }, { $push: { player: { nick: roomValue.member[i], board: "아직", select_engine: "아직", build: build, rest_engine: 10, tile_option: 1, tile_white: 3, tile_energy_1: 1, tile_energy_2: 1, tile_energy_3: 1, tile_energy_4: 1, score: 2 } } }, function(err) {});
@@ -433,7 +425,7 @@ app.post('/giveUp', function(req, res) {
             _id: req.query.roomId,
             player: { $elemMatch: { nick: req.user.user_nick } }
         }, { 
-            $inc: { 'player.$.score': -5 },
+            $inc: { 'player.$.score': -5, round: 1 },
             $set: { 'player.$.select_engine': "아직" }
         }, function(err) {
             Room.update({
@@ -459,6 +451,7 @@ app.post('/saveTile', function(req, res) {
                 var tileValue = completeArray[j].split('-')[0];
                 var rowValue = completeArray[j].split('-')[1];
                 var colValue = completeArray[j].split('-')[2];
+                var rotateValue = parseInt(completeArray[j].split('-')[3]);
                 var indexValue = parseInt(10 * (rowValue - 1) + colValue);
                 var memberValue = 0;
                 for (var i = 0; i < roomValue.member.length; i++) {
@@ -466,9 +459,12 @@ app.post('/saveTile', function(req, res) {
                         memberValue = i;
                     }
                 }
-                var setKey = "player." + memberValue + ".build." + indexValue + ".tile";
+                var setTileKey = "player." + memberValue + ".build." + indexValue + ".tile";
+                var setRotateKey = "player." + memberValue + ".build." + indexValue + ".rotate";
                 var setQuery = {};
-                setQuery[setKey] = tileValue;
+                setQuery[setTileKey] = tileValue;
+                setQuery[setRotateKey] = rotateValue;
+                console.log(setQuery);
                 Room.update({ _id: req.query.roomId }, { $set: setQuery }, function(err) {
                     var incKey = "player." + memberValue + "." + tileValue;
                     var incQuery = {};
@@ -483,23 +479,3 @@ app.post('/saveTile', function(req, res) {
         res.render('login');
     }
 });
-        
-        // var playerQuery = { _id: "59719c9f6c344a2e40b877f5" };
-        // Room.findOne(playerQuery, function(err, roomValue) {
-        //     var memberValue = 0;
-        //     var indexValue = 2;
-        //     var tileValue = "qweqw54125";
-        //     var tileQuery = "player." + memberValue + ".build." + indexValue + ".tile";
-        //     var setQuery = {};
-        //     setQuery[tileQuery] = tileValue;
-        //     Room.update(playerQuery, { $set: setQuery }, function(err) {
-        //         console.log(roomValue.player[0].build[2].tile); 
-        //     });
-        //     //var memberValue = 0;
-        //     // for (var i = 0; i < roomValue.member.length; i++) {
-        //     //     if (roomValue.member[i] === "팩펀쨔응") {
-        //     //         memberValue = i;
-        //     //     }
-        //     // }
-        // });
-        // 
