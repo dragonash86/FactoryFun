@@ -250,7 +250,7 @@ app.post('/roomCreat', function(req, res) {
         room.tile_engine[18] = { name: "tile_engine_18", score: 7, bonus: "orange", top_1: "2_blue_input", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_orange_input", right: "2_red_output" };
         room.tile_engine[19] = { name: "tile_engine_19", score: 11, bonus: "", top_1: "", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_red_output", right: "1_blue_output" };
         room.tile_engine[20] = { name: "tile_engine_20", score: 9, bonus: "", top_1: "", top_2: "", bottom_1: "2_red_input", bottom_2: "", left: "2_green_input", right: "1_blue_output" };
-        room.tile_engine[21] = { name: "tile_engine_21", score: 3, bonus: "red", top_1: "", top_2: "1_blue_input", bottom_1: "", bottom_2: "", left: "3_red_output", right: "" };
+        room.tile_engine[21] = { name: "tile_engine_21", score: 3, bonus: "red", top_1: "", top_2: "1_blue_output", bottom_1: "", bottom_2: "", left: "3_red_input", right: "" };
         room.tile_engine[22] = { name: "tile_engine_22", score: 10, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "1_green_output", bottom_2: "", left: "3_orange_input", right: "" };
         room.tile_engine[23] = { name: "tile_engine_23", score: 5, bonus: "", top_1: "", top_2: "3_red_output", bottom_1: "2_orange_input", bottom_2: "", left: "2_red_input", right: "" };
         room.tile_engine[24] = { name: "tile_engine_24", score: 5, bonus: "", top_1: "", top_2: "", bottom_1: "3_blue_input", bottom_2: "", left: "", right: "black" };
@@ -354,7 +354,7 @@ app.post('/deleteRoom', function(req, res) {
 app.post('/startRoom', function(req, res) {
     if (req.user) {
         Room.findOneAndUpdate({ _id: req.query.roomId }, { $set: { start: "진행 중" } }, function(err, roomValue) {
-        	//플레이어 초기값 입력 저장
+            //플레이어 초기값 입력 저장
             var build = [];
             for (var j = 0, row, col; j <= 90; j++) {
                 row = parseInt(j / 10) + 1;
@@ -366,7 +366,7 @@ app.post('/startRoom', function(req, res) {
                 build[j] = { index: j, tile: "", rotate: 0, row: row, col: col };
             }    
             for (var i = 0; i < roomValue.member.length; i++) {
-                Room.update({ _id: req.query.roomId }, { $push: { player: { nick: roomValue.member[i], board: "아직", select_engine: "아직", build: build, rest_engine: 10, tile_option: 1, tile_white: 3, tile_energy_1: 1, tile_energy_2: 1, tile_energy_3: 1, tile_energy_4: 1, score: 2 } } }, function(err) {});
+                Room.update({ _id: req.query.roomId }, { $push: { player: { nick: roomValue.member[i], board: "아직", select_engine: "아직", build: build, rest_engine: 10, tile_option: 1, tile_white: 3, tile_energy_blue: 1, tile_energy_green: 1, tile_energy_orange: 1, tile_energy_red: 1, score: 2 } } }, function(err) {});
             }
             res.redirect('/room?roomId=' + req.query.roomId);
         });
@@ -449,32 +449,111 @@ app.post('/saveTile', function(req, res) {
         Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
             for (var j = 0; j < completeArray.length; j++) {
                 var tileValue = completeArray[j].split('-')[0];
-                var rowValue = completeArray[j].split('-')[1];
-                var colValue = completeArray[j].split('-')[2];
+                var rowValue = parseInt(completeArray[j].split('-')[1]);
+                var colValue = parseInt(completeArray[j].split('-')[2]);
                 var rotateValue = parseInt(completeArray[j].split('-')[3]);
-                var indexValue = parseInt(10 * (rowValue - 1) + colValue);
+                var indexValue = 10 * (rowValue - 1) + colValue;
                 var memberValue = 0;
                 for (var i = 0; i < roomValue.member.length; i++) {
-                    if (roomValue.member[i] === req.user.user_nick ) {
-                        memberValue = i;
-                    }
+                    if (roomValue.member[i] === req.user.user_nick) memberValue = i;
                 }
                 var setTileKey = "player." + memberValue + ".build." + indexValue + ".tile";
                 var setRotateKey = "player." + memberValue + ".build." + indexValue + ".rotate";
                 var setQuery = {};
-                setQuery[setTileKey] = tileValue;
-                setQuery[setRotateKey] = rotateValue;
+                console.log(tileValue);
+                if (tileValue !== "") setQuery[setTileKey] = tileValue;
+                if (rotateValue > 0) setQuery[setRotateKey] = rotateValue;
                 console.log(setQuery);
-                Room.update({ _id: req.query.roomId }, { $set: setQuery }, function(err) {
-                    var incKey = "player." + memberValue + "." + tileValue;
-                    var incQuery = {};
-                    incQuery[incKey] = -1;
-                    Room.update({ _id: req.query.roomId }, { $inc: incQuery }, function(err) {
-                        res.redirect('/room?roomId=' + req.query.roomId);
-                    });
-                });
+                var incKey = "player." + memberValue + "." + tileValue;
+                var incQuery = {};
+                if (tileValue !== "") incQuery[incKey] = -1;
+                console.log(incQuery);
+                Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery });
+            }
+            res.redirect('/room?roomId=' + req.query.roomId);
+        });
+    } else {
+        res.render('login');
+    }
+});
+app.post('/ajaxSaveTile', function(req, res) {
+    if (req.user) {
+        var result = 0;
+        var posEngine = "";
+        var needTile = new Array();
+        Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
+            for (var j = 0; j < req.body.completeArray.length; j++) {
+                var tileValue = req.body.completeArray[j].split('-')[0];
+                var rowValue = parseInt(req.body.completeArray[j].split('-')[1]);
+                var colValue = parseInt(req.body.completeArray[j].split('-')[2]);
+                var rotateValue = parseInt(req.body.completeArray[j].split('-')[3]);
+                var indexValue = 10 * (rowValue - 1) + colValue;
+                var memberValue = 0;
+                for (var i = 0; i < roomValue.member.length; i++) {
+                    if (roomValue.member[i] === req.user.user_nick) memberValue = i;
+                }
+                if (req.body.completeArray[j].split("_engine_")[1] !== undefined) {
+                    var engine_attribute = roomValue.tile_engine[req.body.completeArray[j].split("-")[0].split("tile_engine_")[1]];
+                    if (engine_attribute.top_1 !== "") {
+                        needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engine_attribute.top_1);
+                    }
+                    if (engine_attribute.top_2 !== "") {
+                        needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue + 1) + "-" + engine_attribute.top_2);
+                    }
+                    if (engine_attribute.bottom_1 !== "") {
+                        needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue) + "-" + engine_attribute.bottom_1);
+                    }
+                    if (engine_attribute.bottom_2 !== "") {
+                        needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engine_attribute.bottom_2);
+                    }
+                    if (engine_attribute.left !== "") {
+                        needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engine_attribute.left);
+                    }
+                    if (engine_attribute.right !== "") {
+                        needTile.push(parseInt(rowValue) + "-" + parseInt(colValue + 2) + "-" + engine_attribute.right);
+                    }
+                    // console.log(parseInt(rowValue) + "-" + parseInt(colValue));
+                    for (var k = 0; k < needTile.length; k++) {
+                        for (var m = 0; m < req.body.completeArray.length; m++) {
+                            //console.log(req.body.completeArray[m]);
+                            if (parseInt(needTile[k].split('-')[0]) + "-" + parseInt(needTile[k].split('-')[1]) === parseInt(req.body.completeArray[m].split('-')[1]) + "-" + parseInt(req.body.completeArray[m].split('-')[2])) {
+                                console.log(req.body.completeArray[m].split('tile_energy_')[1].split('-')[0]);
+                                if (needTile[k].split('-')[2].split('_')[1] === req.body.completeArray[m].split('tile_energy_')[1].split('-')[0]) {
+                                    result ++;
+                                    console.log(result);
+                                }
+                            }
+                        }
+                    }
+                    console.log(needTile);
+                    // console.log(indexValue);
+                    if (result === needTile.length) {
+                        res.send({ result: "성공" });
+                    } else {
+                        res.send({ result: "에너지 유출 중" });
+                    }
+                }
+                // var setTileKey = "player." + memberValue + ".build." + indexValue + ".tile";
+                // var setRotateKey = "player." + memberValue + ".build." + indexValue + ".rotate";
+                // var setQuery = {};
+                // if (tileValue !== "") setQuery[setTileKey] = tileValue;
+                // if (rotateValue > 0) setQuery[setRotateKey] = rotateValue;
+                // console.log(setQuery);
+                // var incKey = "player." + memberValue + "." + tileValue;
+                // var incQuery = {};
+                // if (tileValue !== "") incQuery[incKey] = -1;
+                // console.log(incQuery);
+                // Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery });
             }
         });
+        // Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
+        //     if (roomValue.tile_engine[req.body.engine_num].right) {
+
+        //     }
+
+        //     var result = roomValue.tile_engine[req.body.engine_num].left;
+        //     res.send({ result: result});
+        // });
     } else {
         res.render('login');
     }
