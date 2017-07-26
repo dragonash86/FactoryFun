@@ -189,6 +189,13 @@ var roomData = mongoose.Schema({
     tile_engine: [],
     member: { type: [String] },
     round: { type: Number },
+    tile_black: { type: Number },
+    tile_way_1: { type: Number },
+    tile_way_2: { type: Number },
+    tile_way_3: { type: Number },
+    tile_way_4: { type: Number },
+    tile_way_5: { type: Number },
+    tile_way_6: { type: Number },
     created_at: { type: Date, default: Date.now }
 });
 var Room = mongoose.model('roomData', roomData);
@@ -225,6 +232,13 @@ app.post('/roomCreat', function(req, res) {
             member: [req.user.user_nick],
             board: ["board_a_classic","board_b_classic","board_c_classic","board_d_classic","board_e_classic","board_a_expert","board_b_expert","board_c_expert","board_d_expert","board_e_expert"],
             delete: "no",
+            tile_black : 13,
+            tile_way_1: 72,
+            tile_way_2: 72,
+            tile_way_3: 9,
+            tile_way_4: 8,
+            tile_way_5: 9,
+            tile_way_6: 8,
             start: "대기",
             select_board: "아직",
             round: 1
@@ -366,7 +380,20 @@ app.post('/startRoom', function(req, res) {
                 build[j] = { index: j, tile: "", rotate: 0, row: row, col: col };
             }    
             for (var i = 0; i < roomValue.member.length; i++) {
-                Room.update({ _id: req.query.roomId }, { $push: { player: { nick: roomValue.member[i], board: "아직", select_engine: "아직", build: build, rest_engine: 10, tile_option: 1, tile_white: 3, tile_energy_blue: 1, tile_energy_green: 1, tile_energy_orange: 1, tile_energy_red: 1, score: 2 } } }, function(err) {});
+                Room.update({ _id: req.query.roomId }, { $push: { player: { 
+                    nick: roomValue.member[i],
+                    board: "아직",
+                    select_engine: "아직",
+                    build: build,
+                    rest_engine: 10,
+                    tile_option: 1,
+                    tile_white: 3,
+                    tile_energy_blue: 1,
+                    tile_energy_green: 1,
+                    tile_energy_orange: 1,
+                    tile_energy_red: 1,
+                    score: 2 
+                } } }, function(err) {});
             }
             res.redirect('/room?roomId=' + req.query.roomId);
         });

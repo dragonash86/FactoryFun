@@ -69,11 +69,11 @@
 							<% } else if (i > 4) { %>
 								Expert
 							<% } %>
-							</span></p><img src="/images/<%= room.board[i] %>.jpg" alt="<%= room.board[i] %>" /></a></li>
+							</span></p><img src="/images/<%= room.board[i] %>.jpg1" alt="<%= room.board[i] %>" /></a></li>
 							<% } %>
-							<li class="random_1"><a href="#n"><p>Classic Random (+2 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
-							<li class="random_2"><a href="#n"><p>All Random(+3 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
-							<li class="random_3"><a href="#n"><p>Expert Random(+4 Score)</p><img src="/images/board_random.jpg" alt="?" /></a></li>
+							<li class="random_1"><a href="#n"><p>Classic Random (+2 Score)</p><img src="/images/board_random.jpg1" alt="?" /></a></li>
+							<li class="random_2"><a href="#n"><p>All Random(+3 Score)</p><img src="/images/board_random.jpg1" alt="?" /></a></li>
+							<li class="random_3"><a href="#n"><p>Expert Random(+4 Score)</p><img src="/images/board_random.jpg1" alt="?" /></a></li>
 						</ul>
 						<form action="/selectBoard?roomId=<%= room._id %>" method="post" class="layer_start"><input type="submit" value="시작" /></form>
 					</div>
@@ -116,7 +116,7 @@
 		</ul>
 		<% if (room.player[0].select_engine === "아직") { %>
 			<div class="select_engine">
-				<a href="#n"><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.jpg" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></a>
+				<a href="#n"><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.jpg1" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></a>
 				<form action="/selectEngine?roomId=<%= room._id %>" method="post" class="layer_start"><input type="submit" value="선택" /></form>
 			</div>
 		<% } %>
@@ -126,31 +126,31 @@
 			<div class="wrap_tile">
 				<ul>
 					<% for (var m = 0; m < room.player[k].tile_white; m++) { %>
-					<li><img src="/images/tile_white.jpg" class="drag tile" alt="tile_white" /></li>
+					<li><img src="/images/tile_white.jpg1" class="drag tile" alt="tile_white" /></li>
 					<% } %>
 					<% for (var o = 0; o < room.player[k].tile_energy_blue; o++) { %>
-					<li><img src="/images/tile_energy_blue.jpg" class="drag tile" alt="tile_energy_blue" /></li>
+					<li><img src="/images/tile_energy_blue.jpg1" class="drag tile" alt="tile_energy_blue" /></li>
 					<% } %>
 					<% for (var p = 0; p < room.player[k].tile_energy_green; p++) { %>
-					<li><img src="/images/tile_energy_green.jpg" class="drag tile" alt="tile_energy_green" /></li>
+					<li><img src="/images/tile_energy_green.jpg1" class="drag tile" alt="tile_energy_green" /></li>
 					<% } %>
 					<% for (var q = 0; q < room.player[k].tile_energy_orange; q++) { %>
-					<li><img src="/images/tile_energy_orange.jpg" class="drag tile" alt="tile_energy_orange" /></li>
+					<li><img src="/images/tile_energy_orange.jpg1" class="drag tile" alt="tile_energy_orange" /></li>
 					<% } %>
 					<% for (var r = 0; r < room.player[k].tile_energy_red; r++) { %>
-					<li><img src="/images/tile_energy_red.jpg" class="drag tile" alt="tile_energy_red" /></li>
+					<li><img src="/images/tile_energy_red.jpg1" class="drag tile" alt="tile_energy_red" /></li>
 					<% } %>
 					<% for (var s = 0; s < room.player[k].tile_option; s++) { %>
-					<li><img src="/images/tile_option.jpg" class="drag tile_engine" alt="tile_option" /></li>
+					<li><img src="/images/tile_option.jpg1" class="drag tile_engine" alt="tile_option" /></li>
 					<% } %>
 					<% if (room.player[0].select_engine !== "아직") { %>
-					<li><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.jpg" class="drag tile_engine selected_engine" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></li>
+					<li><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.jpg1" class="drag tile_engine selected_engine" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></li>
 					<% } %>
 					<% 
 						for (var t = 0; t < room.player[0].build.length; t++) {
 							if (room.player[0].build[t].tile !== "") { 
 					%>
-								<li><img src="/images/<%= room.player[0].build[t].tile %>.jpg" class="drag tile saved pos_<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %> rotate_<%= room.player[0].build[t].rotate %>" id="<%= room.player[0].build[t].row %>-<%= room.player[0].build[t].col %>" alt="<%= room.player[0].build[t].tile %>" /></li>
+								<li><img src="/images/<%= room.player[0].build[t].tile %>.jpg1" class="drag tile saved pos_<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %> rotate_<%= room.player[0].build[t].rotate %>" id="<%= room.player[0].build[t].row %>-<%= room.player[0].build[t].col %>" alt="<%= room.player[0].build[t].tile %>" /></li>
 					<% 		}	
 						}
 					%>
@@ -258,7 +258,7 @@
 						// console.log(complete[i].split("-")[0].split("tile_engine_")[1]);
 						jQuery.ajaxSettings.traditional = true;
 						$.post("/ajaxSaveTile?roomId=<%= room._id %>", { completeArray: complete }, function(data) {
-						// $.post("/ajaxSaveTile?roomId=<%= room._id %>&complete="+arrStr, { engine_num: complete[i].split("-")[0].split("tile_engine_")[1] }, function(data) {
+							console.log(complete);
 							if (data.result === "성공") {
 								data.result = "성공"
 								console.log(data.result);
