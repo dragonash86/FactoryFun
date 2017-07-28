@@ -613,7 +613,7 @@ app.post('/ajaxSaveTile', function(req, res) {
                     }
                     //이런식의 엔진이 필요로 하는 타일 정보가 담김 [ '1-8-2_blue_output', '3-7-3_orange_input', '2-6-1_blue_input' ]
                     //담은 정보를 포문 돌려서 
-                    console.log(needTile);
+                    // console.log(needTile);
                     for (var k = 0; k < needTile.length; k++) {
                         //받은 정보와 비교하기 위해 포문
                         for (var m = 0; m < req.body.completeArray.length; m++) {
@@ -628,7 +628,18 @@ app.post('/ajaxSaveTile', function(req, res) {
                                     if (needTile[k].split("-")[2].split("_")[2] === "black") {
                                         result ++;
                                     }
-                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way") {
+                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_1") {
+
+                                    // console.log("way");
+                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_2") {
+                                    // console.log("way");
+                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_3") {
+                                    // console.log("way");
+                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_4") {
+                                    // console.log("way");
+                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_5") {
+                                    // console.log("way");
+                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_6") {
                                     // console.log("way");
                                 } else {
                                     if (needTile[k].split("-")[2].split("_")[1] === req.body.completeArray[m].split("tile_energy_")[1].split("-")[0]) {
@@ -640,7 +651,30 @@ app.post('/ajaxSaveTile', function(req, res) {
                     }
                     // console.log(indexValue);
                     if (result === needTile.length) {
-                        res.send({ result: "성공" });
+                        for (var j = 0; j < req.body.completeArray.length; j++) {
+                            var tileValue = req.body.completeArray[j].split("-")[0];
+                            var rowValue = parseInt(req.body.completeArray[j].split("-")[1]);
+                            var colValue = parseInt(req.body.completeArray[j].split("-")[2]);
+                            var rotateValue = parseInt(req.body.completeArray[j].split("-")[3]);
+                            var indexValue = 10 * (rowValue - 1) + colValue;
+                            var memberValue = 0;
+                            for (var i = 0; i < roomValue.member.length; i++) {
+                                if (roomValue.member[i] === req.user.user_nick) memberValue = i;
+                            }
+                            var setTileKey = "player." + memberValue + ".build." + indexValue + ".tile";
+                            var setRotateKey = "player." + memberValue + ".build." + indexValue + ".rotate";
+                            var setQuery = {};
+                            console.log(tileValue);
+                            if (tileValue !== "") setQuery[setTileKey] = tileValue;
+                            if (rotateValue > 0) setQuery[setRotateKey] = rotateValue;
+                            console.log(setQuery);
+                            var incKey = "player." + memberValue + "." + tileValue;
+                            var incQuery = {};
+                            if (tileValue !== "") incQuery[incKey] = -1;
+                            console.log(incQuery);
+                            Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery }, function(err) {});
+                        }
+                        res.redirect('/room?roomId=' + req.query.roomId);
                     } else {
                         res.send({ result: "에너지 유출 중" });
                     }

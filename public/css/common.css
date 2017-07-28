@@ -93,7 +93,16 @@ h3{padding:20px 0}
 .board .wrap_tile .tile{width:70px;height:70px}
 .board .wrap_tile .tile_engine,.select_engine img{width:140px;height:70px}
 .board .wrap_tile .selected_engine{top:307px;left:790px}
+.board .wrap_tile .tile_way_1{top:447px;left:790px}
+.board .wrap_tile .tile_way_2{top:447px;left:860px}
+.board .wrap_tile .tile_way_3{top:517px;left:790px}
+.board .wrap_tile .tile_way_4{top:517px;left:860px}
+.board .wrap_tile .tile_way_5{top:587px;left:790px}
+.board .wrap_tile .tile_way_6{top:587px;left:860px}
+.board .wrap_tile .tile_black{top:727px;left:790px}
+
 .board .drag{position:absolute;z-index:50;cursor:move}
+.board .saved{display:none}
 .layer_action{display:none;position:absolute;border:1px solid #272822;background:#fff;padding:10px}
 .layer_action a{display:inline-block;border:1px solid #272822;text-align:center;padding:5px;margin:10px auto 0}
 .layer_action.show{display:block}
