@@ -216,14 +216,6 @@ app.get('/main', function(req, res) {
 app.post('/roomCreat', function(req, res) {
     var now = new Date();
     now = dateToYYYYMMDDMMSS(now);
-
-    function dateToYYYYMMDDMMSS(date) {
-        function pad(num) {
-            var num = num + '';
-            return num.length < 2 ? '0' + num : num;
-        }
-        return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
-    }
     if (req.user) {
         var room = new Room({
             name: now,
@@ -423,9 +415,8 @@ app.post('/selectBoard', function(req, res) {
             }
             var num = new Array();
             var randEngine = new Array();
-            //중복되지 않게 처리해야함.
             for (var i = 0; i < 10; i++) {
-                num[i] = Math.floor(Math.random() * 54);
+                num[i] = shuffleRandom(54)[i];
                 randEngine[i] = roomValue.tile_engine[num[i]];
             }
             Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.tile_engine': randEngine } }, function(err) {
@@ -439,7 +430,20 @@ app.post('/selectBoard', function(req, res) {
 //엔진 고르기
 app.post('/selectEngine', function(req, res) {
     if (req.user) {
-        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': req.query.engine }, $inc: { 'player.$.rest_engine': -1 } }, function(err) {
+        var incKey, incQuery;
+        if (req.query.id === "all") {
+            var allEnergy = new Array("blue", "green", "orange", "red");
+            incQuery = { 'player.$.rest_engine': -1 };
+            incKey = "player.$.tile_energy_" + allEnergy[Math.floor(Math.random() * allEnergy.length)];
+            incQuery[incKey] = 1;
+        } else if (req.query.id === "") {
+            incQuery = { 'player.$.rest_engine': -1 };
+        } else {
+            incQuery = { 'player.$.rest_engine': -1 };
+            incKey = "player.$.tile_energy_" + req.query.id;
+            incQuery[incKey] = 1;
+        }
+        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': req.query.engine }, $inc: incQuery }, function(err) {
             res.redirect('/room?roomId=' + req.query.roomId);
         });
     } else {
@@ -448,56 +452,10 @@ app.post('/selectEngine', function(req, res) {
 });
 app.post('/giveUp', function(req, res) {
     if (req.user) {
-        Room.update({ 
-            _id: req.query.roomId,
-            player: { $elemMatch: { nick: req.user.user_nick } }
-        }, { 
-            $inc: { 'player.$.score': -5, round: 1 },
-            $set: { 'player.$.select_engine': "아직" }
-        }, function(err) {
-            Room.update({
-                _id: req.query.roomId,
-                player: { $elemMatch: { nick: req.user.user_nick }},
-                'player.score': { $lt : 0 }
-            }, { 
-                $set: { 'player.$.score': 1 }
-            }, function(err) {
+        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': -5, round : 1 }, $set: { 'player.$.select_engine': "아직" } }, function(err) {
+            Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick }}, 'player.score': { $lt : 0 } }, { $set: { 'player.$.score': 1 } }, function(err) {
                 res.redirect('/room?roomId=' + req.query.roomId);  
             });    
-        });
-    } else {
-        res.render('login');
-    }
-});
-app.post('/saveTile', function(req, res) {
-    if (req.user) {
-        var completeArray = new Array();
-        completeArray = req.query.complete.split("@");
-        Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
-            for (var j = 0; j < completeArray.length; j++) {
-                var tileValue = completeArray[j].split("-")[0];
-                var rowValue = parseInt(completeArray[j].split("-")[1]);
-                var colValue = parseInt(completeArray[j].split("-")[2]);
-                var rotateValue = parseInt(completeArray[j].split("-")[3]);
-                var indexValue = 10 * (rowValue - 1) + colValue;
-                var memberValue = 0;
-                for (var i = 0; i < roomValue.member.length; i++) {
-                    if (roomValue.member[i] === req.user.user_nick) memberValue = i;
-                }
-                var setTileKey = "player." + memberValue + ".build." + indexValue + ".tile";
-                var setRotateKey = "player." + memberValue + ".build." + indexValue + ".rotate";
-                var setQuery = {};
-                console.log(tileValue);
-                if (tileValue !== "") setQuery[setTileKey] = tileValue;
-                if (rotateValue > 0) setQuery[setRotateKey] = rotateValue;
-                console.log(setQuery);
-                var incKey = "player." + memberValue + "." + tileValue;
-                var incQuery = {};
-                if (tileValue !== "") incQuery[incKey] = -1;
-                console.log(incQuery);
-                Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery });
-            }
-            res.redirect('/room?roomId=' + req.query.roomId);
         });
     } else {
         res.render('login');
@@ -512,8 +470,7 @@ app.post('/ajaxSaveTile', function(req, res) {
             //배치 완료 버튼 누르고 받아온 배열을 그 크기만큼 포문 돌림 데이터 형식은
             // [ 'tile_white-1-4-undefined',
             //   'tile_energy_green-1-9-undefined',
-            //   'tile_engine_41-2-6-undefined' ] 마지막 언디파인드는 rotate값임. 추후 개발 예정
-            console.log(req.body.completeArray);
+            //   'tile_engine_41-2-6-undefined' ] 마지막 언디파인드는 rotate값
             for (var j = 0; j < req.body.completeArray.length; j++) {
                 //그 타일의 세로좌표 값
                 var rowValue = parseInt(req.body.completeArray[j].split("-")[1]);
@@ -613,7 +570,7 @@ app.post('/ajaxSaveTile', function(req, res) {
                     }
                     //이런식의 엔진이 필요로 하는 타일 정보가 담김 [ '1-8-2_blue_output', '3-7-3_orange_input', '2-6-1_blue_input' ]
                     //담은 정보를 포문 돌려서 
-                    // console.log(needTile);
+                    console.log(needTile);
                     for (var k = 0; k < needTile.length; k++) {
                         //받은 정보와 비교하기 위해 포문
                         for (var m = 0; m < req.body.completeArray.length; m++) {
@@ -625,11 +582,10 @@ app.post('/ajaxSaveTile', function(req, res) {
                                         result ++;
                                     }
                                 } else if (req.body.completeArray[m].split("-")[0] === "tile_black") {
-                                    if (needTile[k].split("-")[2].split("_")[2] === "black") {
+                                    if (needTile[k].split("-")[2] === "black") {
                                         result ++;
                                     }
                                 } else if (req.body.completeArray[m].split("-")[0] === "tile_way_1") {
-
                                     // console.log("way");
                                 } else if (req.body.completeArray[m].split("-")[0] === "tile_way_2") {
                                     // console.log("way");
@@ -641,6 +597,11 @@ app.post('/ajaxSaveTile', function(req, res) {
                                     // console.log("way");
                                 } else if (req.body.completeArray[m].split("-")[0] === "tile_way_6") {
                                     // console.log("way");
+                                // } else if (req.body.completeArray[m].split("-")[4] !== "new") {
+                                //     if () {
+                                //     } else {
+                                //         result = 0;    
+                                //     }
                                 } else {
                                     if (needTile[k].split("-")[2].split("_")[1] === req.body.completeArray[m].split("tile_energy_")[1].split("-")[0]) {
                                         result ++;
@@ -649,13 +610,15 @@ app.post('/ajaxSaveTile', function(req, res) {
                             }
                         }
                     }
-                    // console.log(indexValue);
-                    if (result === needTile.length) {
+                    console.log(result);
+                    console.log(req.body.completeArray);
+                    if (result === needTile.length && result !== 0) {
                         for (var j = 0; j < req.body.completeArray.length; j++) {
                             var tileValue = req.body.completeArray[j].split("-")[0];
                             var rowValue = parseInt(req.body.completeArray[j].split("-")[1]);
                             var colValue = parseInt(req.body.completeArray[j].split("-")[2]);
                             var rotateValue = parseInt(req.body.completeArray[j].split("-")[3]);
+                            var savedValue = req.body.completeArray[j].split("-")[4];
                             var indexValue = 10 * (rowValue - 1) + colValue;
                             var memberValue = 0;
                             for (var i = 0; i < roomValue.member.length; i++) {
@@ -664,43 +627,51 @@ app.post('/ajaxSaveTile', function(req, res) {
                             var setTileKey = "player." + memberValue + ".build." + indexValue + ".tile";
                             var setRotateKey = "player." + memberValue + ".build." + indexValue + ".rotate";
                             var setQuery = {};
-                            console.log(tileValue);
-                            if (tileValue !== "") setQuery[setTileKey] = tileValue;
+                            // console.log(tileValue);
+                            setQuery[setTileKey] = tileValue;
                             if (rotateValue > 0) setQuery[setRotateKey] = rotateValue;
-                            console.log(setQuery);
+                            // console.log(setQuery);
                             var incKey = "player." + memberValue + "." + tileValue;
                             var incQuery = {};
-                            if (tileValue !== "") incQuery[incKey] = -1;
-                            console.log(incQuery);
+                            if (savedValue === "saved") {
+                                incQuery[incKey] = 0;
+                            } else {
+                                incQuery[incKey] = -1;
+                            }
                             Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery }, function(err) {});
                         }
-                        res.redirect('/room?roomId=' + req.query.roomId);
+                        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': "아직" }, $inc: { round: 1} }, function(err) {});
                     } else {
                         res.send({ result: "에너지 유출 중" });
+                        break;
                     }
                 }
-                // var setTileKey = "player." + memberValue + ".build." + indexValue + ".tile";
-                // var setRotateKey = "player." + memberValue + ".build." + indexValue + ".rotate";
-                // var setQuery = {};
-                // if (tileValue !== "") setQuery[setTileKey] = tileValue;
-                // if (rotateValue > 0) setQuery[setRotateKey] = rotateValue;
-                // console.log(setQuery);
-                // var incKey = "player." + memberValue + "." + tileValue;
-                // var incQuery = {};
-                // if (tileValue !== "") incQuery[incKey] = -1;
-                // console.log(incQuery);
-                // Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery });
             }
         });
-        // Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
-        //     if (roomValue.tile_engine[req.body.engine_num].right) {
-
-        //     }
-
-        //     var result = roomValue.tile_engine[req.body.engine_num].left;
-        //     res.send({ result: result});
-        // });
     } else {
         res.render('login');
     }
 });
+
+function dateToYYYYMMDDMMSS(date) {
+    function pad(num) {
+        var num = num + '';
+        return num.length < 2 ? '0' + num : num;
+    }
+    return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+}
+function shuffleRandom(n) {
+    var ar = new Array();
+    var temp;
+    var rnum;
+    for (var i = 0; i < n; i++) {
+        ar.push(i);
+    }
+    for (var i = 0; i < ar.length; i++) {
+        rnum = Math.floor(Math.random() * n);
+        temp = ar[i];
+        ar[i] = ar[rnum];
+        ar[rnum] = temp;
+    }
+    return ar;
+}

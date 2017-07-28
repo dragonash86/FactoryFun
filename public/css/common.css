@@ -91,6 +91,8 @@ h3{padding:20px 0}
 .board .wrap_tile ul{overflow:hidden;height:106px}
 .board .wrap_tile li{float:left;width:100px;height:106px}
 .board .wrap_tile .tile{width:70px;height:70px}
+.board .select_engine{position:absolute;top:40px;left:480px}
+.board .select_engine input{width:140px;height:70px}
 .board .wrap_tile .tile_engine,.select_engine img{width:140px;height:70px}
 .board .wrap_tile .selected_engine{top:307px;left:790px}
 .board .wrap_tile .tile_way_1{top:447px;left:790px}
