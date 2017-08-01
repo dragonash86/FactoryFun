@@ -297,9 +297,11 @@
 				jQuery.ajaxSettings.traditional = true;
 				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { completeArray: complete }, function(data) {
 					if (data.result === "성공") {
+						alert("배치 완료! " + data.score + "점 획득");
 						location.reload();
 					} else {
-						alert(data.result);
+						console.log(data.result,"받은 값");
+						//alert(data.result);
 					}
 				}, "json");	
 			} else {

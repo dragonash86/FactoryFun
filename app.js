@@ -466,6 +466,7 @@ app.post('/ajaxSaveTile', function(req, res) {
         var result = 0;
         var posEngine = "";
         var needTile = new Array();
+        var countScore = new Array();
         Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
             //배치 완료 버튼 누르고 받아온 배열을 그 크기만큼 포문 돌림 데이터 형식은
             // [ 'tile_white-1-4-undefined',
@@ -493,79 +494,79 @@ app.post('/ajaxSaveTile', function(req, res) {
                     //각 포지션의 값이 비어있지 않다면 필요한 타일 정보를 담게 함.
                     if (rotateValue === "undefined") {
                         if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.top_1);
+                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.top_1 + "_" + 2);
                         }
                         if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_2);
+                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_2 + "_" + 2);
                         }
                         if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue) + "-" + engineAttr.bottom_1);
+                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue) + "-" + engineAttr.bottom_1 + "_undefined");
                         }
                         if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.bottom_2);
+                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.bottom_2 + "_undefined");
                         }
                         if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.left);
+                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.left + "_" + 1);
                         }
                         if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue + 2) + "-" + engineAttr.right);
+                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue + 2) + "-" + engineAttr.right + "_" + 3);
                         }
                     } else if (parseInt(rotateValue) === 1) {
                         if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_1);
+                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_1 + "_" + 3);
                         }
                         if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_2);
+                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_2 + "_" + 3);
                         }
                         if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.bottom_1);
+                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.bottom_1 + "_" + 1);
                         }
                         if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue - 1) + "-" + engineAttr.bottom_2);
+                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue - 1) + "-" + engineAttr.bottom_2 + "_" + 1);
                         }
                         if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.left);
+                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.left + "_" + 2);
                         }
                         if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue + 2) + "-" + parseInt(colValue) + "-" + engineAttr.right);
+                            needTile.push(parseInt(rowValue + 2) + "-" + parseInt(colValue) + "-" + engineAttr.right + "_undefined");
                         }
                     } else if (parseInt(rotateValue) === 2) {
                         if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_1);
+                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_1 + "_undefined");
                         }
                         if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue) + "-" + engineAttr.top_2);
+                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue) + "-" + engineAttr.top_2 + "_undefined");
                         }
                         if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.bottom_1);
+                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.bottom_1 + "_" + 2);
                         }
                         if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.bottom_2);
+                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.bottom_2 + "_" + 2);
                         }
                         if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue + 2) + "-" + engineAttr.left);
+                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue + 2) + "-" + engineAttr.left + "_" + 3);
                         }
                         if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.right);
+                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.right + "_" + 1);
                         }
                     } else if (parseInt(rotateValue) === 3) {
                         if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue - 1) + "-" + engineAttr.top_1);
+                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue - 1) + "-" + engineAttr.top_1 + "_" + 1);
                         }
                         if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.top_2);
+                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.top_2 + "_" + 1);
                         }
                         if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.bottom_1);
+                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.bottom_1 + "_" + 3);
                         }
                         if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 2) + "-" + engineAttr.bottom_2);
+                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 2) + "-" + engineAttr.bottom_2 + "_" + 3);
                         }
                         if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue + 2) + "-" + parseInt(colValue) + "-" + engineAttr.left);
+                            needTile.push(parseInt(rowValue + 2) + "-" + parseInt(colValue) + "-" + engineAttr.left + "_0");
                         }
                         if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.right);
+                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.right + "_" + 2);
                         }
                     }
                     //이런식의 엔진이 필요로 하는 타일 정보가 담김 [ '1-8-2_blue_output', '3-7-3_orange_input', '2-6-1_blue_input' ]
@@ -578,14 +579,48 @@ app.post('/ajaxSaveTile', function(req, res) {
                             //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
                             if (parseInt(needTile[k].split("-")[0]) + "-" + parseInt(needTile[k].split("-")[1]) === parseInt(req.body.completeArray[m].split("-")[1]) + "-" + parseInt(req.body.completeArray[m].split("-")[2])) {
                                 if (req.body.completeArray[m].split("-")[0] === "tile_white") {
-                                    if (needTile[k].split("-")[2].split("_")[2] === "output") {
+                                    if (needTile[k].split("-")[2].split("_")[2] === "output" && needTile[k].split("-")[2].split("_")[3] === req.body.completeArray[m].split("-")[3]) {
                                         result ++;
                                     }
                                 } else if (req.body.completeArray[m].split("-")[0] === "tile_black") {
-                                    if (needTile[k].split("-")[2] === "black") {
+                                    if (needTile[k].split("-")[2].split("_")[0] === "black" && needTile[k].split("-")[2].split("_")[3] === req.body.completeArray[m].split("-")[3]) {
                                         result ++;
                                     }
                                 } else if (req.body.completeArray[m].split("-")[0] === "tile_way_1") {
+                                    console.log(req.body.completeArray[m]);
+                                    if (req.body.completeArray[m].split("-")[3] === "undefined") {
+                                        if (needTile[k].split("-")[2].split("_")[1] === req.body.completeArray[m].split("-")[3]) {
+                                            
+
+                                        } else {
+                                            res.send({ result: "위로 가는 타일이 연결 안됨" });
+                                            break;
+                                        }
+                                    } else if (parseInt(req.body.completeArray[m].split("-")[3]) === 1) {
+                                        if (parseInt(needTile[k].split("-")[2].split("_")[1]) === parseInt(req.body.completeArray[m].split("-")[3])) {
+                                            
+                                        } else {
+                                            res.send({ result: "오른쪽으로 가는 타일이 연결 안됨" });
+                                            break;
+                                        }
+
+                                    } else if (parseInt(req.body.completeArray[m].split("-")[3]) === 2) {
+                                        if (parseInt(needTile[k].split("-")[2].split("_")[1]) === parseInt(req.body.completeArray[m].split("-")[3])) {
+                                            
+                                        } else {
+                                            res.send({ result: "아래로 가는 타일이 연결 안됨" });
+                                            break;
+                                        }
+
+                                    } else if (parseInt(req.body.completeArray[m].split("-")[3]) === 3) {
+                                        if (parseInt(needTile[k].split("-")[2].split("_")[1]) === parseInt(req.body.completeArray[m].split("-")[3])) {
+                                            
+                                        } else {
+                                            res.send({ result: "왼쪽으로 가는 타일이 연결 안됨" });
+                                            break;
+                                        }
+
+                                    }
                                     // console.log("way");
                                 } else if (req.body.completeArray[m].split("-")[0] === "tile_way_2") {
                                     // console.log("way");
@@ -610,8 +645,8 @@ app.post('/ajaxSaveTile', function(req, res) {
                             }
                         }
                     }
-                    console.log(result);
-                    console.log(req.body.completeArray);
+                    // console.log(result);
+                    // console.log(req.body.completeArray);
                     if (result === needTile.length && result !== 0) {
                         for (var j = 0; j < req.body.completeArray.length; j++) {
                             var tileValue = req.body.completeArray[j].split("-")[0];
@@ -631,18 +666,30 @@ app.post('/ajaxSaveTile', function(req, res) {
                             setQuery[setTileKey] = tileValue;
                             if (rotateValue > 0) setQuery[setRotateKey] = rotateValue;
                             // console.log(setQuery);
-                            var incKey = "player." + memberValue + "." + tileValue;
+                            var incKeyTile = "player." + memberValue + "." + tileValue;
                             var incQuery = {};
                             if (savedValue === "saved") {
-                                incQuery[incKey] = 0;
+                                incQuery[incKeyTile] = 0;
                             } else {
-                                incQuery[incKey] = -1;
+                                countScore.push(req.body.completeArray[j]);
+                                incQuery[incKeyTile] = -1;
+                                // console.log(countScore);
                             }
                             Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery }, function(err) {});
                         }
-                        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': "아직" }, $inc: { round: 1} }, function(err) {});
+                        var incQuery = { round: 1 };
+                        var incKeyScore = "player." + memberValue + ".score";
+                        incQuery[incKeyScore] = parseInt(engineAttr.score - countScore.length + 1);
+                        console.log(engineAttr.score,"engineAttr.score");
+                        console.log(countScore.length,"countScore.length");
+                        console.log(incQuery,"incQuery");
+                        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': "아직" }, $inc: incQuery }, function(err) {
+                            res.send({ result: "성공", score: incQuery[incKeyScore] });
+                        });
+                        break;
                     } else {
-                        res.send({ result: "에너지 유출 중" });
+                        console.log("에너지 유출 중");
+                        // res.send({ result: "에너지 유출 중" });
                         break;
                     }
                 }
