@@ -1,4 +1,5 @@
 <% include include/header.ejs %>
+<a href="/" class="btn_main">메인</a>
 <div class="container room">
 	<% if (room.start === "대기") { %>
 	<h2>생성 시간 : <%= room.name %></h2>
@@ -192,9 +193,8 @@
 			<% for (var i = 1; i <= 10; i++) { %>
 			<tr>
 				<% for (var j = 1; j <= 10; j++) { %>
-				<td>
+				<td id="td_<%= i %>_<%= j %>">
 					<span><%= i %>-<%= j %></span>
-
 				</td>
 				<% } %>
 			</tr>
@@ -245,7 +245,7 @@
 			var x = ((parseInt($(this).css("top")) - posTop) / posValue + 1);
 			var y = ((parseInt($(this).css("left")) - posLeft) / posValue + 1);
 			if (x > 0 && x < 11 && y > 0 && y < 11) {
-				$(this).attr("id", (x + "-" + y));
+				$(this).attr("id", (x + "@" + y));
 			}
 		});
 		if ($(".saved").length > 0) {
@@ -275,7 +275,7 @@
 		});
 		$(".complete").click(function(e) {
 			e.preventDefault();
-			var complete = new Array();
+			var complete = new Array("sendTile");
 			for (var i = 0; i < $(".wrap_tile img").length; i++) {
 				// if ($(".wrap_tile img")[i].alt === "tile_white" && $(".wrap_tile img").eq(i).hasClass("saved")) {
 				// 	console.log(1);
@@ -286,22 +286,35 @@
 				// if ($(".wrap_tile img")[i].id && !$(".wrap_tile img").eq(i).hasClass("saved")) { //saved를 체크 안하면 기존에 있는 타일들 활용을 못하는 문제
 				if ($(".wrap_tile img")[i].id) {
 					if ($(".wrap_tile img").eq(i).hasClass("saved")) {
-						complete.push($(".wrap_tile img")[i].alt + "-" + $(".wrap_tile img")[i].id + "-" + $(".wrap_tile img")[i].className.split("rotate_")[1] + "-saved");
+						complete.push($(".wrap_tile img")[i].alt + "@" + $(".wrap_tile img")[i].id + "@" + $(".wrap_tile img")[i].className.split("rotate_")[1] + "@saved");
 					} else {
-						complete.push($(".wrap_tile img")[i].alt + "-" + $(".wrap_tile img")[i].id + "-" + $(".wrap_tile img")[i].className.split("rotate_")[1] + "-new");
+						complete.push($(".wrap_tile img")[i].alt + "@" + $(".wrap_tile img")[i].id + "@" + $(".wrap_tile img")[i].className.split("rotate_")[1] + "@new");
 					}
 				}
 			}
-			console.log(complete);
-			if (complete.length > 1) {
+			//console.log(complete);
+			if (complete.length > 0) {
 				jQuery.ajaxSettings.traditional = true;
 				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { completeArray: complete }, function(data) {
 					if (data.result === "성공") {
 						alert("배치 완료! " + data.score + "점 획득");
 						location.reload();
 					} else {
-						console.log(data.result,"받은 값");
 						//alert(data.result);
+						console.log(data.needTile);
+						for (var i = 0; i < data.needTile.length; i++) {
+							var rowValue = parseInt(data.needTile[i].split("@")[0]);
+	                        var colValue = parseInt(data.needTile[i].split("@")[1]);
+	                        var color = data.needTile[i].split("@")[2].split("_")[1];
+	                        $(".board #td_" + rowValue + "_" + colValue).addClass(color);
+	                        console.log(color);
+	                        if (data.needTile[i].split("@")[2] === "black") {
+	                        	$(".board #td_" + rowValue + "_" + colValue).addClass("black");
+	                        }
+						}
+						$(".drag").drop(function(ev, dd) {
+							$(".board td").attr("class", "");
+						});
 					}
 				}, "json");	
 			} else {

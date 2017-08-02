@@ -87,8 +87,11 @@ h3{padding:20px 0}
 .board table{clear:both}
 .board td{position:relative;border:1px solid #272822;width:70px;height:70px}
 .board td span{position:absolute;top:-2px;left:2px;font-size:10px}
-.board .lv_1{position:absolute;left:14px;top:15px;border:1px solid red;border-radius:20px;width:20px;height:20px}
-.board .lv_2{position:absolute;left:10px;top:10px;border:15px solid red;border-radius:20px;width:20px;height:20px}
+.board td.green{background:green}
+.board td.orange{background:orange}
+.board td.red{background:red}
+.board td.blue{background:blue}
+.board td.black{background:black}
 .board .wrap_tile ul{overflow:hidden;height:106px}
 .board .wrap_tile li{float:left;width:100px;height:106px}
 .board .wrap_tile .tile{width:70px;height:70px}

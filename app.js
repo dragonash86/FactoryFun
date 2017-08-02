@@ -472,188 +472,166 @@ app.post('/ajaxSaveTile', function(req, res) {
             // [ 'tile_white-1-4-undefined',
             //   'tile_energy_green-1-9-undefined',
             //   'tile_engine_41-2-6-undefined' ] 마지막 언디파인드는 rotate값
+            console.log(req.body.completeArray);
             for (var j = 0; j < req.body.completeArray.length; j++) {
                 //그 타일의 세로좌표 값
-                var rowValue = parseInt(req.body.completeArray[j].split("-")[1]);
+                var rowValue = parseInt(req.body.completeArray[j].split("@")[1]);
                 //그 타일의 가로좌표 값
-                var colValue = parseInt(req.body.completeArray[j].split("-")[2]);
+                var colValue = parseInt(req.body.completeArray[j].split("@")[2]);
                 //그 타일의 회전 수
-                var rotateValue = req.body.completeArray[j].split("-")[3];
-                //그 타일의 index
-                var indexValue = 10 * (rowValue - 1) + colValue;
+                var rotateValue = req.body.completeArray[j].split("@")[3];
                 // var memberValue = 0;
                 //player[n] 에 접근하기 위해 그 게임의 참가자 수로 for문 돌림
                 for (var i = 0; i < roomValue.member.length; i++) {
                     if (roomValue.member[i] === req.user.user_nick) memberValue = i;
                 }
                 //받아온 배열을 _engine_으로 자르고 엔진의 번호를 구함. 
-                if (req.body.completeArray[j].split("_engine_")[1]) {
+                if (req.body.completeArray[j].split("tile_engine_")[1]) {
                     //엔진의 번호를 engineAttr에 담음
-                    var engineNum = req.body.completeArray[j].split("-")[0].split("tile_engine_")[1];
+                    var engineNum = req.body.completeArray[j].split("@")[0].split("tile_engine_")[1];
                     var engineAttr = roomValue.tile_engine[engineNum];
                     //각 포지션의 값이 비어있지 않다면 필요한 타일 정보를 담게 함.
                     if (rotateValue === "undefined") {
                         if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.top_1 + "_" + 2);
+                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue) + "@" + engineAttr.top_1 + "@" + 2);
                         }
                         if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_2 + "_" + 2);
+                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.top_2 + "@" + 2);
                         }
                         if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue) + "-" + engineAttr.bottom_1 + "_undefined");
+                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue) + "@" + engineAttr.bottom_1 + "@undefined");
                         }
                         if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.bottom_2 + "_undefined");
+                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.bottom_2 + "@undefined");
                         }
                         if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.left + "_" + 1);
+                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue - 1) + "@" + engineAttr.left + "@" + 1);
                         }
                         if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue + 2) + "-" + engineAttr.right + "_" + 3);
+                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue + 2) + "@" + engineAttr.right + "@" + 3);
                         }
                     } else if (parseInt(rotateValue) === 1) {
                         if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_1 + "_" + 3);
+                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue + 1) + "@" + engineAttr.top_1 + "@" + 3);
                         }
                         if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_2 + "_" + 3);
+                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.top_2 + "@" + 3);
                         }
                         if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.bottom_1 + "_" + 1);
+                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue - 1) + "@" + engineAttr.bottom_1 + "@" + 1);
                         }
                         if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue - 1) + "-" + engineAttr.bottom_2 + "_" + 1);
+                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue - 1) + "@" + engineAttr.bottom_2 + "@" + 1);
                         }
                         if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.left + "_" + 2);
+                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue) + "@" + engineAttr.left + "@" + 2);
                         }
                         if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue + 2) + "-" + parseInt(colValue) + "-" + engineAttr.right + "_undefined");
+                            needTile.push(parseInt(rowValue + 2) + "@" + parseInt(colValue) + "@" + engineAttr.right + "@undefined");
                         }
                     } else if (parseInt(rotateValue) === 2) {
                         if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.top_1 + "_undefined");
+                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.top_1 + "@undefined");
                         }
                         if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue) + "-" + engineAttr.top_2 + "_undefined");
+                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue) + "@" + engineAttr.top_2 + "@undefined");
                         }
                         if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.bottom_1 + "_" + 2);
+                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.bottom_1 + "@" + 2);
                         }
                         if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.bottom_2 + "_" + 2);
+                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue) + "@" + engineAttr.bottom_2 + "@" + 2);
                         }
                         if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue + 2) + "-" + engineAttr.left + "_" + 3);
+                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue + 2) + "@" + engineAttr.left + "@" + 3);
                         }
                         if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.right + "_" + 1);
+                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue - 1) + "@" + engineAttr.right + "@" + 1);
                         }
                     } else if (parseInt(rotateValue) === 3) {
                         if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue - 1) + "-" + engineAttr.top_1 + "_" + 1);
+                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue - 1) + "@" + engineAttr.top_1 + "@" + 1);
                         }
                         if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue) + "-" + parseInt(colValue - 1) + "-" + engineAttr.top_2 + "_" + 1);
+                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue - 1) + "@" + engineAttr.top_2 + "@" + 1);
                         }
                         if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 1) + "-" + engineAttr.bottom_1 + "_" + 3);
+                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.bottom_1 + "@" + 3);
                         }
                         if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "-" + parseInt(colValue + 2) + "-" + engineAttr.bottom_2 + "_" + 3);
+                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue + 2) + "@" + engineAttr.bottom_2 + "@" + 3);
                         }
                         if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue + 2) + "-" + parseInt(colValue) + "-" + engineAttr.left + "_0");
+                            needTile.push(parseInt(rowValue + 2) + "@" + parseInt(colValue) + "@" + engineAttr.left + "@undefined");
                         }
                         if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "-" + parseInt(colValue) + "-" + engineAttr.right + "_" + 2);
+                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue) + "@" + engineAttr.right + "@" + 2);
                         }
                     }
                     //이런식의 엔진이 필요로 하는 타일 정보가 담김 [ '1-8-2_blue_output', '3-7-3_orange_input', '2-6-1_blue_input' ]
                     //담은 정보를 포문 돌려서 
                     console.log(needTile);
-                    for (var k = 0; k < needTile.length; k++) {
-                        //받은 정보와 비교하기 위해 포문
-                        for (var m = 0; m < req.body.completeArray.length; m++) {
-                            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
-                            //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
-                            if (parseInt(needTile[k].split("-")[0]) + "-" + parseInt(needTile[k].split("-")[1]) === parseInt(req.body.completeArray[m].split("-")[1]) + "-" + parseInt(req.body.completeArray[m].split("-")[2])) {
-                                if (req.body.completeArray[m].split("-")[0] === "tile_white") {
-                                    if (needTile[k].split("-")[2].split("_")[2] === "output" && needTile[k].split("-")[2].split("_")[3] === req.body.completeArray[m].split("-")[3]) {
-                                        result ++;
-                                    }
-                                } else if (req.body.completeArray[m].split("-")[0] === "tile_black") {
-                                    if (needTile[k].split("-")[2].split("_")[0] === "black" && needTile[k].split("-")[2].split("_")[3] === req.body.completeArray[m].split("-")[3]) {
-                                        result ++;
-                                    }
-                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_1") {
-                                    console.log(req.body.completeArray[m]);
-                                    if (req.body.completeArray[m].split("-")[3] === "undefined") {
-                                        if (needTile[k].split("-")[2].split("_")[1] === req.body.completeArray[m].split("-")[3]) {
-                                            
+                    // for (var k = 0; k < needTile.length; k++) {
+                    //     //받은 정보와 비교하기 위해 포문
+                    //     for (var m = 0; m < req.body.completeArray.length; m++) {
+                    //         //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
+                    //         //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
+                    //         // var check = function() {
+                    //             if (parseInt(needTile[k].split("@")[0]) + "@" + parseInt(needTile[k].split("@")[1]) === parseInt(req.body.completeArray[m].split("@")[1]) + "@" + parseInt(req.body.completeArray[m].split("@")[2])) {
+                    //                 if (req.body.completeArray[m].split("@")[0] === "tile_white") {
+                    //                     if (needTile[k].split("@")[2].split("_")[2] === "output" && needTile[k].split("@")[3] === req.body.completeArray[m].split("@")[3]) {
+                    //                         result ++;
+                    //                     }
+                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_black") {
+                    //                     if (needTile[k].split("@")[2] === "black" && needTile[k].split("@")[3] === req.body.completeArray[m].split("@")[3]) {
+                    //                         result ++;
+                    //                     }
+                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_1") {
+                    //                     if (req.body.completeArray[m].split("@")[3] === needTile[k].split("@")[3]) {
+                    //                         console.log(req.body.completeArray[m]);
+                    //                         console.log(needTile[k]);
+                    //                         //needTile[k].split("@")[1] = parseInt(needTile[k].split("@")[1] + 1);
+                    //                         console.log(parseInt(needTile[k].split("@")[1]) + 1);
+                    //                         console.log(needTile[k].split("@")[1]);
+                    //                         if (needTile[k].split("@")[3] === "undefined") {
 
-                                        } else {
-                                            res.send({ result: "위로 가는 타일이 연결 안됨" });
-                                            break;
-                                        }
-                                    } else if (parseInt(req.body.completeArray[m].split("-")[3]) === 1) {
-                                        if (parseInt(needTile[k].split("-")[2].split("_")[1]) === parseInt(req.body.completeArray[m].split("-")[3])) {
-                                            
-                                        } else {
-                                            res.send({ result: "오른쪽으로 가는 타일이 연결 안됨" });
-                                            break;
-                                        }
-
-                                    } else if (parseInt(req.body.completeArray[m].split("-")[3]) === 2) {
-                                        if (parseInt(needTile[k].split("-")[2].split("_")[1]) === parseInt(req.body.completeArray[m].split("-")[3])) {
-                                            
-                                        } else {
-                                            res.send({ result: "아래로 가는 타일이 연결 안됨" });
-                                            break;
-                                        }
-
-                                    } else if (parseInt(req.body.completeArray[m].split("-")[3]) === 3) {
-                                        if (parseInt(needTile[k].split("-")[2].split("_")[1]) === parseInt(req.body.completeArray[m].split("-")[3])) {
-                                            
-                                        } else {
-                                            res.send({ result: "왼쪽으로 가는 타일이 연결 안됨" });
-                                            break;
-                                        }
-
-                                    }
-                                    // console.log("way");
-                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_2") {
-                                    // console.log("way");
-                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_3") {
-                                    // console.log("way");
-                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_4") {
-                                    // console.log("way");
-                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_5") {
-                                    // console.log("way");
-                                } else if (req.body.completeArray[m].split("-")[0] === "tile_way_6") {
-                                    // console.log("way");
-                                // } else if (req.body.completeArray[m].split("-")[4] !== "new") {
-                                //     if () {
-                                //     } else {
-                                //         result = 0;    
-                                //     }
-                                } else {
-                                    if (needTile[k].split("-")[2].split("_")[1] === req.body.completeArray[m].split("tile_energy_")[1].split("-")[0]) {
-                                        result ++;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    // console.log(result);
+                    //                         }
+                    //                     }
+                    //                     // console.log("way");
+                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_2") {
+                    //                     // console.log("way");
+                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_3") {
+                    //                     // console.log("way");
+                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_4") {
+                    //                     // console.log("way");
+                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_5") {
+                    //                     // console.log("way");
+                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_6") {
+                    //                     // console.log("way");
+                    //                 // } else if (req.body.completeArray[m].split("@")[4] !== "new") {
+                    //                 //     if () {
+                    //                 //     } else {
+                    //                 //         result = 0;    
+                    //                 //     }
+                    //                 } else {
+                    //                     if (needTile[k].split("@")[2].split("_")[1] === req.body.completeArray[m].split("tile_energy_")[1].split("@")[0]) {
+                    //                         result ++;
+                    //                     }
+                    //                 }
+                    //             }
+                    //         // }
+                    //         // check();
+                    //     }
+                    // }
+                    console.log(result);
                     // console.log(req.body.completeArray);
                     if (result === needTile.length && result !== 0) {
                         for (var j = 0; j < req.body.completeArray.length; j++) {
-                            var tileValue = req.body.completeArray[j].split("-")[0];
-                            var rowValue = parseInt(req.body.completeArray[j].split("-")[1]);
-                            var colValue = parseInt(req.body.completeArray[j].split("-")[2]);
-                            var rotateValue = parseInt(req.body.completeArray[j].split("-")[3]);
-                            var savedValue = req.body.completeArray[j].split("-")[4];
+                            var tileValue = req.body.completeArray[j].split("@")[0];
+                            var rowValue = parseInt(req.body.completeArray[j].split("@")[1]);
+                            var colValue = parseInt(req.body.completeArray[j].split("@")[2]);
+                            var rotateValue = parseInt(req.body.completeArray[j].split("@")[3]);
+                            var savedValue = req.body.completeArray[j].split("@")[4];
                             var indexValue = 10 * (rowValue - 1) + colValue;
                             var memberValue = 0;
                             for (var i = 0; i < roomValue.member.length; i++) {
@@ -688,8 +666,8 @@ app.post('/ajaxSaveTile', function(req, res) {
                         });
                         break;
                     } else {
-                        console.log("에너지 유출 중");
-                        // res.send({ result: "에너지 유출 중" });
+                        // console.log("에너지 유출 중");
+                        res.send({ result: "에너지 유출 중", needTile: needTile });
                         break;
                     }
                 }
