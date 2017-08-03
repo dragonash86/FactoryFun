@@ -570,59 +570,17 @@ app.post('/ajaxSaveTile', function(req, res) {
                     }
                     //이런식의 엔진이 필요로 하는 타일 정보가 담김 [ '1-8-2_blue_output', '3-7-3_orange_input', '2-6-1_blue_input' ]
                     //담은 정보를 포문 돌려서 
-                    console.log(needTile);
-                    // for (var k = 0; k < needTile.length; k++) {
-                    //     //받은 정보와 비교하기 위해 포문
-                    //     for (var m = 0; m < req.body.completeArray.length; m++) {
-                    //         //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
-                    //         //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
-                    //         // var check = function() {
-                    //             if (parseInt(needTile[k].split("@")[0]) + "@" + parseInt(needTile[k].split("@")[1]) === parseInt(req.body.completeArray[m].split("@")[1]) + "@" + parseInt(req.body.completeArray[m].split("@")[2])) {
-                    //                 if (req.body.completeArray[m].split("@")[0] === "tile_white") {
-                    //                     if (needTile[k].split("@")[2].split("_")[2] === "output" && needTile[k].split("@")[3] === req.body.completeArray[m].split("@")[3]) {
-                    //                         result ++;
-                    //                     }
-                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_black") {
-                    //                     if (needTile[k].split("@")[2] === "black" && needTile[k].split("@")[3] === req.body.completeArray[m].split("@")[3]) {
-                    //                         result ++;
-                    //                     }
-                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_1") {
-                    //                     if (req.body.completeArray[m].split("@")[3] === needTile[k].split("@")[3]) {
-                    //                         console.log(req.body.completeArray[m]);
-                    //                         console.log(needTile[k]);
-                    //                         //needTile[k].split("@")[1] = parseInt(needTile[k].split("@")[1] + 1);
-                    //                         console.log(parseInt(needTile[k].split("@")[1]) + 1);
-                    //                         console.log(needTile[k].split("@")[1]);
-                    //                         if (needTile[k].split("@")[3] === "undefined") {
-
-                    //                         }
-                    //                     }
-                    //                     // console.log("way");
-                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_2") {
-                    //                     // console.log("way");
-                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_3") {
-                    //                     // console.log("way");
-                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_4") {
-                    //                     // console.log("way");
-                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_5") {
-                    //                     // console.log("way");
-                    //                 } else if (req.body.completeArray[m].split("@")[0] === "tile_way_6") {
-                    //                     // console.log("way");
-                    //                 // } else if (req.body.completeArray[m].split("@")[4] !== "new") {
-                    //                 //     if () {
-                    //                 //     } else {
-                    //                 //         result = 0;    
-                    //                 //     }
-                    //                 } else {
-                    //                     if (needTile[k].split("@")[2].split("_")[1] === req.body.completeArray[m].split("tile_energy_")[1].split("@")[0]) {
-                    //                         result ++;
-                    //                     }
-                    //                 }
-                    //             }
-                    //         // }
-                    //         // check();
-                    //     }
-                    // }
+                    console.log("needTile: ", needTile);
+                    for (var k = 0; k < needTile.length; k++) {
+                        var needTileRow = parseInt(needTile[k].split("@")[0]);
+                        var needTileCol = parseInt(needTile[k].split("@")[1]);
+                        var needTileType = needTile[k].split("@")[2];
+                        var needTileInputOrOutput = needTile[k].split("@")[2].split("_")[2];
+                        var needTileRotate = needTile[k].split("@")[3];
+                        console.log(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, needTileType.split("_")[1]);
+                        result += CheckTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, req.body.completeArray);
+                        
+                    }
                     console.log(result);
                     // console.log(req.body.completeArray);
                     if (result === needTile.length && result !== 0) {
@@ -699,4 +657,85 @@ function shuffleRandom(n) {
         ar[rnum] = temp;
     }
     return ar;
+}
+
+function CheckTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, completeArray)
+{
+    console.log("completeArray:",completeArray, needTileInputOrOutput);
+    //받은 정보와 비교하기 위해 포문
+    for (var m = 0; m < completeArray.length; m++) {
+        //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
+        //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
+        if (needTileRow + "@" + needTileCol === parseInt(completeArray[m].split("@")[1]) + "@" + parseInt(completeArray[m].split("@")[2])) {
+            if (completeArray[m].split("@")[0] === "tile_white") {
+                if (needTileInputOrOutput === "output" && needTileRotate === completeArray[m].split("@")[3]) {
+                    return 1;
+                }
+            } else if (completeArray[m].split("@")[0] === "tile_black") {
+                if (needTileType === "black" && needTileRotate === completeArray[m].split("@")[3]) {
+                    return 1;
+                }
+            } else if (completeArray[m].split("@")[0] === "tile_way_1") {
+                //tile_way_1같은 경우는 Rotate가 일치하면 연결이 됨 
+                // console.log(needTileInputOrOutput === undefined);
+                // console.log(needTileInputOrOutput);
+                // console.log(completeArray[m].split("@")[3] === needTileRotate);
+                // console.log(needTileInputOrOutput === undefined && completeArray[m].split("@")[3] === needTileRotate);
+                if ((needTileInputOrOutput === "input" && 3-parseInt(completeArray[m].split("@")[3]) === parseInt(needTileRotate))
+                || (needTileInputOrOutput === undefined && completeArray[m].split("@")[3] === needTileRotate)) {
+                    //Rotate값에 따라 다음에 체크해야할 타일이 바뀌겠지
+                    if(needTileRotate === "undefined") {
+                        needTileRow++;
+                    } else if(needTileRotate === "1") {
+                        needTileCol--;
+                     } else if(needTileRotate === "2") {
+                        needTileRow--;
+                    } else if(needTileRotate === "3") {
+                        needTileCol++;
+                    } 
+
+                    //증가된 Row, Col이 1에서 9사이 값인지 체크
+                    if (needTileRow > 0 && needTileRow < 10 && needTileCol > 0 && needTileCol < 10) {
+                        return CheckTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, completeArray);
+                    }
+                    else {
+                        return 0;
+                    }
+                    //console.log(completeArray[m]);
+                    //console.log(needTile[k]);
+                    //needTile[k].split("@")[1] = parseInt(needTile[k].split("@")[1] + 1);
+                    // console.log(parseInt(needTile[k].split("@")[1]) + 1);
+                    // console.log(needTile[k].split("@")[1]);
+                    // if (needTile[k].split("@")[3] === "undefined") {
+
+                    // }
+                }
+                // console.log("way");
+            } else if (completeArray[m].split("@")[0] === "tile_way_2") {
+                // console.log("way");
+            } else if (completeArray[m].split("@")[0] === "tile_way_3") {
+                // console.log("way");
+            } else if (completeArray[m].split("@")[0] === "tile_way_4") {
+                // console.log("way");
+            } else if (completeArray[m].split("@")[0] === "tile_way_5") {
+                // console.log("way");
+            } else if (completeArray[m].split("@")[0] === "tile_way_6") {
+                // console.log("way");
+            // } else if (completeArray[m].split("@")[4] !== "new") {
+            //     if () {
+            //     } else {
+            //         result = 0;    
+            //     }
+            } else {
+                if (needTileType.split("_")[1] === completeArray[m].split("tile_energy_")[1].split("@")[0]) {
+                    return 1;
+                }
+            }
+        }
+            
+        // }
+        // check();
+    }
+    
+    return 0;
 }
