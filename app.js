@@ -578,7 +578,7 @@ app.post('/ajaxSaveTile', function(req, res) {
                         var needTileInputOrOutput = needTile[k].split("@")[2].split("_")[2];
                         var needTileRotate = needTile[k].split("@")[3];
                         console.log(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, needTileType.split("_")[1]);
-                        result += CheckTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, req.body.completeArray);
+                        result += checkTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, req.body.completeArray);
                         
                     }
                     console.log(result);
@@ -659,8 +659,7 @@ function shuffleRandom(n) {
     return ar;
 }
 
-function CheckTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, completeArray)
-{
+function checkTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, completeArray) {
     console.log("completeArray:",completeArray, needTileInputOrOutput);
     //받은 정보와 비교하기 위해 포문
     for (var m = 0; m < completeArray.length; m++) {
@@ -696,7 +695,7 @@ function CheckTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput
 
                     //증가된 Row, Col이 1에서 9사이 값인지 체크
                     if (needTileRow > 0 && needTileRow < 10 && needTileCol > 0 && needTileCol < 10) {
-                        return CheckTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, completeArray);
+                        return checkTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, completeArray);
                     }
                     else {
                         return 0;
