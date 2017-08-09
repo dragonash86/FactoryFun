@@ -122,60 +122,60 @@
 		<div class="wrap_tile">
 			<ul>
 				<% for (var m = 0; m < room.player[k].tile_white; m++) { %>
-				<li><img src="/images/tile_white.jpg" class="drag tile" alt="tile_white" /></li>
+				<li><img src="/images/tile_white.jpg" class="drag tile rotate_0" alt="tile_white" /></li>
 				<% } %>
 				<% for (var o = 0; o < room.player[k].tile_energy_blue; o++) { %>
-				<li><img src="/images/tile_energy_blue.jpg" class="drag tile" alt="tile_energy_blue" /></li>
+				<li><img src="/images/tile_energy_blue.jpg" class="drag tile rotate_0" alt="tile_energy_blue" /></li>
 				<% } %>
 				<% for (var p = 0; p < room.player[k].tile_energy_green; p++) { %>
-				<li><img src="/images/tile_energy_green.jpg" class="drag tile" alt="tile_energy_green" /></li>
+				<li><img src="/images/tile_energy_green.jpg" class="drag tile rotate_0" alt="tile_energy_green" /></li>
 				<% } %>
 				<% for (var q = 0; q < room.player[k].tile_energy_orange; q++) { %>
-				<li><img src="/images/tile_energy_orange.jpg" class="drag tile" alt="tile_energy_orange" /></li>
+				<li><img src="/images/tile_energy_orange.jpg" class="drag tile rotate_0" alt="tile_energy_orange" /></li>
 				<% } %>
 				<% for (var r = 0; r < room.player[k].tile_energy_red; r++) { %>
-				<li><img src="/images/tile_energy_red.jpg" class="drag tile" alt="tile_energy_red" /></li>
+				<li><img src="/images/tile_energy_red.jpg" class="drag tile rotate_0" alt="tile_energy_red" /></li>
 				<% } %>
 				<% for (var s = 0; s < room.player[k].tile_option; s++) { %>
-				<li><img src="/images/tile_option.jpg" class="drag tile_engine" alt="tile_option" /></li>
+				<li><img src="/images/tile_option.jpg" class="drag tile_engine rotate_0" alt="tile_option" /></li>
 				<% } %>
 				<li>
 					<% for (var t = 0; t < room.tile_black; t++) { %>
-					<img src="/images/tile_black.jpg" class="drag tile tile_black" alt="tile_black" />
+					<img src="/images/tile_black.jpg" class="drag tile tile_black rotate_0" alt="tile_black" />
 					<% } %>
 				</li>
 				<li>
 					<% for (var u = 0; u < room.tile_way_1; u++) { %>
-					<img src="/images/tile_way_1.jpg" class="drag tile tile_way_1" alt="tile_way_1" />
+					<img src="/images/tile_way_1.jpg" class="drag tile tile_way_1 rotate_0" alt="tile_way_1" />
 					<% } %>
 				</li>
 				<li>
 					<% for (var v = 0; v < room.tile_way_2; v++) { %>
-					<img src="/images/tile_way_2.jpg" class="drag tile tile_way_2" alt="tile_way_2" />
+					<img src="/images/tile_way_2.jpg" class="drag tile tile_way_2 rotate_0" alt="tile_way_2" />
 					<% } %>
 				</li>
 				<li>
 					<% for (var w = 0; w < room.tile_way_3; w++) { %>
-					<img src="/images/tile_way_3.jpg" class="drag tile tile_way_3" alt="tile_way_3" />
+					<img src="/images/tile_way_3.jpg" class="drag tile tile_way_3 rotate_0" alt="tile_way_3" />
 					<% } %>
 				</li>
 				<li>
 					<% for (var x = 0; x < room.tile_way_4; x++) { %>
-					<img src="/images/tile_way_4.jpg" class="drag tile tile_way_4" alt="tile_way_4" />
+					<img src="/images/tile_way_4.jpg" class="drag tile tile_way_4 rotate_0" alt="tile_way_4" />
 					<% } %>
 				</li>
 				<li>
 					<% for (var y = 0; y < room.tile_way_5; y++) { %>
-					<img src="/images/tile_way_5.jpg" class="drag tile tile_way_5" alt="tile_way_5" />
+					<img src="/images/tile_way_5.jpg" class="drag tile tile_way_5 rotate_0" alt="tile_way_5" />
 					<% } %>
 				</li>
 				<li>
 					<% for (var z = 0; z < room.tile_way_6; z++) { %>
-					<img src="/images/tile_way_6.jpg" class="drag tile tile_way_6" alt="tile_way_6" />
+					<img src="/images/tile_way_6.jpg" class="drag tile tile_way_6 rotate_0" alt="tile_way_6" />
 					<% } %>
 				</li>
 				<% if (room.player[0].select_engine !== "아직") { %>
-				<li><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.jpg" class="drag tile_engine selected_engine" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></li>
+				<li><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.jpg" class="drag tile_engine selected_engine rotate_0" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></li>
 				<% } %>
 				<% 
 					for (var t = 0; t < room.player[0].build.length; t++) {
@@ -262,7 +262,7 @@
 		}
 		$(".drag").dblclick(function() {
 			if (!$(this).hasClass("rotate_1") && !$(this).hasClass("rotate_2") && !$(this).hasClass("rotate_3")) {
-				$(this).addClass("rotate_1");
+				$(this).addClass("rotate_1").removeClass("rotate_0");
 			} else if ($(this).hasClass("rotate_1")) {
 				$(this).addClass("rotate_2");
 				$(this).removeClass("rotate_1");
@@ -270,32 +270,24 @@
 				$(this).addClass("rotate_3");
 				$(this).removeClass("rotate_2");
 			} else if ($(this).hasClass("rotate_3")) {
-				$(this).removeClass("rotate_3");
+				$(this).removeClass("rotate_3").addClass("rotate_0");
 			}
 		});
 		$(".complete").click(function(e) {
 			e.preventDefault();
-			var complete = new Array("sendTile");
+			var complete = new Array();
 			for (var i = 0; i < $(".wrap_tile img").length; i++) {
-				// if ($(".wrap_tile img")[i].alt === "tile_white" && $(".wrap_tile img").eq(i).hasClass("saved")) {
-				// 	console.log(1);
-				// }
-				// if ($(".wrap_tile img").eq(i).hasClass("saved")) {
-				// 	console.log(2);
-				// }
-				// if ($(".wrap_tile img")[i].id && !$(".wrap_tile img").eq(i).hasClass("saved")) { //saved를 체크 안하면 기존에 있는 타일들 활용을 못하는 문제
 				if ($(".wrap_tile img")[i].id) {
 					if ($(".wrap_tile img").eq(i).hasClass("saved")) {
-						complete.push($(".wrap_tile img")[i].alt + "@" + $(".wrap_tile img")[i].id + "@" + $(".wrap_tile img")[i].className.split("rotate_")[1] + "@saved");
+						complete.push({ name: $(".wrap_tile img")[i].alt, row: parseInt($(".wrap_tile img")[i].id.split("@")[0]), col: parseInt($(".wrap_tile img")[i].id.split("@")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "no" });
 					} else {
-						complete.push($(".wrap_tile img")[i].alt + "@" + $(".wrap_tile img")[i].id + "@" + $(".wrap_tile img")[i].className.split("rotate_")[1] + "@new");
+						complete.push({ name: $(".wrap_tile img")[i].alt, row: parseInt($(".wrap_tile img")[i].id.split("@")[0]), col: parseInt($(".wrap_tile img")[i].id.split("@")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "yes" });
 					}
 				}
 			}
-			//console.log(complete);
+			console.log(complete[0].tileName);
 			if (complete.length > 0) {
-				jQuery.ajaxSettings.traditional = true;
-				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { completeArray: complete }, function(data) {
+				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { "complete": complete }, function(data) {
 					if (data.result === "성공") {
 						alert("배치 완료! " + data.score + "점 획득");
 						location.reload();
@@ -303,13 +295,12 @@
 						//alert(data.result);
 						console.log(data.needTile);
 						for (var i = 0; i < data.needTile.length; i++) {
-							var rowValue = parseInt(data.needTile[i].split("@")[0]);
-	                        var colValue = parseInt(data.needTile[i].split("@")[1]);
-	                        var color = data.needTile[i].split("@")[2].split("_")[1];
-	                        $(".board #td_" + rowValue + "_" + colValue).addClass(color);
-	                        console.log(color);
-	                        if (data.needTile[i].split("@")[2] === "black") {
-	                        	$(".board #td_" + rowValue + "_" + colValue).addClass("black");
+							var row = data.needTile[i].row;
+							var col = data.needTile[i].col;
+	                        var color = data.needTile[i].type.split("_")[1];
+	                        $(".board #td_" + row + "_" + col).addClass(color);
+	                        if (data.needTile[i].type === "black") {
+	                        	$(".board #td_" + row + "_" + col).addClass("black");
 	                        }
 						}
 						$(".drag").drop(function(ev, dd) {

@@ -5,12 +5,12 @@ var session = require('express-session');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var NaverStrategy = require('passport-naver').Strategy;
-var flash = require('connect-flash');
 var app = express();
 var server = require('http').Server(app);
 var Rndld = null;
 app.use(express.static(__dirname + '/public'));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
 app.use(session({
     secret: 'FactoryFunFactoryFunFactoryFunFactoryFun',
     resave: false,
@@ -18,7 +18,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
 app.engine('html', require('ejs').__express);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -112,46 +111,6 @@ passport.use(new LocalStrategy({ passReqToCallback: true }, function(req, userna
         return done(null, user);
     });
 }));
-//네이버 로그인
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/login');
-}
-app.get('/account', ensureAuthenticated, function(req, res) {
-    res.render('account', { user: req.user });
-});
-passport.use(new NaverStrategy({
-    clientID: "_SX5sVw5qJDBFgMAsJ8p",
-    clientSecret: "JUbcQKTuCB",
-    callbackURL: "/login/naver"
-}, function(accessToken, refreshToken, profile, done) {
-    User.findOne({ email: profile._json.email }, function(err, user) {
-        if (!user) {
-            var user = new User({
-                win: 0,
-                lose: 0,
-                email: profile.emails[0].value,
-                sns: "naver"
-            });
-            user.save(function(err) {
-                if (err) console.log(err);
-                return done(err, user);
-            });
-        } else {
-            return done(err, user);
-        }
-    });
-
-}));
-app.get('/login/naver', passport.authenticate('naver'), function(req, res) {
-    if (req.user.user_nick !== "") {
-        res.render('main', { user: req.user });
-    } else {
-        res.render('join_nick', { user: req.user });
-    }
-});
 app.get('/join_nick', function(req, res) {
     res.render('join_nick', { user: req.user });
 });
@@ -160,10 +119,6 @@ app.post('/joinNickForm', function(req, res) {
         res.render('main', { user: req.user });
     });
 });
-app.get('/login/naver/callback', passport.authenticate('naver', {
-    successRedirect: '/',
-    failureRedirect: '/login'
-}));
 app.post('/loginForm', passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/login',
@@ -463,133 +418,65 @@ app.post('/giveUp', function(req, res) {
 });
 app.post('/ajaxSaveTile', function(req, res) {
     if (req.user) {
-        var result = 0;
-        var posEngine = "";
         var needTile = new Array();
         var countScore = new Array();
+        var posTypeRowNum = new Array();
+        var posTypeColNum = new Array();
+        var posTypeRotateNum = new Array();
+        var posType = ["top_1", "top_2", "bottom_1", "bottom_2", "left", "right"];
+        var result = 0;
+        var engineNum, engineAttr, row, col, rotate, needTileRow, needTileCol, needTileRotate, needTileType, needTileInputOrOutput;
         Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
-            //배치 완료 버튼 누르고 받아온 배열을 그 크기만큼 포문 돌림 데이터 형식은
-            // [ 'tile_white-1-4-undefined',
-            //   'tile_energy_green-1-9-undefined',
-            //   'tile_engine_41-2-6-undefined' ] 마지막 언디파인드는 rotate값
-            console.log(req.body.completeArray);
-            for (var j = 0; j < req.body.completeArray.length; j++) {
-                //그 타일의 세로좌표 값
-                var rowValue = parseInt(req.body.completeArray[j].split("@")[1]);
-                //그 타일의 가로좌표 값
-                var colValue = parseInt(req.body.completeArray[j].split("@")[2]);
-                //그 타일의 회전 수
-                var rotateValue = req.body.completeArray[j].split("@")[3];
-                // var memberValue = 0;
-                //player[n] 에 접근하기 위해 그 게임의 참가자 수로 for문 돌림
-                for (var i = 0; i < roomValue.member.length; i++) {
-                    if (roomValue.member[i] === req.user.user_nick) memberValue = i;
-                }
+            for (var j = 0; j < req.body.complete.length; j++) {
                 //받아온 배열을 _engine_으로 자르고 엔진의 번호를 구함. 
-                if (req.body.completeArray[j].split("tile_engine_")[1]) {
+                if (req.body.complete[j].name.split("tile_engine_")[1]) {
                     //엔진의 번호를 engineAttr에 담음
-                    var engineNum = req.body.completeArray[j].split("@")[0].split("tile_engine_")[1];
-                    var engineAttr = roomValue.tile_engine[engineNum];
-                    //각 포지션의 값이 비어있지 않다면 필요한 타일 정보를 담게 함.
-                    if (rotateValue === "undefined") {
-                        if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue) + "@" + engineAttr.top_1 + "@" + 2);
-                        }
-                        if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.top_2 + "@" + 2);
-                        }
-                        if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue) + "@" + engineAttr.bottom_1 + "@undefined");
-                        }
-                        if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.bottom_2 + "@undefined");
-                        }
-                        if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue - 1) + "@" + engineAttr.left + "@" + 1);
-                        }
-                        if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue + 2) + "@" + engineAttr.right + "@" + 3);
-                        }
-                    } else if (parseInt(rotateValue) === 1) {
-                        if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue + 1) + "@" + engineAttr.top_1 + "@" + 3);
-                        }
-                        if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.top_2 + "@" + 3);
-                        }
-                        if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue - 1) + "@" + engineAttr.bottom_1 + "@" + 1);
-                        }
-                        if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue - 1) + "@" + engineAttr.bottom_2 + "@" + 1);
-                        }
-                        if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue) + "@" + engineAttr.left + "@" + 2);
-                        }
-                        if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue + 2) + "@" + parseInt(colValue) + "@" + engineAttr.right + "@undefined");
-                        }
-                    } else if (parseInt(rotateValue) === 2) {
-                        if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.top_1 + "@undefined");
-                        }
-                        if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue) + "@" + engineAttr.top_2 + "@undefined");
-                        }
-                        if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.bottom_1 + "@" + 2);
-                        }
-                        if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue) + "@" + engineAttr.bottom_2 + "@" + 2);
-                        }
-                        if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue + 2) + "@" + engineAttr.left + "@" + 3);
-                        }
-                        if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue - 1) + "@" + engineAttr.right + "@" + 1);
-                        }
-                    } else if (parseInt(rotateValue) === 3) {
-                        if (engineAttr.top_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue - 1) + "@" + engineAttr.top_1 + "@" + 1);
-                        }
-                        if (engineAttr.top_2 !== "") {
-                            needTile.push(parseInt(rowValue) + "@" + parseInt(colValue - 1) + "@" + engineAttr.top_2 + "@" + 1);
-                        }
-                        if (engineAttr.bottom_1 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue + 1) + "@" + engineAttr.bottom_1 + "@" + 3);
-                        }
-                        if (engineAttr.bottom_2 !== "") {
-                            needTile.push(parseInt(rowValue + 1) + "@" + parseInt(colValue + 2) + "@" + engineAttr.bottom_2 + "@" + 3);
-                        }
-                        if (engineAttr.left !== "") {
-                            needTile.push(parseInt(rowValue + 2) + "@" + parseInt(colValue) + "@" + engineAttr.left + "@undefined");
-                        }
-                        if (engineAttr.right !== "") {
-                            needTile.push(parseInt(rowValue - 1) + "@" + parseInt(colValue) + "@" + engineAttr.right + "@" + 2);
+                    engineNum = req.body.complete[j].name.split("tile_engine_")[1];
+                    engineAttr = roomValue.tile_engine[engineNum];
+                    row = parseInt(req.body.complete[j].row);
+                    col = parseInt(req.body.complete[j].col);
+                    rotate = parseInt(req.body.complete[j].rotate);
+                    if (rotate === 0) {
+                        posTypeRowNum = [-1, -1, 1, 1, 0, 0];
+                        posTypeColNum = [0, 1, 0, 1, -1, 2];
+                        posTypeRotateNum = [2, 2, 0, 0, 3, 3];
+                    } else if (rotate === 1) {
+                        posTypeRowNum = [0, 1, 0, 1, -1, 2];
+                        posTypeColNum = [1, 1, -1, -1, 0, 0];
+                        posTypeRotateNum = [3, 3, 1, 1, 2, 0];
+                    } else if (rotate === 2) {
+                        posTypeRowNum = [1, 1, -1, -1, 0, 0];
+                        posTypeColNum = [1, 0, 1, 0, 2, -1];
+                        posTypeRotateNum = [0, 0, 2, 2, 3, 1];
+                    } else if (rotate === 3) {
+                        posTypeRowNum = [1, 0, 1, 1, 2, -1];
+                        posTypeColNum = [-1, -1, 1, 2, 0, 0];
+                        posTypeRotateNum = [1, 1, 3, 3, 0, 2];
+                    }
+                    for (var i = 0; i < posType.length; i++) {
+                        if (engineAttr[posType[i]] !== "") {
+                            needTile.push({ row: row + posTypeRowNum[i], col: col + posTypeColNum[i], type: engineAttr[posType[i]], rotate: posTypeRotateNum[i] });
                         }
                     }
-                    //이런식의 엔진이 필요로 하는 타일 정보가 담김 [ '1-8-2_blue_output', '3-7-3_orange_input', '2-6-1_blue_input' ]
-                    //담은 정보를 포문 돌려서 
-                    console.log("needTile: ", needTile);
-                    for (var k = 0; k < needTile.length; k++) {
-                        var needTileRow = parseInt(needTile[k].split("@")[0]);
-                        var needTileCol = parseInt(needTile[k].split("@")[1]);
-                        var needTileType = needTile[k].split("@")[2];
-                        var needTileInputOrOutput = needTile[k].split("@")[2].split("_")[2];
-                        var needTileRotate = needTile[k].split("@")[3];
-                        console.log(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, needTileType.split("_")[1]);
-                        result += checkTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, req.body.completeArray);
-                        
-                    }
+                    checkTile(needTile, req.body.complete);
+                    result += checkTile(needTile, req.body.complete, result);
+                    // for (var k = 0; k < needTile.length; k++) {
+                    //     
+                    //     // console.log(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, needTileType.split("_")[1]);
+                    //     // result += checkTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, req.body.complete);
+                        // checkTile(needTile, req.body.complete);
+                    //     // console.log("checkTile() 후 다시 돌아온 값 : ", checkTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, req.body.complete));
+                    //     // console.log("checkTile - needTileCol 재확인 : ", needTileCol);
+                    // }
+                    // console.log("checkTile - needTileCol 재확인() : ", checkTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, req.body.complete));
                     console.log(result);
-                    // console.log(req.body.completeArray);
                     if (result === needTile.length && result !== 0) {
-                        for (var j = 0; j < req.body.completeArray.length; j++) {
-                            var tileValue = req.body.completeArray[j].split("@")[0];
-                            var rowValue = parseInt(req.body.completeArray[j].split("@")[1]);
-                            var colValue = parseInt(req.body.completeArray[j].split("@")[2]);
-                            var rotateValue = parseInt(req.body.completeArray[j].split("@")[3]);
-                            var savedValue = req.body.completeArray[j].split("@")[4];
+                        for (var j = 0; j < req.body.complete.length; j++) {
+                            var tileValue = req.body.complete[j].split("@")[0];
+                            var rowValue = parseInt(req.body.complete[j].split("@")[1]);
+                            var colValue = parseInt(req.body.complete[j].split("@")[2]);
+                            var rotateValue = parseInt(req.body.complete[j].split("@")[3]);
+                            var savedValue = req.body.complete[j].split("@")[4];
                             var indexValue = 10 * (rowValue - 1) + colValue;
                             var memberValue = 0;
                             for (var i = 0; i < roomValue.member.length; i++) {
@@ -607,7 +494,7 @@ app.post('/ajaxSaveTile', function(req, res) {
                             if (savedValue === "saved") {
                                 incQuery[incKeyTile] = 0;
                             } else {
-                                countScore.push(req.body.completeArray[j]);
+                                countScore.push(req.body.complete[j]);
                                 incQuery[incKeyTile] = -1;
                                 // console.log(countScore);
                             }
@@ -616,15 +503,16 @@ app.post('/ajaxSaveTile', function(req, res) {
                         var incQuery = { round: 1 };
                         var incKeyScore = "player." + memberValue + ".score";
                         incQuery[incKeyScore] = parseInt(engineAttr.score - countScore.length + 1);
-                        console.log(engineAttr.score,"engineAttr.score");
-                        console.log(countScore.length,"countScore.length");
-                        console.log(incQuery,"incQuery");
+                        // console.log(engineAttr.score,"engineAttr.score");
+                        // console.log(countScore.length,"countScore.length");
+                        // console.log(incQuery,"incQuery");
                         Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': "아직" }, $inc: incQuery }, function(err) {
                             res.send({ result: "성공", score: incQuery[incKeyScore] });
                         });
                         break;
                     } else {
-                        // console.log("에너지 유출 중");
+                        console.log("에너지 유출 중");
+                        // console.log("checkTile - needTileCol 재확인() : ", checkTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, req.body.complete));
                         res.send({ result: "에너지 유출 중", needTile: needTile });
                         break;
                     }
@@ -659,82 +547,83 @@ function shuffleRandom(n) {
     return ar;
 }
 
-function checkTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, completeArray) {
-    console.log("completeArray:",completeArray, needTileInputOrOutput);
-    //받은 정보와 비교하기 위해 포문
-    for (var m = 0; m < completeArray.length; m++) {
-        //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
-        //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
-        if (needTileRow + "@" + needTileCol === parseInt(completeArray[m].split("@")[1]) + "@" + parseInt(completeArray[m].split("@")[2])) {
-            if (completeArray[m].split("@")[0] === "tile_white") {
-                if (needTileInputOrOutput === "output" && needTileRotate === completeArray[m].split("@")[3]) {
-                    return 1;
-                }
-            } else if (completeArray[m].split("@")[0] === "tile_black") {
-                if (needTileType === "black" && needTileRotate === completeArray[m].split("@")[3]) {
-                    return 1;
-                }
-            } else if (completeArray[m].split("@")[0] === "tile_way_1") {
-                //tile_way_1같은 경우는 Rotate가 일치하면 연결이 됨 
-                // console.log(needTileInputOrOutput === undefined);
-                // console.log(needTileInputOrOutput);
-                // console.log(completeArray[m].split("@")[3] === needTileRotate);
-                // console.log(needTileInputOrOutput === undefined && completeArray[m].split("@")[3] === needTileRotate);
-                if ((needTileInputOrOutput === "input" && 3-parseInt(completeArray[m].split("@")[3]) === parseInt(needTileRotate))
-                || (needTileInputOrOutput === undefined && completeArray[m].split("@")[3] === needTileRotate)) {
-                    //Rotate값에 따라 다음에 체크해야할 타일이 바뀌겠지
-                    if(needTileRotate === "undefined") {
-                        needTileRow++;
-                    } else if(needTileRotate === "1") {
-                        needTileCol--;
-                     } else if(needTileRotate === "2") {
-                        needTileRow--;
-                    } else if(needTileRotate === "3") {
-                        needTileCol++;
-                    } 
-
-                    //증가된 Row, Col이 1에서 9사이 값인지 체크
-                    if (needTileRow > 0 && needTileRow < 10 && needTileCol > 0 && needTileCol < 10) {
-                        return checkTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, completeArray);
+function checkTile(needTile, complete, result) {
+    console.log("needTile : ", needTile);
+    console.log("complete : ", complete);
+    console.log(result);
+    for (var m = 0; m < complete.length; m++) {
+        row = parseInt(complete[m].row);
+        col = parseInt(complete[m].col);
+        rotate = parseInt(complete[m].rotate);
+        name = complete[m].name;
+        for (var n = 0; n < needTile.length; n++) {
+            needTileRow = needTile[n].row;
+            needTileCol = needTile[n].col;
+            needTileRotate = needTile[n].rotate;
+            needTileType = needTile[n].type;
+            needTileInputOrOutput = needTile[n].type.split("_")[2];
+            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
+            //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
+            if (needTileRow === row && needTileCol === col) {
+                if (name === "tile_white") {
+                    if (needTileInputOrOutput === "output" && needTileRotate === rotate) {
+                        result ++;
+                        console.log("화이트 타일 result 증가", result);
                     }
-                    else {
-                        return 0;
+                } else if (name === "tile_black") {
+                    if (needTileType === "black" && needTileRotate === complete[m].split("@")[3]) {
+                        result ++;
+                        console.log("블랙 타일 result 증가", result);
                     }
-                    //console.log(completeArray[m]);
-                    //console.log(needTile[k]);
-                    //needTile[k].split("@")[1] = parseInt(needTile[k].split("@")[1] + 1);
-                    // console.log(parseInt(needTile[k].split("@")[1]) + 1);
-                    // console.log(needTile[k].split("@")[1]);
-                    // if (needTile[k].split("@")[3] === "undefined") {
-
+                } else if (name === "tile_way_1") {
+                    console.log(needTileInputOrOutput);
+                    // if ((needTileInputOrOutput === "input" && 3 - parseInt(complete[m].split("@")[3]) === needTileRotate) || (needTileInputOrOutput === undefined && complete[m].split("@")[3] === needTileRotate)) {
+                    // if (needTileInputOrOutput === "input") {
+                        if(needTileRotate === 0) {
+                            needTile[n].row ++;
+                        } else if(needTileRotate === 1) {
+                            needTile[n].col --;
+                        } else if(needTileRotate === 2) {
+                            needTile[n].row --;
+                        } else if(needTileRotate === 3) {
+                            needTile[n].col ++;
+                        }
+                        return needTile;
                     // }
-                }
-                // console.log("way");
-            } else if (completeArray[m].split("@")[0] === "tile_way_2") {
-                // console.log("way");
-            } else if (completeArray[m].split("@")[0] === "tile_way_3") {
-                // console.log("way");
-            } else if (completeArray[m].split("@")[0] === "tile_way_4") {
-                // console.log("way");
-            } else if (completeArray[m].split("@")[0] === "tile_way_5") {
-                // console.log("way");
-            } else if (completeArray[m].split("@")[0] === "tile_way_6") {
-                // console.log("way");
-            // } else if (completeArray[m].split("@")[4] !== "new") {
-            //     if () {
-            //     } else {
-            //         result = 0;    
-            //     }
-            } else {
-                if (needTileType.split("_")[1] === completeArray[m].split("tile_energy_")[1].split("@")[0]) {
-                    return 1;
+                } else if (name === "tile_way_2") {
+                    if(needTileRotate === "undefined") {
+                        console.log("tile_way_2에 undefined");
+                        needTile[n].row ++;
+                    } else if(needTileRotate === "1") {
+                        console.log("tile_way_2에 1");
+                        needTile[n].row ++;
+                        needTile[n].col --;
+                    } else if(needTileRotate === "2") {
+                        console.log("tile_way_2에 2");
+                        needTile[n].row ++;
+                        needTile[n].col ++;
+                    } else if(needTileRotate === "3") {
+                        console.log("tile_way_2에 3");
+                        needTileRotate += 2;
+                        needTile[n].row --;
+                    }
+                    return checkTile(needTileRow, needTileCol, needTileType, needTileInputOrOutput, needTileRotate, complete);
+                } else if (name === "tile_way_3") {
+                    // console.log("way");
+                } else if (name === "tile_way_4") {
+                    // console.log("way");
+                } else if (name === "tile_way_5") {
+                    // console.log("way");
+                } else if (name === "tile_way_6") {
+                    // console.log("way");
+                } else {
+                    if (needTileType.split("_")[1] === name.split("tile_energy_")[1]) {
+                        result ++;
+                        console.log(needTileType.split("_")[1], "에너지 타일 result 증가", result);
+                    }
                 }
             }
         }
-            
-        // }
-        // check();
     }
-    
-    return 0;
+    return result;
 }
