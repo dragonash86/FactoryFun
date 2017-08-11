@@ -1,0 +1,375 @@
+<% include include/header.ejs %>
+    <style>
+      .rotate0 {
+      -webkit-transform: rotate(0deg);
+      -moz-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      -ms-transform: rotate(0deg);
+      transform: rotate(0deg);
+      }
+      
+      .rotate1 {
+      -webkit-transform: rotate(90deg);
+      -moz-transform: rotate(90deg);
+      -o-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+      transform: rotate(90deg);
+      }
+
+      .rotate2 {
+      -webkit-transform: rotate(180deg);
+      -moz-transform: rotate(180deg);
+      -o-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+      transform: rotate(180deg);
+      }
+
+      .rotate3 {
+      -webkit-transform: rotate(270deg);
+      -moz-transform: rotate(270deg);
+      -o-transform: rotate(270deg);
+      -ms-transform: rotate(270deg);
+      transform: rotate(270deg);
+      }      
+    </style>
+    <script>
+var _mapInfo = [
+    [0, 0, 0, 0, -1, 0, 0, 0, 0],
+    [0, 0, 0, 0, -2, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, -1, 0, 0, 0, 0],
+    [0, 0, 0, 0, -1, 0, 0, 0, 0]
+];
+
+var _map = [];
+var _tile = [];
+
+var TILE = {
+    EMPTY: 0,
+    NONE: -1,
+    WALL: -2,
+    PIPE: 1,
+    START: 2,
+    END: 3,
+    ENGINE: 4
+};
+
+var DIRECTION = {
+    NONE: 0,
+    IN: 1,
+    OUT: 2,
+    INOUT: 3    
+};
+
+var COLOR = {
+    NONE: 0,
+    BLUE: 1,
+    GREEN: 2,
+    ORANGE: 3,
+    RED: 4,
+    BLACK: 5
+}
+
+var directionY = [-1, 0, 1, 0];
+var directionX = [0, 1, 0, -1];
+var directionMatch = [2, 3, 0, 1];
+
+var rotateMap = [
+    [0, 3, 2, 1],
+    [1, 0, 3, 2],
+    [2, 1, 0, 3],
+    [3, 2, 1, 0]    
+];
+
+var _history = [];
+
+function Item(type, rotate) {
+    this.type = type;
+    this.rotate = rotate % 4;
+}
+
+function Stream(direction, color, size) {
+    this.direction = direction;
+    this.color = color;
+    this.size = size;
+}
+
+function Tile(id, type, filename, size, stream, link) {
+    this.id = id;
+    this.type = type;
+    this.filename = filename;
+    this.size = size;
+    this.stream = stream;
+    this.link = link;
+}
+
+function draw() {
+    var str = '';
+
+    for (var i = 0; i < _map.length; i++) {
+        for (var j = 0; j < _map[i].length; j++) {
+            var item = _map[i][j];
+            
+            if (item.type == TILE.EMPTY) {
+                str += '<div style="width:72px;height:72px;border:1px solid #999;float:left;" /></div>';
+            } else if (item.type == TILE.NONE) {
+                str += '<div style="width:72px;height:72px;border:1px solid #FFF;float:left;" /></div>';
+            } else if (item.type == TILE.WALL) {
+                str += '<div style="width:72px;height:72px;border:1px solid #999;background:#aaa;float:left;" /></div>';
+            } else {
+                var tile = _tile[item.type];
+                str += '<div style="width:72px;height:72px;border:1px solid #999;float:left;" />';
+                str += '<img src="images/' + tile.filename + '" style="width:72px;height:72px;" class="rotate' + item.rotate + '" />';
+                str += '</div>';
+            }
+        }
+
+        str += '<div style="clear:both;"></div>';
+    }
+
+    var c = document.getElementById('divMain');
+    c.innerHTML = str;
+}
+
+function initTile() {
+    var pipe = new Stream(DIRECTION.INOUT, COLOR.NONE, 99);
+    var none = new Stream(DIRECTION.NONE, COLOR.NONE, 0);
+    
+    _tile[1] = new Tile(1, TILE.PIPE, 'tile_way_1.jpg', 1, [pipe, none, pipe, none], [[2], [], [0], []]);
+    _tile[2] = new Tile(2, TILE.PIPE, 'tile_way_2.jpg', 1, [pipe, none, none, pipe], [[3], [], [], [0]]);
+    _tile[3] = new Tile(3, TILE.PIPE, 'tile_way_3.jpg', 1, [pipe, pipe, pipe, none], [[1, 2], [0, 2], [0, 1], []]);
+    _tile[4] = new Tile(4, TILE.PIPE, 'tile_way_4.jpg', 1, [pipe, pipe, pipe, pipe], [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]]);
+    _tile[5] = new Tile(5, TILE.PIPE, 'tile_way_5.jpg', 1, [pipe, pipe, pipe, pipe], [[2], [3], [0], [1]]);
+    _tile[6] = new Tile(6, TILE.PIPE, 'tile_way_6.jpg', 1, [pipe, pipe, pipe, pipe], [[1], [0], [3], [2]]);
+
+    var start;
+    start = new Stream(DIRECTION.OUT, COLOR.BLUE, 99);
+    _tile[11] = new Tile(11, TILE.START, 'tile_energy_blue.jpg', 1, [start, start, start, start], []);
+    start = new Stream(DIRECTION.OUT, COLOR.GREEN, 99);
+    _tile[12] = new Tile(12, TILE.START, 'tile_energy_green.jpg', 1, [start, start, start, start], []);
+    start = new Stream(DIRECTION.OUT, COLOR.ORANGE, 99);
+    _tile[13] = new Tile(13, TILE.START, 'tile_energy_orange.jpg', 1, [start, start, start, start], []);
+    start = new Stream(DIRECTION.OUT, COLOR.RED, 99);
+    _tile[14] = new Tile(14, TILE.START, 'tile_energy_red.jpg', 1, [start, start, start, start], []);
+
+    var white = new Stream(DIRECTION.IN, COLOR.NONE, 99);    
+    _tile[21] = new Tile(21, TILE.END, 'tile_white.jpg', 1, [white, none, none, none], []);
+    var black = new Stream(DIRECTION.IN, COLOR.BLACK, 99);    
+    _tile[22] = new Tile(22, TILE.END, 'tile_black.jpg', 1, [black, none, none, none], []);
+}
+
+function initMap() {
+    for (var i = 0; i < _mapInfo.length; i++) {
+        var map = [];
+        for (var j = 0; j < _mapInfo[i].length; j++) {
+            var item = _mapInfo[i][j];
+            map.push(new Item(item, 0));
+        }
+
+        _map.push(map);
+    }
+}
+
+function getRotateDirection(d, rotate) {
+    return (d + rotate) % 4;
+}
+
+function process(depth, y, x, direction, stream) {
+    console.log('process : y = ' + y + ', x = ' + x);
+
+    /*
+    for (var i = 0; i < _history.length; i++) {
+        if (_history[i].x == x && _history[i].y == y)
+            return true;
+    }
+    */
+
+    if (y < 0 || y >= _map.length || x < 0 || x >= _map[y].length) {
+        console.log('position out : ret = ' + ret);
+        return ret;
+    }
+
+    var item = _map[y][x];
+    var tile = _tile[item.type];
+
+    var newDirection = rotateMap[direction][item.rotate];
+
+    var ret = -1;
+
+    if (depth <= 0) {
+        ret = -2;
+    }
+    
+    depth++;
+
+    if (depth >= 100) {
+        console.log('loop : ret = ' + ret);
+        return -1;
+    }
+
+    if (item.type == TILE.EMPTY || item.type == TILE.NONE || item.type == TILE.WALL) {
+        console.log('not tile : ret = ' + ret);
+        return ret;
+    }
+
+    if (tile.stream[newDirection].direction == DIRECTION.NONE) {
+        console.log('direction none : ret = ' + ret);
+        return ret;
+    }
+
+    if (tile.type == TILE.START) {
+        console.log('start tile : ret = ' + ret);
+        return ret;
+    }
+
+    if (tile.stream[newDirection].direction == DIRECTION.OUT) {
+        console.log('direction out : ret = ' + ret);
+        return -1;
+    }
+
+    if (tile.stream[newDirection].color != COLOR.NONE && stream.color != tile.stream[newDirection].color) {
+        console.log('color different : ret = ' + ret);
+        return -1; 
+    }
+
+    if (depth == 0) {
+        _history.push({x: x, y: y});
+        return 0;
+    }
+
+    if (tile.link.length > newDirection) {
+        for (var i = 0; i < tile.link[newDirection].length; i++) {
+            var d = tile.link[newDirection][i];
+            d = getRotateDirection(d, item.rotate);
+
+            ret = process(depth, y + directionY[d], x + directionX[d], directionMatch[d], stream);
+            if (ret == -1) {
+                console.log('ret : -1');
+                return -1;
+            }
+        }
+    }
+
+    _history.push({x: x, y: y});
+
+    return 0;
+}
+
+function start(y, x) {
+    var item = _map[y][x];
+    var tile = _tile[item.type];
+
+    if (tile.type == TILE.START) {
+        var count = 0;
+
+        for (var i = 0; i < 4; i++) {
+            process(-1, y + directionY[i], x + directionX[i], directionMatch[i], tile.stream[i]);
+        }
+
+        for (var i = 0; i < 4; i++) {
+            var ret = process(0, y + directionY[i], x + directionX[i], directionMatch[i], tile.stream[i]);
+            if (ret == -1) {
+                return false;
+            } else if (ret == -2) {
+                count++;
+            }
+        }
+
+        if (count == 4) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    return true;
+}
+
+function check() {
+    _history = [];
+    
+    var ret = true;
+    for (var i = 0; i < _map.length; i++) {
+        var map = [];
+        for (var j = 0; j < _map[i].length; j++) {
+            var item = _map[i][j];
+            var tile = _tile[item.type];
+
+            if (item.type <= TILE.EMPTY) {
+                continue;
+            }
+            
+            if (tile.type == TILE.START) {
+                ret = start(i, j);
+
+                if (ret == false) {
+                    break;
+                }
+            }
+        }
+
+        if (ret == false) {
+            break;
+        }
+    }
+
+    console.log('Ret code = ' + ret);
+}
+
+function init() {
+    initTile();
+    initMap();
+
+    _map[2][2] = new Item(12, 0);
+    _map[1][2] = new Item(2, 3);
+    _map[1][1] = new Item(1, 1);
+    _map[1][0] = new Item(21, 1);            
+
+    _map[2][1] = new Item(11, 0);        
+    _map[3][1] = new Item(4, 2);
+    _map[3][2] = new Item(1, 1);
+    _map[3][3] = new Item(1, 3);
+    _map[3][4] = new Item(2, 3);
+    _map[4][4] = new Item(2, 1);
+    _map[4][5] = new Item(3, 3);
+    _map[4][6] = new Item(4, 3);
+    _map[3][6] = new Item(1, 0);
+    _map[2][6] = new Item(1, 0);
+    _map[1][6] = new Item(1, 0);
+    _map[0][6] = new Item(21, 2);
+    _map[4][7] = new Item(2, 0);
+    _map[3][7] = new Item(21, 2);
+    _map[5][6] = new Item(1, 2);
+    _map[6][6] = new Item(21, 0);    
+    _map[3][5] = new Item(21, 2);
+    _map[3][0] = new Item(21, 1);
+    _map[4][1] = new Item(21, 0);
+
+    /*
+    _map[6][1] = new Item(13, 0);
+    _map[6][0] = new Item(2, 1);
+    _map[5][0] = new Item(2, 2);
+    _map[5][1] = new Item(1, 1);
+    _map[7][1] = new Item(2, 1);
+    _map[7][2] = new Item(2, 0);
+    _map[6][2] = new Item(1, 0);
+    _map[5][2] = new Item(3, 1);
+    _map[5][3] = new Item(21, 3);                        
+    */
+    
+    draw();
+
+    check();
+}
+    </script>
+<div id="divMain"></div>
+<script>
+    $(function() {
+        init()
+    });
+</script>
+<% include include/footer.ejs %>
