@@ -23,6 +23,7 @@ h3{padding:20px 0}
 .btn_main{position:absolute;top:10px;left:20px}
 .m_clear{margin:0}
 .t_c{text-align:center}
+.cB{clear:both}
 .m_t_20{margin-top:20px}
 .m_b_20{margin-bottom:20px}
 .p_t_20{padding-top:20px}
@@ -106,6 +107,12 @@ h3{padding:20px 0}
 .board .wrap_tile .tile_way_5{top:587px;left:790px}
 .board .wrap_tile .tile_way_6{top:587px;left:860px}
 .board .wrap_tile .tile_black{top:727px;left:790px}
+#player_board .empty{float:left;position:relative;width:72px;height:72px;border:1px solid #272822}
+#player_board .empty span{position:absolute;top:-2px;left:2px;font-size:10px}
+#player_board .none{border:0}
+#player_board .wall{background:#c7c7c7}
+#player_board .tile{width:70px;height:70px}
+
 
 .board .drag{position:absolute;z-index:50;cursor:move}
 .board .saved{display:none}

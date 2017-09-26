@@ -216,7 +216,7 @@ app.post('/roomCreat', function(req, res) {
         room.tile_engine[19] = { name: "tile_engine_19", score: 11, bonus: "", top_1: "", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_red_output", right: "1_blue_output" };
         room.tile_engine[20] = { name: "tile_engine_20", score: 9, bonus: "", top_1: "", top_2: "", bottom_1: "2_red_input", bottom_2: "", left: "2_green_input", right: "1_blue_output" };
         room.tile_engine[21] = { name: "tile_engine_21", score: 3, bonus: "red", top_1: "", top_2: "1_blue_output", bottom_1: "", bottom_2: "", left: "3_red_input", right: "" };
-        room.tile_engine[22] = { name: "tile_engine_22", score: 10, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "1_green_output", bottom_2: "", left: "3_orange_input", right: "" };
+        room.tile_engine[22] = { name: "tile_engine_22", score: 10, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "", bottom_2: "1_green_output", left: "3_orange_input", right: "" };
         room.tile_engine[23] = { name: "tile_engine_23", score: 5, bonus: "", top_1: "", top_2: "3_red_output", bottom_1: "2_orange_input", bottom_2: "", left: "2_red_input", right: "" };
         room.tile_engine[24] = { name: "tile_engine_24", score: 5, bonus: "", top_1: "", top_2: "", bottom_1: "3_blue_input", bottom_2: "", left: "", right: "black" };
         room.tile_engine[25] = { name: "tile_engine_25", score: 10, bonus: "", top_1: "1_orange_input", top_2: "", bottom_1: "", bottom_2: "black", left: "3_red_input", right: "" };
@@ -260,6 +260,31 @@ app.post('/roomCreat', function(req, res) {
     }
 });
 app.get('/room', function(req, res) {
+    if (req.user) {
+        if (req.query.roomId != null) {
+            Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
+                //판떼기 안골랐는지 체크
+                if (roomValue.select_board !== "모두 고름") {
+                    var count = 0;
+                    for (var i = 0; i < roomValue.player.length; i++) {
+                        if (roomValue.player[i].board !== "아직") {
+                            count = count + 1;
+                            if (count === roomValue.member.length) {
+                                Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { select_board: "모두 고름" } }, function(err) {});
+                            }
+                        }
+                    }
+                }
+                res.render('room', { room: roomValue, user: req.user });
+            });
+        } else {
+            res.send('<script>alert("잘못된 요청");location.href="/main";</script>');
+        }
+    } else {
+        res.render('login');
+    }
+});
+app.get('/roomLocal', function(req, res) {
     if (req.user) {
         if (req.query.roomId != null) {
             Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
@@ -478,11 +503,11 @@ app.post('/ajaxSaveTile', function(req, res) {
                     console.log(result);
                     if (result === needTile.length && result !== 0) {
                         for (var j = 0; j < req.body.complete.length; j++) {
-                            var tileValue = req.body.complete[j].split("@")[0];
-                            var rowValue = parseInt(req.body.complete[j].split("@")[1]);
-                            var colValue = parseInt(req.body.complete[j].split("@")[2]);
-                            var rotateValue = parseInt(req.body.complete[j].split("@")[3]);
-                            var savedValue = req.body.complete[j].split("@")[4];
+                            var tileValue = req.body.complete[j].name;
+                            var rowValue = parseInt(req.body.complete[j].row);
+                            var colValue = parseInt(req.body.complete[j].col);
+                            var rotateValue = parseInt(req.body.complete[j].rotate);
+                            var savedValue = req.body.complete[j].new;
                             var indexValue = 10 * (rowValue - 1) + colValue;
                             var memberValue = 0;
                             for (var i = 0; i < roomValue.member.length; i++) {
@@ -491,10 +516,10 @@ app.post('/ajaxSaveTile', function(req, res) {
                             var setTileKey = "player." + memberValue + ".build." + indexValue + ".tile";
                             var setRotateKey = "player." + memberValue + ".build." + indexValue + ".rotate";
                             var setQuery = {};
-                            // console.log(tileValue);
+                            console.log(tileValue);
                             setQuery[setTileKey] = tileValue;
                             if (rotateValue > 0) setQuery[setRotateKey] = rotateValue;
-                            // console.log(setQuery);
+                            console.log(setQuery);
                             var incKeyTile = "player." + memberValue + "." + tileValue;
                             var incQuery = {};
                             if (savedValue === "saved") {
@@ -502,16 +527,16 @@ app.post('/ajaxSaveTile', function(req, res) {
                             } else {
                                 countScore.push(req.body.complete[j]);
                                 incQuery[incKeyTile] = -1;
-                                // console.log(countScore);
+                                console.log(countScore);
                             }
                             Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery }, function(err) {});
                         }
                         var incQuery = { round: 1 };
                         var incKeyScore = "player." + memberValue + ".score";
                         incQuery[incKeyScore] = parseInt(engineAttr.score - countScore.length + 1);
-                        // console.log(engineAttr.score,"engineAttr.score");
-                        // console.log(countScore.length,"countScore.length");
-                        // console.log(incQuery,"incQuery");
+                        console.log(engineAttr.score,"engineAttr.score");
+                        console.log(countScore.length,"countScore.length");
+                        console.log(incQuery,"incQuery");
                         Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': "아직" }, $inc: incQuery }, function(err) {
                             res.send({ result: "성공", score: incQuery[incKeyScore] });
                         });
@@ -600,7 +625,7 @@ function checkTile(needTile, complete, result) {
                     console.log("needTileRotate : ", needTileRotate);
                     console.log("rotate : ", rotate);
                     // if ((needTileInputOrOutput === "input" && 1 + rotate === needTileRotate) || (needTileInputOrOutput === "input" && 2 + rotate === needTileRotate) || (needTileInputOrOutput === "output" && rotate === needTileRotate) || (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate)) {
-                        if (needTileInputOrOutput !== "outpu") {
+                        if (needTileInputOrOutput !== "output") {
                             if (needTileRotate === 0) {
                                 console.log("tile_way_2에 0");
                                 if (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate) needTile[n].col ++; 
@@ -617,7 +642,7 @@ function checkTile(needTile, complete, result) {
                                 console.log("tile_way_2에 3");
                                 if (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate) needTile[n].row --; 
                                 else needTile[n].row ++;
-                            }    
+                            }
                         }
                         
                         // if (needTileRotate === 0) {

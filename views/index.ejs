@@ -1,38 +1,5 @@
 <% include include/header.ejs %>
-    <style>
-      .rotate0 {
-      -webkit-transform: rotate(0deg);
-      -moz-transform: rotate(0deg);
-      -o-transform: rotate(0deg);
-      -ms-transform: rotate(0deg);
-      transform: rotate(0deg);
-      }
-      
-      .rotate1 {
-      -webkit-transform: rotate(90deg);
-      -moz-transform: rotate(90deg);
-      -o-transform: rotate(90deg);
-      -ms-transform: rotate(90deg);
-      transform: rotate(90deg);
-      }
-
-      .rotate2 {
-      -webkit-transform: rotate(180deg);
-      -moz-transform: rotate(180deg);
-      -o-transform: rotate(180deg);
-      -ms-transform: rotate(180deg);
-      transform: rotate(180deg);
-      }
-
-      .rotate3 {
-      -webkit-transform: rotate(270deg);
-      -moz-transform: rotate(270deg);
-      -o-transform: rotate(270deg);
-      -ms-transform: rotate(270deg);
-      transform: rotate(270deg);
-      }      
-    </style>
-    <script>
+<script>
 var _mapInfo = [
     [0, 0, 0, 0, -1, 0, 0, 0, 0],
     [0, 0, 0, 0, -2, 0, 0, 0, 0],
@@ -62,7 +29,7 @@ var DIRECTION = {
     NONE: 0,
     IN: 1,
     OUT: 2,
-    INOUT: 3    
+    INOUT: 3
 };
 
 var COLOR = {
@@ -82,7 +49,7 @@ var rotateMap = [
     [0, 3, 2, 1],
     [1, 0, 3, 2],
     [2, 1, 0, 3],
-    [3, 2, 1, 0]    
+    [3, 2, 1, 0]
 ];
 
 var _history = [];
@@ -109,29 +76,26 @@ function Tile(id, type, filename, size, stream, link) {
 
 function draw() {
     var str = '';
-
     for (var i = 0; i < _map.length; i++) {
         for (var j = 0; j < _map[i].length; j++) {
             var item = _map[i][j];
-            
             if (item.type == TILE.EMPTY) {
-                str += '<div style="width:72px;height:72px;border:1px solid #999;float:left;" /></div>';
+                str += '<div class="empty"><span>' + (i + 1) + '-' + (j + 1) + '</span></div>';
             } else if (item.type == TILE.NONE) {
-                str += '<div style="width:72px;height:72px;border:1px solid #FFF;float:left;" /></div>';
+                str += '<div class="empty none"></div>';
             } else if (item.type == TILE.WALL) {
-                str += '<div style="width:72px;height:72px;border:1px solid #999;background:#aaa;float:left;" /></div>';
+                str += '<div class="empty wall"></div>';
             } else {
                 var tile = _tile[item.type];
-                str += '<div style="width:72px;height:72px;border:1px solid #999;float:left;" />';
-                str += '<img src="images/' + tile.filename + '" style="width:72px;height:72px;" class="rotate' + item.rotate + '" />';
+                str += '<div class="empty">';
+                str += '<img src="/images/' + tile.filename + '" class="tile rotate_' + item.rotate + '" />';
                 str += '</div>';
             }
         }
-
-        str += '<div style="clear:both;"></div>';
+        str += '<div class="cB"></div>';
     }
 
-    var c = document.getElementById('divMain');
+    var c = document.getElementById("player_board");
     c.innerHTML = str;
 }
 
@@ -324,52 +288,80 @@ function init() {
     initTile();
     initMap();
 
-    _map[2][2] = new Item(12, 0);
-    _map[1][2] = new Item(2, 3);
-    _map[1][1] = new Item(1, 1);
-    _map[1][0] = new Item(21, 1);            
+    // _map[2][2] = new Item(12, 0);
+    // _map[1][2] = new Item(2, 3);
+    // _map[1][1] = new Item(1, 1);
+    // _map[1][0] = new Item(21, 1);
 
-    _map[2][1] = new Item(11, 0);        
-    _map[3][1] = new Item(4, 2);
-    _map[3][2] = new Item(1, 1);
-    _map[3][3] = new Item(1, 3);
-    _map[3][4] = new Item(2, 3);
-    _map[4][4] = new Item(2, 1);
-    _map[4][5] = new Item(3, 3);
-    _map[4][6] = new Item(4, 3);
-    _map[3][6] = new Item(1, 0);
-    _map[2][6] = new Item(1, 0);
-    _map[1][6] = new Item(1, 0);
-    _map[0][6] = new Item(21, 2);
-    _map[4][7] = new Item(2, 0);
-    _map[3][7] = new Item(21, 2);
-    _map[5][6] = new Item(1, 2);
-    _map[6][6] = new Item(21, 0);    
-    _map[3][5] = new Item(21, 2);
-    _map[3][0] = new Item(21, 1);
-    _map[4][1] = new Item(21, 0);
+    // _map[2][1] = new Item(11, 0);
+    // _map[3][1] = new Item(4, 2);
+    // _map[3][2] = new Item(1, 1);
+    // _map[3][3] = new Item(1, 3);
+    // _map[3][4] = new Item(2, 3);
+    // _map[4][4] = new Item(2, 1);
+    // _map[4][5] = new Item(3, 3);
+    // _map[4][6] = new Item(4, 3);
+    // _map[3][6] = new Item(1, 0);
+    // _map[2][6] = new Item(1, 0);
+    // _map[1][6] = new Item(1, 0);
+    // _map[0][6] = new Item(21, 2);
+    // _map[4][7] = new Item(2, 0);
+    // _map[3][7] = new Item(21, 2);
+    // _map[5][6] = new Item(1, 2);
+    // _map[6][6] = new Item(21, 0);
+    // _map[3][5] = new Item(21, 2);
+    // _map[3][0] = new Item(21, 1);
+    // _map[4][1] = new Item(21, 0);
 
-    /*
-    _map[6][1] = new Item(13, 0);
-    _map[6][0] = new Item(2, 1);
-    _map[5][0] = new Item(2, 2);
+    // _map[6][1] = new Item(13, 0);
+    // _map[6][0] = new Item(2, 1);
+    // _map[5][0] = new Item(2, 2);
     _map[5][1] = new Item(1, 1);
-    _map[7][1] = new Item(2, 1);
+    _map[7][1] = new Item(6, 1);
     _map[7][2] = new Item(2, 0);
+    
     _map[6][2] = new Item(1, 0);
     _map[5][2] = new Item(3, 1);
-    _map[5][3] = new Item(21, 3);                        
-    */
-    
+    _map[5][3] = new Item(21, 3);
+
     draw();
 
     check();
 }
-    </script>
-<div id="divMain"></div>
+</script>
+<div id="player_board"></div>
+<script src="/js/jquery.event.drag-2.2.js"></script>
+<script src="/js/jquery.event.drop-2.2.js"></script>
 <script>
     $(function() {
-        init()
+        init();
+        $(".drag").drag(function(ev, dd) {
+            $(this).css({
+                top: Math.round( dd.offsetY / posValue ) * posValue + 27,
+                left: Math.round( dd.offsetX / posValue ) * posValue + 20
+            });
+        });
+        $(".drag").drop(function(ev, dd) {
+            $(this).attr("id", "");
+            var x = ((parseInt($(this).css("top")) - posTop) / posValue + 1);
+            var y = ((parseInt($(this).css("left")) - posLeft) / posValue + 1);
+            if (x > 0 && x < 11 && y > 0 && y < 11) {
+                $(this).attr("id", (x + "@" + y));
+            }
+        });
+        $(".drag").dblclick(function() {
+            if (!$(this).hasClass("rotate_1") && !$(this).hasClass("rotate_2") && !$(this).hasClass("rotate_3")) {
+                $(this).addClass("rotate_1").removeClass("rotate_0");
+            } else if ($(this).hasClass("rotate_1")) {
+                $(this).addClass("rotate_2");
+                $(this).removeClass("rotate_1");
+            } else if ($(this).hasClass("rotate_2")) {
+                $(this).addClass("rotate_3");
+                $(this).removeClass("rotate_2");
+            } else if ($(this).hasClass("rotate_3")) {
+                $(this).removeClass("rotate_3").addClass("rotate_0");
+            }
+        });
     });
 </script>
 <% include include/footer.ejs %>
