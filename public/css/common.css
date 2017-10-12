@@ -86,8 +86,8 @@ h3{padding:20px 0}
 /* board */ /* 나중에 백단에서도 접근 못하게 막아야함 */
 .board{display:block;padding:63px 0}
 .board table{clear:both}
-.board td{position:relative;border:1px solid #272822;width:70px;height:70px}
-.board td span{position:absolute;top:-2px;left:2px;font-size:10px}
+.board td{position:relative;border:1px solid #272822;width:70px;height:70px;text-align:center;color:#fff}
+.board td span{position:absolute;top:-2px;left:2px;font-size:10px;color:#000}
 .board td.green{background:green}
 .board td.orange{background:orange}
 .board td.red{background:red}
@@ -107,7 +107,7 @@ h3{padding:20px 0}
 .board .wrap_tile .tile_way_5{top:587px;left:790px}
 .board .wrap_tile .tile_way_6{top:587px;left:860px}
 .board .wrap_tile .tile_black{top:727px;left:790px}
-#player_board .empty{float:left;position:relative;width:72px;height:72px;border:1px solid #272822}
+#player_board .empty{float:left;position:relative;width:70px;height:70px;border:1px solid #272822}
 #player_board .empty span{position:absolute;top:-2px;left:2px;font-size:10px}
 #player_board .none{border:0}
 #player_board .wall{background:#c7c7c7}

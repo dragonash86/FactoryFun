@@ -300,7 +300,7 @@ app.get('/roomLocal', function(req, res) {
                         }
                     }
                 }
-                res.render('room', { room: roomValue, user: req.user });
+                res.render('roomLocal', { room: roomValue, user: req.user });
             });
         } else {
             res.send('<script>alert("잘못된 요청");location.href="/main";</script>');
