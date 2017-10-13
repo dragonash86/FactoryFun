@@ -349,62 +349,81 @@
 		                        console.log("블랙 타일 result 증가", result);
 		                    }
 		                } else if (name === "tile_way_1") {
-		                	console.log("일자길 들어옴", m);
-		                    // if ((needTileInputOrOutput === "input" && 2 - rotate === needTileRotate) || (needTileInputOrOutput === "output" && rotate === needTileRotate)) {
-		                        if (needTileRotate === 0) {
-		                            needTile[n].row ++;
-		                        } else if (needTileRotate === 1) {
-		                            needTile[n].col --;
-		                        } else if (needTileRotate === 2) {
-		                            needTile[n].row --;
-		                        } else if (needTileRotate === 3) {
-		                            needTile[n].col ++;
-		                            console.log(12312312312312312);
-		                        }
-		                    // }
+		                	if (rotate === needTileRotate) {
+		                		if (needTileInputOrOutput === "output" || needTileType === "black") {
+			                		if (needTileRotate === 0) {
+			                            needTile[n].row --;
+			                        } else if (needTileRotate === 1) {
+			                            needTile[n].col ++;
+			                        } else if (needTileRotate === 2) {
+			                            needTile[n].row ++;
+			                        } else if (needTileRotate === 3) {
+			                            needTile[n].col --;
+			                        }
+			                	} else {
+				                    if (needTileRotate === 0) {
+			                            needTile[n].row ++;
+			                        } else if (needTileRotate === 1) {
+			                            needTile[n].col --;
+			                        } else if (needTileRotate === 2) {
+			                            needTile[n].row --;
+			                        } else if (needTileRotate === 3) {
+			                            needTile[n].col ++;
+			                        }
+		                    	}
+		                	} else {
+		                       	continue;
+		                    }
 		                } else if (name === "tile_way_2") {
-		                    console.log("needTileInputOrOutput : ", needTileInputOrOutput);
-		                    console.log("needTileRotate : ", needTileRotate);
-		                    console.log("rotate : ", rotate);
-		                    // if ((needTileInputOrOutput === "input" && 1 + rotate === needTileRotate) || (needTileInputOrOutput === "input" && 2 + rotate === needTileRotate) || (needTileInputOrOutput === "output" && rotate === needTileRotate) || (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate)) {
-		                        if (needTileInputOrOutput !== "output") {
-		                            if (needTileRotate === 0) {
-		                                console.log("tile_way_2에 0");
-		                                if (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate) needTile[n].col ++; 
-		                                else needTile[n].col --;
-		                            } else if (needTileRotate === 1) {
-		                                console.log("tile_way_2에 1");
-		                                if (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate) needTile[n].row ++; 
-		                                else needTile[n].row --;
-		                            } else if (needTileRotate === 2) {
-		                                console.log("tile_way_2에 2");
-		                                if (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate) needTile[n].col --; 
-		                                else needTile[n].col ++;
-		                            } else if (needTileRotate === 3) {
-		                                console.log("tile_way_2에 3");
-		                                if (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate) needTile[n].row --; 
-		                                else needTile[n].row ++;
-		                            }
-		                        }
-		                        
-		                        // if (needTileRotate === 0) {
-		                        //     console.log("tile_way_2에 0");
-		                        //     if (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate) needTile[n].col ++; 
-		                        //     else needTile[n].col --;
-		                        // } else if (needTileRotate === 1) {
-		                        //     console.log("tile_way_2에 1");
-		                        //     if (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate) needTile[n].row ++; 
-		                        //     else needTile[n].row --;
-		                        // } else if (needTileRotate === 2) {
-		                        //     console.log("tile_way_2에 2");
-		                        //     if (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate) needTile[n].col --; 
-		                        //     else needTile[n].col ++;
-		                        // } else if (needTileRotate === 3) {
-		                        //     console.log("tile_way_2에 3");
-		                        //     if (needTileInputOrOutput === "output" && 3 + rotate === needTileRotate) needTile[n].row --; 
-		                        //     else needTile[n].row ++;
-		                        // }
-		                    // }
+		                	console.log("꾸부렁길 들어옴", m, n);
+		                	console.log("인풋아웃풋",needTileInputOrOutput);
+		                	console.log("타입",needTileType);
+		                	if (needTileRotate) {
+		                		if (needTileInputOrOutput === "output" || needTileType === "black") {
+			                		if (needTileRotate === 0) {
+			                            
+			                        } else if (needTileRotate === 1) {
+			                        	needTile[n].row --;
+			                            needTile[n].rotate = (needTile[n].rotate + 3) % 4;
+			                        } else if (needTileRotate === 2) {
+			                            needTile[n].col --;
+			                            needTile[n].rotate = (needTile[n].rotate + 3) % 4;
+			                            console.log("여기");
+			                        } else if (needTileRotate === 3) {
+			                            needTile[n].row ++;
+			                        }
+			                	} else {
+				                    if (needTileRotate === 0) {
+			                            needTile[n].row ++;
+			                        } else if (needTileRotate === 1) {
+			                            needTile[n].col --;
+			                        } else if (needTileRotate === 2) {
+			                            needTile[n].row --;
+			                        } else if (needTileRotate === 3) {
+			                            needTile[n].col ++;
+			                        }
+		                    	}
+		                	} else {
+		                       	continue;
+		                    }		                	
+
+
+		                	// console.log("꾸부렁길 들어옴", m, n);
+		                	// if (rotate === needTileRotate) {
+			                // 	if (needTileRotate === 0) {
+		                 //            needTile[n].row ++;
+		                 //            needTile[n].col --;
+		                 //        } else if (needTileRotate === 1) {
+		                 //            needTile[n].row --;
+		                 //        } else if (needTileRotate === 2) {
+		                 //            needTile[n].row --;
+		                 //            needTile[n].row ++;
+		                 //        } else if (needTileRotate === 3) {
+		                 //            needTile[n].row ++;
+		                 //        }
+		                 //    } else {
+	                  //       	continue;
+	                  //   	}
 		                } else if (name === "tile_way_3") {
 		                    // console.log("way");
 		                } else if (name === "tile_way_4") {
@@ -420,9 +439,8 @@
 		                    }
 		                }
 		            }
-		            console.log(needTileRow, row, needTileCol, col);
 		            if (needTileRow === row && needTileCol === col) {
-		            	console.log("아직도");
+		            	match(complete, needTile);
 		            }
 		        }
 
@@ -514,26 +532,33 @@
                     row = complete[j].row;
                     col = complete[j].col;
                     rotate = complete[j].rotate;
+                    //항목 : posType = ["top_1", "top_2", "bottom_1", "bottom_2", "left", "right"];
                     if (rotate === 0) {
                         posTypeRowNum = [-1, -1, 1, 1, 0, 0];
                         posTypeColNum = [0, 1, 0, 1, -1, 2];
-                        posTypeRotateNum = [2, 2, 0, 0, 1, 3];
+                        posTypeRotateNum = [2, 2, 0, 0, 3, 1];
                     } else if (rotate === 1) {
                         posTypeRowNum = [0, 1, 0, 1, -1, 2];
                         posTypeColNum = [1, 1, -1, -1, 0, 0];
-                        posTypeRotateNum = [3, 3, 1, 1, 2, 0];
+                        posTypeRotateNum = [3, 3, 1, 1, 0, 2];
                     } else if (rotate === 2) {
                         posTypeRowNum = [1, 1, -1, -1, 0, 0];
                         posTypeColNum = [1, 0, 1, 0, 2, -1];
-                        posTypeRotateNum = [0, 0, 2, 2, 3, 1];
+                        posTypeRotateNum = [0, 0, 2, 2, 1, 3];
                     } else if (rotate === 3) {
                         posTypeRowNum = [1, 0, 1, 1, 2, -1];
                         posTypeColNum = [-1, -1, 1, 2, 0, 0];
-                        posTypeRotateNum = [1, 1, 3, 3, 0, 2];
+                        posTypeRotateNum = [1, 1, 3, 3, 2, 0];
                     }
                     for (var i = 0; i < posType.length; i++) {
                         if (engineAttr[posType[i]] !== "") {
-                            needTile.push({ row: row + posTypeRowNum[i], col: col + posTypeColNum[i], type: engineAttr[posType[i]], rotate: posTypeRotateNum[i] });
+                            needTile.push({ 
+                            	row: row + posTypeRowNum[i],
+                            	col: col + posTypeColNum[i],
+                            	type: engineAttr[posType[i]],
+                            	rotate: posTypeRotateNum[i],
+                            	direction: posTypeRotateNum[i]
+                            });
                         }
                     }
                 }
@@ -550,7 +575,13 @@
 				var row = needTile[i].row;
 				var col = needTile[i].col;
                 var color = needTile[i].type.split("_")[1];
-                $(".board #td_" + row + "_" + col).addClass(color).append("<p>" + needTile[i].rotate + "</p>");
+                var directionLetter;
+                if (needTile[i].rotate === 0) directionLetter = "↓";
+                else if (needTile[i].rotate === 1) directionLetter = "→";
+                else if (needTile[i].rotate === 2) directionLetter = "↑";
+                else if (needTile[i].rotate === 3) directionLetter = "←";
+                $(".board #td_" + row + "_" + col).addClass(color).append("<p>" + needTile[i].rotate + "<br />" + directionLetter + "</p>"
+                );
                 if (needTile[i].type === "black") {
                 	$(".board #td_" + row + "_" + col).addClass("black");
                 }
