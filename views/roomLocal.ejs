@@ -317,7 +317,8 @@
 			// 	alert("에너지가 필요합니다.");
 			// }
 		});
-		function match(complete, needTile) {
+		function match(complete, needTile, energyTile) {
+			var energyTileRow, energyTileCol, energyTileRotate, energyTileType;
 			for (var m = 0; m < complete.length; m++) {
 		        console.log("---------몇번 돌까---------", m);
 		        var row = complete[m].row;
@@ -325,50 +326,50 @@
 		        var rotate = complete[m].rotate;
 		        var name = complete[m].name;
 		        // console.log("test111", needTile.length);
-		        for (var n = 0; n < needTile.length; n++) {
-		            needTileRow = needTile[n].row;
-		            needTileCol = needTile[n].col;
-		            needTileRotate = needTile[n].rotate;
-		            needTileType = needTile[n].type;
-		            needTileInputOrOutput = needTile[n].type.split("_")[2];
+		        for (var n = 0; n < energyTile.length; n++) {
+		            energyTileRow = energyTile[n].row;
+		            energyTileCol = energyTile[n].col;
+		            energyTileRotate = energyTile[n].rotate;
+		            energyTileType = energyTile[n].type;
+		            energyTileInputOrOutput = energyTile[n].type.split("_")[2];
 		            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
 		            //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
-		            console.log("test222", needTileRow);
+		            console.log("test222", energyTileRow);
 		            console.log("test2222", row);
-		            if (needTileRow === row && needTileCol === col) {
+		            if (energyTileRow === row && energyTileCol === col) {
 		            	console.log("매칭 됨", m);
 		            	// console.log(123123123);
 		                if (name === "tile_white") {
-		                    if (needTileInputOrOutput === "output" && needTileRotate === rotate) {
+		                    if (energyTileInputOrOutput === "output" && energyTileRotate === rotate) {
 		                        result ++;
 		                        console.log("화이트 타일 result 증가", result);
 		                    }
 		                } else if (name === "tile_black") {
-		                    if (needTileType === "black" && needTileRotate === rotate) {
+		                    if (energyTileType === "black" && energyTileRotate === rotate) {
 		                        result ++;
 		                        console.log("블랙 타일 result 증가", result);
 		                    }
 		                } else if (name === "tile_way_1") {
-		                	if (rotate === needTileRotate) {
-		                		if (needTileInputOrOutput === "output" || needTileType === "black") {
-			                		if (needTileRotate === 0) {
-			                            needTile[n].row --;
-			                        } else if (needTileRotate === 1) {
-			                            needTile[n].col ++;
-			                        } else if (needTileRotate === 2) {
-			                            needTile[n].row ++;
-			                        } else if (needTileRotate === 3) {
-			                            needTile[n].col --;
+		                	if (rotate === energyTileRotate) {
+		                		if (energyTileInputOrOutput === "output" || energyTileType === "black") {
+			                		if (energyTileRotate === 0) {
+			                            energyTile[n].row --;
+			                        } else if (energyTileRotate === 1) {
+			                            energyTile[n].col ++;
+			                        } else if (energyTileRotate === 2) {
+			                            energyTile[n].row ++;
+			                        } else if (energyTileRotate === 3) {
+			                            energyTile[n].col --;
 			                        }
 			                	} else {
-				                    if (needTileRotate === 0) {
-			                            needTile[n].row ++;
-			                        } else if (needTileRotate === 1) {
-			                            needTile[n].col --;
-			                        } else if (needTileRotate === 2) {
-			                            needTile[n].row --;
-			                        } else if (needTileRotate === 3) {
-			                            needTile[n].col ++;
+				                    if (energyTileRotate === 0) {
+			                            energyTile[n].row ++;
+			                        } else if (energyTileRotate === 1) {
+			                            energyTile[n].col --;
+			                        } else if (energyTileRotate === 2) {
+			                            energyTile[n].row --;
+			                        } else if (energyTileRotate === 3) {
+			                            energyTile[n].col ++;
 			                        }
 		                    	}
 		                	} else {
@@ -376,31 +377,31 @@
 		                    }
 		                } else if (name === "tile_way_2") {
 		                	console.log("꾸부렁길 들어옴", m, n);
-		                	console.log("인풋아웃풋",needTileInputOrOutput);
-		                	console.log("타입",needTileType);
-		                	if (needTileRotate) {
-		                		if (needTileInputOrOutput === "output" || needTileType === "black") {
-			                		if (needTileRotate === 0) {
+		                	console.log("인풋아웃풋", energyTileInputOrOutput);
+		                	console.log("타입", energyTileType);
+		                	if (energyTileRotate) {
+		                		if (energyTileInputOrOutput === "output" || energyTileType === "black") {
+			                		if (energyTileRotate === 0) {
 			                            
-			                        } else if (needTileRotate === 1) {
-			                        	needTile[n].row --;
-			                            needTile[n].rotate = (needTile[n].rotate + 3) % 4;
-			                        } else if (needTileRotate === 2) {
-			                            needTile[n].col --;
-			                            needTile[n].rotate = (needTile[n].rotate + 3) % 4;
+			                        } else if (energyTileRotate === 1) {
+			                        	energyTile[n].row --;
+			                            energyTile[n].rotate = (energyTile[n].rotate + 3) % 4;
+			                        } else if (energyTileRotate === 2) {
+			                            energyTile[n].col --;
+			                            energyTile[n].rotate = (energyTile[n].rotate + 3) % 4;
 			                            console.log("여기");
-			                        } else if (needTileRotate === 3) {
-			                            needTile[n].row ++;
+			                        } else if (energyTileRotate === 3) {
+			                            energyTile[n].row ++;
 			                        }
 			                	} else {
-				                    if (needTileRotate === 0) {
-			                            needTile[n].row ++;
-			                        } else if (needTileRotate === 1) {
-			                            needTile[n].col --;
-			                        } else if (needTileRotate === 2) {
-			                            needTile[n].row --;
-			                        } else if (needTileRotate === 3) {
-			                            needTile[n].col ++;
+				                    if (energyTileRotate === 0) {
+			                            energyTile[n].row ++;
+			                        } else if (energyTileRotate === 1) {
+			                            energyTile[n].col --;
+			                        } else if (energyTileRotate === 2) {
+			                            energyTile[n].row --;
+			                        } else if (energyTileRotate === 3) {
+			                            energyTile[n].col ++;
 			                        }
 		                    	}
 		                	} else {
@@ -409,17 +410,17 @@
 
 
 		                	// console.log("꾸부렁길 들어옴", m, n);
-		                	// if (rotate === needTileRotate) {
-			                // 	if (needTileRotate === 0) {
-		                 //            needTile[n].row ++;
-		                 //            needTile[n].col --;
-		                 //        } else if (needTileRotate === 1) {
-		                 //            needTile[n].row --;
-		                 //        } else if (needTileRotate === 2) {
-		                 //            needTile[n].row --;
-		                 //            needTile[n].row ++;
-		                 //        } else if (needTileRotate === 3) {
-		                 //            needTile[n].row ++;
+		                	// if (rotate === energyTileRotate) {
+			                // 	if (energyTileRotate === 0) {
+		                 //            energyTile[n].row ++;
+		                 //            energyTile[n].col --;
+		                 //        } else if (energyTileRotate === 1) {
+		                 //            energyTile[n].row --;
+		                 //        } else if (energyTileRotate === 2) {
+		                 //            energyTile[n].row --;
+		                 //            energyTile[n].row ++;
+		                 //        } else if (energyTileRotate === 3) {
+		                 //            energyTile[n].row ++;
 		                 //        }
 		                 //    } else {
 	                  //       	continue;
@@ -433,14 +434,14 @@
 		                } else if (name === "tile_way_6") {
 		                    // console.log("way");
 		                } else {
-		                    if (needTileType.split("_")[1] === name.split("tile_energy_")[1]) {
+		                    if (energyTileType.split("_")[1] === name.split("tile_energy_")[1]) {
 		                        result ++;
-		                        console.log(needTileType.split("_")[1], "에너지 타일 result 증가", result);
+		                        console.log(energyTileType.split("_")[1], "에너지 타일 result 증가", result);
 		                    }
 		                }
 		            }
-		            if (needTileRow === row && needTileCol === col) {
-		            	match(complete, needTile);
+		            if (energyTileRow === row && energyTileCol === col) {
+		            	// match(complete, needTile, energyTile);
 		            }
 		        }
 
@@ -456,7 +457,8 @@
 	        var posTypeRotateNum = [];
 			var tile_engine = [];
 			var complete = [];
-			var engineNum, engineAttr, row, col, rotate, needTileRow, needTileCol, needTileRotate, needTileType, needTileInputOrOutput;
+			var energyTile = [];
+			var engineNum, engineAttr, row, col, rotate, needTileRow, needTileCol, needTileRotate, needTileType, needTileInputOrOutput, directionLetter;
 			var result = 0;
 			tile_engine[0] = { name: "tile_engine_0", score: 8, bonus: "", top_1: "", top_2: "", bottom_1: "2_blue_input", bottom_2: "", left: "2_red_input", right: "black" };
 	        tile_engine[1] = { name: "tile_engine_1", score: 9, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_green_input", right: "black" };
@@ -523,6 +525,7 @@
 					}
 				}
 			}
+			console.log(complete);
 			for (var j = 0; j < complete.length; j++) {
                 //받아온 배열을 _engine_으로 자르고 엔진의 번호를 구함. 
                 if (complete[j].name.split("tile_engine_")[1]) {
@@ -561,10 +564,16 @@
                             });
                         }
                     }
+                } else if (complete[j].name.split("tile_energy_")[1]) {
+                	energyType = complete[j].name.split("tile_energy_")[1];
+                	console.log(energyType);
+                    row = complete[j].row;
+                    col = complete[j].col;
+                    rotate = complete[j].rotate;
+                    energyTile.push({ row: row, col: col, type: energyType });
                 }
             }
-
-            match(complete, needTile);
+            match(complete, needTile, energyTile);
 		    // console.log(result);
 			if (result === needTile.length && result !== 0) {
 				console.log("성공")
@@ -572,10 +581,9 @@
 				console.log("실패")
 			}
             for (var i = 0; i < needTile.length; i++) {
-				var row = needTile[i].row;
-				var col = needTile[i].col;
-                var color = needTile[i].type.split("_")[1];
-                var directionLetter;
+				row = needTile[i].row;
+				col = needTile[i].col;
+                color = needTile[i].type.split("_")[1];
                 if (needTile[i].rotate === 0) directionLetter = "↓";
                 else if (needTile[i].rotate === 1) directionLetter = "→";
                 else if (needTile[i].rotate === 2) directionLetter = "↑";
@@ -586,7 +594,23 @@
                 	$(".board #td_" + row + "_" + col).addClass("black");
                 }
 			}
-            console.log(needTile);
+			for (var i = 0; i < energyTile.length; i++) {
+				row = energyTile[i].row;
+				col = energyTile[i].col;
+                color = energyTile[i].type;
+                if (energyTile[i].rotate === 0) directionLetter = "↓";
+                else if (energyTile[i].rotate === 1) directionLetter = "→";
+                else if (energyTile[i].rotate === 2) directionLetter = "↑";
+                else if (energyTile[i].rotate === 3) directionLetter = "←";
+                else {
+                	energyTile[i].rotate = "";
+                	directionLetter = "";
+                }
+                $(".board #td_" + row + "_" + col).addClass(color).append("<p>" + energyTile[i].rotate + "<br />" + directionLetter + "</p>"
+                );
+			}
+            // console.log(needTile);
+            console.log(energyTile);
 
 		}
 		$("body").keydown(function (e) {
