@@ -317,8 +317,8 @@
 			// 	alert("에너지가 필요합니다.");
 			// }
 		});
-		function match(complete, needTile, energyTile) {
-			var energyTileRow, energyTileCol, energyTileRotate, energyTileType;
+		function match(complete, needTile, energyTile, result) {
+			var energyTileRow, energyTileCol, energyTileRotate, energyTileType, energyTileDirection;
 			for (var m = 0; m < complete.length; m++) {
 		        console.log("---------몇번 돌까---------", m);
 		        var row = complete[m].row;
@@ -331,117 +331,202 @@
 		            energyTileCol = energyTile[n].col;
 		            energyTileRotate = energyTile[n].rotate;
 		            energyTileType = energyTile[n].type;
+		            energyTileDirection = energyTile[n].direction;
 		            energyTileInputOrOutput = energyTile[n].type.split("_")[2];
 		            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
 		            //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
-		            console.log("test222", energyTileRow);
-		            console.log("test2222", row);
 		            if (energyTileRow === row && energyTileCol === col) {
 		            	console.log("매칭 됨", m);
 		            	// console.log(123123123);
 		                if (name === "tile_white") {
 		                    if (energyTileInputOrOutput === "output" && energyTileRotate === rotate) {
-		                        result ++;
 		                        console.log("화이트 타일 result 증가", result);
 		                    }
 		                } else if (name === "tile_black") {
 		                    if (energyTileType === "black" && energyTileRotate === rotate) {
-		                        result ++;
 		                        console.log("블랙 타일 result 증가", result);
 		                    }
 		                } else if (name === "tile_way_1") {
-		                	if (rotate === energyTileRotate) {
-		                		if (energyTileInputOrOutput === "output" || energyTileType === "black") {
-			                		if (energyTileRotate === 0) {
-			                            energyTile[n].row --;
-			                        } else if (energyTileRotate === 1) {
-			                            energyTile[n].col ++;
-			                        } else if (energyTileRotate === 2) {
-			                            energyTile[n].row ++;
-			                        } else if (energyTileRotate === 3) {
-			                            energyTile[n].col --;
-			                        }
-			                	} else {
-				                    if (energyTileRotate === 0) {
-			                            energyTile[n].row ++;
-			                        } else if (energyTileRotate === 1) {
-			                            energyTile[n].col --;
-			                        } else if (energyTileRotate === 2) {
-			                            energyTile[n].row --;
-			                        } else if (energyTileRotate === 3) {
-			                            energyTile[n].col ++;
-			                        }
-		                    	}
-		                	} else {
-		                       	continue;
-		                    }
+		            		console.log("energyTile.direction", energyTileDirection);
+		            		if (rotate === energyTileDirection) {
+		                		if (energyTileDirection === 0) {
+		                            energyTile[n].row --;
+		                        } else if (energyTileDirection === 1) {
+		                            energyTile[n].col ++;
+		                        } else if (energyTileDirection === 2) {
+		                            energyTile[n].row ++;
+		                        } else if (energyTileDirection === 3) {
+		                            energyTile[n].col --;
+		                        }
+		                    } else continue;
 		                } else if (name === "tile_way_2") {
-		                	console.log("꾸부렁길 들어옴", m, n);
-		                	console.log("인풋아웃풋", energyTileInputOrOutput);
-		                	console.log("타입", energyTileType);
-		                	if (energyTileRotate) {
-		                		if (energyTileInputOrOutput === "output" || energyTileType === "black") {
-			                		if (energyTileRotate === 0) {
-			                            
-			                        } else if (energyTileRotate === 1) {
-			                        	energyTile[n].row --;
-			                            energyTile[n].rotate = (energyTile[n].rotate + 3) % 4;
-			                        } else if (energyTileRotate === 2) {
-			                            energyTile[n].col --;
-			                            energyTile[n].rotate = (energyTile[n].rotate + 3) % 4;
-			                            console.log("여기");
-			                        } else if (energyTileRotate === 3) {
-			                            energyTile[n].row ++;
-			                        }
-			                	} else {
-				                    if (energyTileRotate === 0) {
-			                            energyTile[n].row ++;
-			                        } else if (energyTileRotate === 1) {
-			                            energyTile[n].col --;
-			                        } else if (energyTileRotate === 2) {
-			                            energyTile[n].row --;
-			                        } else if (energyTileRotate === 3) {
-			                            energyTile[n].col ++;
-			                        }
-		                    	}
-		                	} else {
-		                       	continue;
-		                    }		                	
-
-
-		                	// console.log("꾸부렁길 들어옴", m, n);
-		                	// if (rotate === energyTileRotate) {
-			                // 	if (energyTileRotate === 0) {
-		                 //            energyTile[n].row ++;
-		                 //            energyTile[n].col --;
-		                 //        } else if (energyTileRotate === 1) {
-		                 //            energyTile[n].row --;
-		                 //        } else if (energyTileRotate === 2) {
-		                 //            energyTile[n].row --;
-		                 //            energyTile[n].row ++;
-		                 //        } else if (energyTileRotate === 3) {
-		                 //            energyTile[n].row ++;
-		                 //        }
-		                 //    } else {
-	                  //       	continue;
-	                  //   	}
+		                	if (energyTileDirection === 0) {
+	                            if (rotate === 2) {
+	                        		energyTile[n].direction = 1;
+	                            	energyTile[n].col ++;
+	                        	} else if (rotate === 3) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                        	} else continue;
+	                        } else if (energyTileDirection === 1) {
+	                        	if (rotate === 0) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                        	} else if (rotate === 3) {
+	                        		energyTile[n].direction = 2;
+	                            	energyTile[n].row ++;
+	                        	} else continue;
+	                        } else if (energyTileDirection === 2) {
+	                            if (rotate === 0) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                        	} else if (rotate === 1) {
+	                        		energyTile[n].direction = 1;
+	                            	energyTile[n].col ++;
+	                        	} else continue;
+	                        } else if (energyTileDirection === 3) {
+	                            if (rotate === 1) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                        	} else if (rotate === 2) {
+	                        		energyTile[n].direction = 2;
+	                            	energyTile[n].row ++;
+	                        	} else continue;
+	                        } else continue;
 		                } else if (name === "tile_way_3") {
-		                    // console.log("way");
+		                	if (energyTileDirection === 0) {
+	                            if (rotate === 0) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 1
+				                    });
+	                        	} else if (rotate === 1) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row, col: energyTile[n].col + 2, type: energyType, direction: 1
+				                    });
+	                        	} else if (rotate === 2) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col - 1, type: energyType, direction: 3
+				                    });
+	                        	} else continue;
+	                        } else if (energyTileDirection === 1) {
+	                        	if (rotate === 1) {
+	                        		energyTile[n].direction = 1;
+	                            	energyTile[n].col ++;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col - 1, type: energyType, direction: 2
+				                    });
+	                        	} else if (rotate === 2) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 2, col: energyTile[n].col, type: energyType, direction: 2
+				                    });
+	                        	} else if (rotate === 3) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 1
+				                    });
+	                        	} else continue;
+	                        } else if (energyTileDirection === 2) {
+	                            if (rotate === 0) {
+	                        		energyTile[n].direction = 2;
+	                            	energyTile[n].row ++;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row - 1, col: energyTile[n].col + 1, type: energyType, direction: 1
+				                    });
+	                        	} else if (rotate === 2) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 2
+				                    });
+	                        	} else if (rotate === 3) {
+	                        		energyTile[n].direction = 1;
+	                            	energyTile[n].col ++;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row, col: energyTile[n].col - 2, type: energyType, direction: 3
+				                    });
+	                        	} else continue;
+	                        } else if (energyTileDirection === 3) {
+	                            if (rotate === 0) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 2, col: energyTile[n].col, type: energyType, direction: 2
+				                    });
+	                        	} else if (rotate === 1) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 2
+				                    });
+	                        	} else if (rotate === 3) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col - 1, type: energyType, direction: 3
+				                    });
+	                        	} else continue;
+	                        } else continue;
 		                } else if (name === "tile_way_4") {
-		                    // console.log("way");
+                            if (energyTileDirection === 0) {
+                        		energyTile[n].direction = 0;
+                            	energyTile[n].row --;
+                            	energyTile.push({
+			                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 1
+			                    });
+			                    energyTile.push({
+			                    	row: energyTile[n].row + 1, col: energyTile[n].col - 1, type: energyType, direction: 3
+			                    });
+                        	} else if (energyTileDirection === 1) {
+                        		energyTile[n].direction = 1;
+                            	energyTile[n].col ++;
+                            	energyTile.push({
+			                    	row: energyTile[n].row - 1, col: energyTile[n].col - 1, type: energyType, direction: 0
+			                    });
+			                    energyTile.push({
+			                    	row: energyTile[n].row + 1, col: energyTile[n].col - 1, type: energyType, direction: 2
+			                    });
+                        	} else if (energyTileDirection === 2) {
+                        		energyTile[n].direction = 2;
+                            	energyTile[n].row ++;
+                            	energyTile.push({
+			                    	row: energyTile[n].row - 1, col: energyTile[n].col + 1, type: energyType, direction: 1
+			                    });
+			                    energyTile.push({
+			                    	row: energyTile[n].row - 1, col: energyTile[n].col - 1, type: energyType, direction: 3
+			                    });
+                        	} else if (energyTileDirection === 3) {
+                        		energyTile[n].direction = 3;
+                            	energyTile[n].col --;
+                            	energyTile.push({
+			                    	row: energyTile[n].row - 1, col: energyTile[n].col + 1, type: energyType, direction: 0
+			                    });
+			                    energyTile.push({
+			                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 2
+			                    });
+                        	} else continue;
 		                } else if (name === "tile_way_5") {
-		                    // console.log("way");
+		                    continue;
 		                } else if (name === "tile_way_6") {
-		                    // console.log("way");
+		                    continue;
 		                } else {
-		                    if (energyTileType.split("_")[1] === name.split("tile_energy_")[1]) {
-		                        result ++;
-		                        console.log(energyTileType.split("_")[1], "에너지 타일 result 증가", result);
+		                    if (energyTileRow === needTile[n].row && energyTileCol === needTile[n].col && energyTileDirection && needTile[n].direction) {
+		                        // console.log(energyTileType.split("_")[1], "에너지 타일 result 증가", result);
 		                    }
+		                    console.log(energyTileRow, energyTileCol, needTile[n].row, needTile[n].col, energyTileDirection, needTile[n].direction);
+		                    break;
 		                }
 		            }
 		            if (energyTileRow === row && energyTileCol === col) {
-		            	// match(complete, needTile, energyTile);
+		            	match(complete, needTile, energyTile, result);
 		            }
 		        }
 
@@ -454,11 +539,11 @@
 			var needTile = [];
 			var posTypeRowNum = [];
 	        var posTypeColNum = [];
-	        var posTypeRotateNum = [];
+	        var posTypeDirection = [];
 			var tile_engine = [];
 			var complete = [];
 			var energyTile = [];
-			var engineNum, engineAttr, row, col, rotate, needTileRow, needTileCol, needTileRotate, needTileType, needTileInputOrOutput, directionLetter;
+			var engineNum, engineAttr, row, col, rotate, needTileRow, needTileCol, needTileRotate, needTileType, needTileInputOrOutput, directionLetter, typeIO;
 			var result = 0;
 			tile_engine[0] = { name: "tile_engine_0", score: 8, bonus: "", top_1: "", top_2: "", bottom_1: "2_blue_input", bottom_2: "", left: "2_red_input", right: "black" };
 	        tile_engine[1] = { name: "tile_engine_1", score: 9, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_green_input", right: "black" };
@@ -525,10 +610,24 @@
 					}
 				}
 			}
-			console.log(complete);
 			for (var j = 0; j < complete.length; j++) {
-                //받아온 배열을 _engine_으로 자르고 엔진의 번호를 구함. 
-                if (complete[j].name.split("tile_engine_")[1]) {
+                if (complete[j].name.split("tile_energy_")[1]) {
+                	energyType = complete[j].name.split("tile_energy_")[1];
+                	row = complete[j].row;
+                    col = complete[j].col;
+                    energyTile.push({ 
+                    	row: row - 1, col: col, type: energyType, direction: 0 
+                    });
+                    energyTile.push({ 
+                    	row: row, col: col - 1, type: energyType, direction: 3
+                    });
+                    energyTile.push({ 
+                    	row: row, col: col + 1, type: energyType, direction: 1
+                    });
+                    energyTile.push({ 
+                    	row: row + 1 ,col: col, type: energyType, direction: 2
+                    });
+                } else if (complete[j].name.split("tile_engine_")[1]) {
                     //엔진의 번호를 engineAttr에 담음
                     engineNum = complete[j].name.split("tile_engine_")[1];
                     engineAttr = tile_engine[engineNum];
@@ -537,81 +636,85 @@
                     rotate = complete[j].rotate;
                     //항목 : posType = ["top_1", "top_2", "bottom_1", "bottom_2", "left", "right"];
                     if (rotate === 0) {
-                        posTypeRowNum = [-1, -1, 1, 1, 0, 0];
-                        posTypeColNum = [0, 1, 0, 1, -1, 2];
-                        posTypeRotateNum = [2, 2, 0, 0, 3, 1];
+                        // posTypeColNum = [0, 1, 0, 1, -1, 2];
+                        // posTypeRowNum = [-1, -1, 1, 1, 0, 0];
+                        posTypeColNum = [0, 1, 0, 1, 0, 1];
+                        posTypeRowNum = [0, 0, 0, 0, 0, 0];
+                        posTypeDirection = [2, 2, 0, 0, 1, 1];
                     } else if (rotate === 1) {
-                        posTypeRowNum = [0, 1, 0, 1, -1, 2];
-                        posTypeColNum = [1, 1, -1, -1, 0, 0];
-                        posTypeRotateNum = [3, 3, 1, 1, 0, 2];
+                        // posTypeColNum = [1, 1, -1, -1, 0, 0];
+                        // posTypeRowNum = [0, 1, 0, 1, -1, 2];
+                        posTypeColNum = [0, 0, 0, 0, 0, 0];
+                        posTypeRowNum = [0, 1, 0, 1, 0, 1];
+                        posTypeDirection = [3, 3, 1, 1, 2, 2];
                     } else if (rotate === 2) {
-                        posTypeRowNum = [1, 1, -1, -1, 0, 0];
-                        posTypeColNum = [1, 0, 1, 0, 2, -1];
-                        posTypeRotateNum = [0, 0, 2, 2, 1, 3];
+                        // posTypeColNum = [1, 0, 1, 0, 2, -1];
+                        // posTypeRowNum = [1, 1, -1, -1, 0, 0];
+                        posTypeColNum = [1, 0, 1, 0, 1, 0];
+                        posTypeRowNum = [0, 0, 0, 0, 0, 0];
+                        posTypeDirection = [0, 0, 2, 2, 3, 3];
                     } else if (rotate === 3) {
-                        posTypeRowNum = [1, 0, 1, 1, 2, -1];
-                        posTypeColNum = [-1, -1, 1, 2, 0, 0];
-                        posTypeRotateNum = [1, 1, 3, 3, 2, 0];
+                        // posTypeColNum = [-1, -1, 1, 2, 0, 0];
+                        // posTypeRowNum = [1, 0, 1, 1, 2, -1];
+                        posTypeColNum = [0, 0, 0, 0, 0, 0];
+                        posTypeRowNum = [1, 0, 1, 0, 1, 0];
+                        posTypeDirection = [1, 1, 3, 3, 0, 0];
                     }
                     for (var i = 0; i < posType.length; i++) {
                         if (engineAttr[posType[i]] !== "") {
+                        	typeIO = engineAttr[posType[i]].split("_")[2];
+                        	if (typeIO === "output") {
+	                        	posTypeDirection[i] = (posTypeDirection[i] + 2) % 4;
+	                        }
                             needTile.push({ 
                             	row: row + posTypeRowNum[i],
                             	col: col + posTypeColNum[i],
                             	type: engineAttr[posType[i]],
-                            	rotate: posTypeRotateNum[i],
-                            	direction: posTypeRotateNum[i]
+                            	direction: posTypeDirection[i]
                             });
                         }
                     }
-                } else if (complete[j].name.split("tile_energy_")[1]) {
-                	energyType = complete[j].name.split("tile_energy_")[1];
-                	console.log(energyType);
-                    row = complete[j].row;
-                    col = complete[j].col;
-                    rotate = complete[j].rotate;
-                    energyTile.push({ row: row, col: col, type: energyType });
                 }
             }
-            match(complete, needTile, energyTile);
+
+            match(complete, needTile, energyTile, result);
 		    // console.log(result);
 			if (result === needTile.length && result !== 0) {
 				console.log("성공")
 			} else {
 				console.log("실패")
 			}
-            for (var i = 0; i < needTile.length; i++) {
+			for (var i = 0; i < energyTile.length; i++) {
+				row = energyTile[i].row;
+				col = energyTile[i].col;
+                color = energyTile[i].type;
+                if (energyTile[i].direction === 0) directionLetter = "↑";
+                else if (energyTile[i].direction === 1) directionLetter = "→";
+                else if (energyTile[i].direction === 2) directionLetter = "↓";
+                else if (energyTile[i].direction === 3) directionLetter = "←";
+                else {
+                	energyTile[i].direction = "";
+                	directionLetter = "";
+                }
+                $(".board #td_" + row + "_" + col).addClass(color).append("<p>" + energyTile[i].direction + "<br />" + directionLetter + "</p>");
+			}
+			for (var i = 0; i < needTile.length; i++) {
 				row = needTile[i].row;
 				col = needTile[i].col;
                 color = needTile[i].type.split("_")[1];
-                if (needTile[i].rotate === 0) directionLetter = "↓";
-                else if (needTile[i].rotate === 1) directionLetter = "→";
-                else if (needTile[i].rotate === 2) directionLetter = "↑";
-                else if (needTile[i].rotate === 3) directionLetter = "←";
-                $(".board #td_" + row + "_" + col).addClass(color).append("<p>" + needTile[i].rotate + "<br />" + directionLetter + "</p>"
+                if (needTile[i].direction === 0) directionLetter = "↑";
+                else if (needTile[i].direction === 1) directionLetter = "→";
+                else if (needTile[i].direction === 2) directionLetter = "↓";
+                else if (needTile[i].direction === 3) directionLetter = "←";
+                $(".board #td_" + row + "_" + col).addClass(color).append("<p>" + directionLetter + "</p>"
                 );
                 if (needTile[i].type === "black") {
                 	$(".board #td_" + row + "_" + col).addClass("black");
                 }
 			}
-			for (var i = 0; i < energyTile.length; i++) {
-				row = energyTile[i].row;
-				col = energyTile[i].col;
-                color = energyTile[i].type;
-                if (energyTile[i].rotate === 0) directionLetter = "↓";
-                else if (energyTile[i].rotate === 1) directionLetter = "→";
-                else if (energyTile[i].rotate === 2) directionLetter = "↑";
-                else if (energyTile[i].rotate === 3) directionLetter = "←";
-                else {
-                	energyTile[i].rotate = "";
-                	directionLetter = "";
-                }
-                $(".board #td_" + row + "_" + col).addClass(color).append("<p>" + energyTile[i].rotate + "<br />" + directionLetter + "</p>"
-                );
-			}
             // console.log(needTile);
-            console.log(energyTile);
-
+            console.log("energyTile", energyTile);
+            console.log("needTile", needTile);
 		}
 		$("body").keydown(function (e) {
 			if (e.keyCode == 13) {
