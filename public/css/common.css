@@ -88,6 +88,7 @@ h3{padding:20px 0}
 .board table{clear:both}
 .board td{position:relative;border:1px solid #272822;width:70px;height:70px;text-align:center;color:#fff}
 .board td span{position:absolute;top:-2px;left:2px;font-size:10px;color:#000}
+.board td p{position:absolute;top:21px;left:26px}
 .board td.green{background:green}
 .board td.orange{background:orange}
 .board td.red{background:red}

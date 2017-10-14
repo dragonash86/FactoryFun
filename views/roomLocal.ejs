@@ -318,9 +318,9 @@
 			// }
 		});
 		function match(complete, needTile, energyTile, result) {
+			console.log("result는 match시작 할 때 ", result);
 			var energyTileRow, energyTileCol, energyTileRotate, energyTileType, energyTileDirection;
 			for (var m = 0; m < complete.length; m++) {
-		        console.log("---------몇번 돌까---------", m);
 		        var row = complete[m].row;
 		        var col = complete[m].col;
 		        var rotate = complete[m].rotate;
@@ -336,8 +336,6 @@
 		            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
 		            //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
 		            if (energyTileRow === row && energyTileCol === col) {
-		            	console.log("매칭 됨", m);
-		            	// console.log(123123123);
 		                if (name === "tile_white") {
 		                    if (energyTileInputOrOutput === "output" && energyTileRotate === rotate) {
 		                        console.log("화이트 타일 result 증가", result);
@@ -518,23 +516,28 @@
 		                } else if (name === "tile_way_6") {
 		                    continue;
 		                } else {
-		                    if (energyTileRow === needTile[n].row && energyTileCol === needTile[n].col && energyTileDirection && needTile[n].direction) {
-		                        // console.log(energyTileType.split("_")[1], "에너지 타일 result 증가", result);
-		                    }
-		                    console.log(energyTileRow, energyTileCol, needTile[n].row, needTile[n].col, energyTileDirection, needTile[n].direction);
-		                    break;
+		                	console.log("needTile.length", needTile.length);
+		                	for (var i = 0; i < needTile.length; i++ ) {
+		                		if (energyTileRow === needTile[i].row && energyTileCol === needTile[i].col && energyTileDirection === needTile[i].direction && energyTileType === needTile[i].type.split("_")[1]) {
+			                        console.log("여기 오긴 온거야?", energyTileRow, energyTileCol, needTile[i].row, needTile[i].col, energyTileDirection, needTile[i].direction);
+			                		result ++;
+			                    }	
+		                	}
+		                	console.log("result는 증가 했는가1", result);
+		                    continue;
 		                }
 		            }
 		            if (energyTileRow === row && energyTileCol === col) {
 		            	match(complete, needTile, energyTile, result);
+		            	console.log("result는 증가 했는가2", result);
 		            }
 		        }
-
-	            
 		    }
-
+		    console.log("result는 증가 했는가3", result);
+		    return result;
 		}
 		function checkTile() {
+			console.log("님 몇번 실행 됨 ")
 			var posType = ["top_1", "top_2", "bottom_1", "bottom_2", "left", "right"];
 			var needTile = [];
 			var posTypeRowNum = [];
@@ -677,12 +680,12 @@
                 }
             }
 
-            match(complete, needTile, energyTile, result);
-		    // console.log(result);
+            result = match(complete, needTile, energyTile, result);
+		    console.log("최종 result", result);
 			if (result === needTile.length && result !== 0) {
-				console.log("성공")
+				console.log("성공");
 			} else {
-				console.log("실패")
+				console.log("실패");
 			}
 			for (var i = 0; i < energyTile.length; i++) {
 				row = energyTile[i].row;
@@ -696,23 +699,8 @@
                 	energyTile[i].direction = "";
                 	directionLetter = "";
                 }
-                $(".board #td_" + row + "_" + col).addClass(color).append("<p>" + energyTile[i].direction + "<br />" + directionLetter + "</p>");
+                $(".board #td_" + row + "_" + col).addClass(color).append("<p>"/* + energyTile[i].direction + "<br />" */+ directionLetter + "</p>");
 			}
-			for (var i = 0; i < needTile.length; i++) {
-				row = needTile[i].row;
-				col = needTile[i].col;
-                color = needTile[i].type.split("_")[1];
-                if (needTile[i].direction === 0) directionLetter = "↑";
-                else if (needTile[i].direction === 1) directionLetter = "→";
-                else if (needTile[i].direction === 2) directionLetter = "↓";
-                else if (needTile[i].direction === 3) directionLetter = "←";
-                $(".board #td_" + row + "_" + col).addClass(color).append("<p>" + directionLetter + "</p>"
-                );
-                if (needTile[i].type === "black") {
-                	$(".board #td_" + row + "_" + col).addClass("black");
-                }
-			}
-            // console.log(needTile);
             console.log("energyTile", energyTile);
             console.log("needTile", needTile);
 		}
