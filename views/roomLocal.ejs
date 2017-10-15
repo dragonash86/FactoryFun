@@ -189,7 +189,7 @@
 			</ul>
 		</div>
 		<div class="board_tile"></div>
-		<h3><%= room.member[k] %><% var board = room.player[k].board.replace('board_', 'Type ').replace('_', ' ').toUpperCase(); %>(<%= board %>)</h3>
+		<h3><%= room.member[k] %><% var board = room.player[k].board.replace('board_', 'Type ').replace('_', ' ').toUpperCase(); %>(<%= board %>)<span></span></h3>
 		<table class="<%= room.player[0].board %>">
 			<% for (var i = 1; i <= 10; i++) { %>
 			<tr>
@@ -701,6 +701,9 @@
                 }
                 $(".board #td_" + row + "_" + col).addClass(color).append("<p>"/* + energyTile[i].direction + "<br />" */+ directionLetter + "</p>");
 			}
+			var score = complete.length - 1;
+			if (score > 0) $(".board h3 span").text("새로 쓴 타일 : " + score + "개");
+			console.log("complete", complete);
             console.log("energyTile", energyTile);
             console.log("needTile", needTile);
 		}
