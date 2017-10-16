@@ -1,3 +1,4 @@
+<title>개발 JS</title>
 <% include include/header.ejs %>
 <a href="/" class="btn_main">메인</a>
 <div class="container room">
@@ -188,7 +189,7 @@
 			</ul>
 		</div>
 		<div class="board_tile"></div>
-		<h3><%= room.member[k] %><% var board = room.player[k].board.replace('board_', 'Type ').replace('_', ' ').toUpperCase(); %>(<%= board %>)</h3>
+		<h3><%= room.member[k] %><% var board = room.player[k].board.replace('board_', 'Type ').replace('_', ' ').toUpperCase(); %>(<%= board %>)<span></span></h3>
 		<table class="<%= room.player[0].board %>">
 			<% for (var i = 1; i <= 10; i++) { %>
 			<tr>
@@ -273,9 +274,353 @@
 				$(this).removeClass("rotate_3").addClass("rotate_0");
 			}
 		});
+		$(".drag").drop(function(ev, dd) {
+			$(".board td").attr("class", "");
+			$(".board td p").remove();
+		});
 		$(".complete").click(function(e) {
 			e.preventDefault();
-			var complete = new Array();
+			checkTile();
+			// var complete = new Array();
+			// for (var i = 0; i < $(".wrap_tile img").length; i++) {
+			// 	if ($(".wrap_tile img")[i].id) {
+			// 		if ($(".wrap_tile img").eq(i).hasClass("saved")) {
+			// 			complete.push({ name: $(".wrap_tile img")[i].alt, row: parseInt($(".wrap_tile img")[i].id.split("@")[0]), col: parseInt($(".wrap_tile img")[i].id.split("@")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "no" });
+			// 		} else {
+			// 			complete.push({ name: $(".wrap_tile img")[i].alt, row: parseInt($(".wrap_tile img")[i].id.split("@")[0]), col: parseInt($(".wrap_tile img")[i].id.split("@")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "yes" });
+			// 		}
+			// 	}
+			// }
+			// if (complete.length > 0) {
+			// 	$.post("/ajaxSaveTile?roomId=<%= room._id %>", { "complete": complete }, function(data) {
+			// 		if (data.result === "성공") {
+			// 			alert("배치 완료! " + data.score + "점 획득");
+			// 			location.reload();
+			// 		} else {
+			// 			//alert(data.result);
+			// 			console.log(data.needTile);
+			// 			for (var i = 0; i < data.needTile.length; i++) {
+			// 				var row = data.needTile[i].row;
+			// 				var col = data.needTile[i].col;
+			// 				var color = data.needTile[i].type.split("_")[1];
+			// 				$(".board #td_" + row + "_" + col).addClass(color);
+			// 				if (data.needTile[i].type === "black") {
+			// 					$(".board #td_" + row + "_" + col).addClass("black");
+			// 				}
+			// 			}
+			// 			$(".drag").drop(function(ev, dd) {
+			// 				$(".board td").attr("class", "");
+			// 			});
+			// 		}
+			// 	}, "json");	
+			// } else {
+			// 	alert("에너지가 필요합니다.");
+			// }
+		});
+		function connect(complete, needTile, energyTile, result) {
+			var energyTileRow, energyTileCol, energyTileRotate, energyTileType, energyTileDirection, row, col, rotate, name;
+			for (var m = 0; m < complete.length; m++) {
+		        row = complete[m].row;
+		        col = complete[m].col;
+		        rotate = complete[m].rotate;
+		        name = complete[m].name;
+		        // console.log("test111", needTile.length);
+		        for (var n = 0; n < energyTile.length; n++) {
+		            energyTileRow = energyTile[n].row;
+		            energyTileCol = energyTile[n].col;
+		            energyTileRotate = energyTile[n].rotate;
+		            energyTileType = energyTile[n].type;
+		            energyTileDirection = energyTile[n].direction;
+		            energyTileInputOrOutput = energyTile[n].type.split("_")[2];
+		            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
+		            //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
+		            if (energyTileRow === row && energyTileCol === col) {
+						if (name === "tile_white") {
+			            	console.log("처음 result", result);
+			            	console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType);
+			                if (energyTileRow === row && energyTileCol === col && energyTileDirection === (rotate + 2) % 4 && energyTileType !== "black") {
+			        			result ++;
+			        		}
+			            	console.log("result white", result);
+			            	continue;
+			            } else {
+			            	for (var i = 0; i < needTile.length; i++ ) {
+			            		console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType, needTile[i].type.split("_")[1]);
+			            		if (energyTileRow === needTile[i].row && energyTileCol === needTile[i].col && energyTileDirection === needTile[i].direction && energyTileType === needTile[i].type.split("_")[1]) {
+			            			result ++;
+			            		}
+			            	}
+			            	console.log("result else", result);
+			            	continue;
+			            }
+			        }
+			    }
+			}
+			return result;
+		}
+		function match(complete, needTile, energyTile) {
+			var energyTileRow, energyTileCol, energyTileRotate, energyTileType, energyTileDirection, row, col, rotate, name;
+			for (var m = 0; m < complete.length; m++) {
+		        row = complete[m].row;
+		        col = complete[m].col;
+		        rotate = complete[m].rotate;
+		        name = complete[m].name;
+		        // console.log("test111", needTile.length);
+		        for (var n = 0; n < energyTile.length; n++) {
+		            energyTileRow = energyTile[n].row;
+		            energyTileCol = energyTile[n].col;
+		            energyTileRotate = energyTile[n].rotate;
+		            energyTileType = energyTile[n].type;
+		            energyTileDirection = energyTile[n].direction;
+		            energyTileInputOrOutput = energyTile[n].type.split("_")[2];
+		            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
+		            //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
+		            if (energyTileRow === row && energyTileCol === col) {
+		                if (name === "tile_way_1") {
+		            		if (rotate === energyTileDirection) {
+		                		if (energyTileDirection === 0) {
+		                            energyTile[n].row --;
+		                        } else if (energyTileDirection === 1) {
+		                            energyTile[n].col ++;
+		                        } else if (energyTileDirection === 2) {
+		                            energyTile[n].row ++;
+		                        } else if (energyTileDirection === 3) {
+		                            energyTile[n].col --;
+		                        }
+		                    } else continue;
+		                } else if (name === "tile_way_2") {
+		                	if (energyTileDirection === 0) {
+	                            if (rotate === 2) {
+	                        		energyTile[n].direction = 1;
+	                            	energyTile[n].col ++;
+	                        	} else if (rotate === 3) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                        	} else continue;
+	                        } else if (energyTileDirection === 1) {
+	                        	if (rotate === 0) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                        	} else if (rotate === 3) {
+	                        		energyTile[n].direction = 2;
+	                            	energyTile[n].row ++;
+	                        	} else continue;
+	                        } else if (energyTileDirection === 2) {
+	                            if (rotate === 0) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                        	} else if (rotate === 1) {
+	                        		energyTile[n].direction = 1;
+	                            	energyTile[n].col ++;
+	                        	} else continue;
+	                        } else if (energyTileDirection === 3) {
+	                            if (rotate === 1) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                        	} else if (rotate === 2) {
+	                        		energyTile[n].direction = 2;
+	                            	energyTile[n].row ++;
+	                        	} else continue;
+	                        } else continue;
+		                } else if (name === "tile_way_3") {
+		                	if (energyTileDirection === 0) {
+	                            if (rotate === 0) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 1
+				                    });
+	                        	} else if (rotate === 1) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row, col: energyTile[n].col + 2, type: energyType, direction: 1
+				                    });
+	                        	} else if (rotate === 2) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col - 1, type: energyType, direction: 3
+				                    });
+	                        	} else continue;
+	                        } else if (energyTileDirection === 1) {
+	                        	if (rotate === 1) {
+	                        		energyTile[n].direction = 1;
+	                            	energyTile[n].col ++;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col - 1, type: energyType, direction: 2
+				                    });
+	                        	} else if (rotate === 2) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 2, col: energyTile[n].col, type: energyType, direction: 2
+				                    });
+	                        	} else if (rotate === 3) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 1
+				                    });
+	                        	} else continue;
+	                        } else if (energyTileDirection === 2) {
+	                            if (rotate === 0) {
+	                        		energyTile[n].direction = 2;
+	                            	energyTile[n].row ++;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row - 1, col: energyTile[n].col + 1, type: energyType, direction: 1
+				                    });
+	                        	} else if (rotate === 2) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 2
+				                    });
+	                        	} else if (rotate === 3) {
+	                        		energyTile[n].direction = 1;
+	                            	energyTile[n].col ++;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row, col: energyTile[n].col - 2, type: energyType, direction: 3
+				                    });
+	                        	} else continue;
+	                        } else if (energyTileDirection === 3) {
+	                            if (rotate === 0) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 2, col: energyTile[n].col, type: energyType, direction: 2
+				                    });
+	                        	} else if (rotate === 1) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 2
+				                    });
+	                        	} else if (rotate === 3) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                            	energyTile.push({ 
+				                    	row: energyTile[n].row + 1, col: energyTile[n].col - 1, type: energyType, direction: 3
+				                    });
+	                        	} else continue;
+	                        } else continue;
+		                } else if (name === "tile_way_4") {
+                            if (energyTileDirection === 0) {
+                        		energyTile[n].direction = 0;
+                            	energyTile[n].row --;
+                            	energyTile.push({
+			                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 1
+			                    });
+			                    energyTile.push({
+			                    	row: energyTile[n].row + 1, col: energyTile[n].col - 1, type: energyType, direction: 3
+			                    });
+                        	} else if (energyTileDirection === 1) {
+                        		energyTile[n].direction = 1;
+                            	energyTile[n].col ++;
+                            	energyTile.push({
+			                    	row: energyTile[n].row - 1, col: energyTile[n].col - 1, type: energyType, direction: 0
+			                    });
+			                    energyTile.push({
+			                    	row: energyTile[n].row + 1, col: energyTile[n].col - 1, type: energyType, direction: 2
+			                    });
+                        	} else if (energyTileDirection === 2) {
+                        		energyTile[n].direction = 2;
+                            	energyTile[n].row ++;
+                            	energyTile.push({
+			                    	row: energyTile[n].row - 1, col: energyTile[n].col + 1, type: energyType, direction: 1
+			                    });
+			                    energyTile.push({
+			                    	row: energyTile[n].row - 1, col: energyTile[n].col - 1, type: energyType, direction: 3
+			                    });
+                        	} else if (energyTileDirection === 3) {
+                        		energyTile[n].direction = 3;
+                            	energyTile[n].col --;
+                            	energyTile.push({
+			                    	row: energyTile[n].row - 1, col: energyTile[n].col + 1, type: energyType, direction: 0
+			                    });
+			                    energyTile.push({
+			                    	row: energyTile[n].row + 1, col: energyTile[n].col + 1, type: energyType, direction: 2
+			                    });
+                        	} else continue;
+		                } else if (name === "tile_way_5") {
+		                    continue;
+		                } else if (name === "tile_way_6") {
+		                    continue;
+		                } else continue;
+		            }
+		            if (energyTileRow === row && energyTileCol === col) {
+		            	match(complete, needTile, energyTile);
+		            } 
+		        }
+		    }
+		}
+		function checkTile() {
+			var posType = ["top_1", "top_2", "bottom_1", "bottom_2", "left", "right"];
+			var needTile = [];
+			var posTypeRowNum = [];
+	        var posTypeColNum = [];
+	        var posTypeDirection = [];
+			var tile_engine = [];
+			var complete = [];
+			var energyTile = [];
+			var engineNum, engineAttr, row, col, rotate, needTileRow, needTileCol, needTileRotate, needTileType, needTileInputOrOutput, directionLetter, typeIO;
+			var result = 0;
+			tile_engine[0] = { name: "tile_engine_0", score: 8, bonus: "", top_1: "", top_2: "", bottom_1: "2_blue_input", bottom_2: "", left: "2_red_input", right: "black" };
+	        tile_engine[1] = { name: "tile_engine_1", score: 9, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_green_input", right: "black" };
+	        tile_engine[2] = { name: "tile_engine_2", score: 5, bonus: "", top_1: "", top_2: "", bottom_1: "3_blue_input", bottom_2: "", left: "2_red_input", right: "2_blue_output" };
+	        tile_engine[3] = { name: "tile_engine_3", score: 7, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "1_green_output", left: "1_red_input", right: "" };
+	        tile_engine[4] = { name: "tile_engine_4", score: 12, bonus: "", top_1: "", top_2: "", bottom_1: "1_orange_input", bottom_2: "", left: "2_blue_input", right: "" };
+	        tile_engine[5] = { name: "tile_engine_5", score: 9, bonus: "", top_1: "1_green_input", top_2: "", bottom_1: "1_red_input", bottom_2: "", left: "1_orange_input", right: "3_blue_output" };
+	        tile_engine[6] = { name: "tile_engine_6", score: 8, bonus: "", top_1: "3_blue_input", top_2: "", bottom_1: "1_red_input", bottom_2: "", left: "1_green_input", right: "3_orange_output" };
+	        tile_engine[7] = { name: "tile_engine_7", score: 8, bonus: "", top_1: "3_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_orange_input", right: "1_blue_output" };
+	        tile_engine[8] = { name: "tile_engine_8", score: 7, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "", right: "black" };
+	        tile_engine[9] = { name: "tile_engine_9", score: 7, bonus: "", top_1: "", top_2: "", bottom_1: "1_blue_input", bottom_2: "", left: "3_green_input", right: "black" };
+	        tile_engine[10] = { name: "tile_engine_10", score: 6, bonus: "green", top_1: "2_red_input", top_2: "", bottom_1: "3_green_input", bottom_2: "", left: "", right: "black" };
+	        tile_engine[11] = { name: "tile_engine_11", score: 4, bonus: "", top_1: "2_blue_input", top_2: "", bottom_1: "3_green_input", bottom_2: "", left: "", right: "3_red_output" };
+	        tile_engine[12] = { name: "tile_engine_12", score: 11, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "2_blue_input", bottom_2: "", left: "1_orange_input", right: "2_green_output" };
+	        tile_engine[13] = { name: "tile_engine_13", score: 13, bonus: "", top_1: "1_blue_input", top_2: "", bottom_1: "1_red_input", bottom_2: "", left: "", right: "black" };
+	        tile_engine[14] = { name: "tile_engine_14", score: 10, bonus: "", top_1: "1_orange_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_blue_input", right: "1_red_output" };
+	        tile_engine[15] = { name: "tile_engine_15", score: 5, bonus: "all", top_1: "1_blue_input", top_2: "", bottom_1: "1_orange_input", bottom_2: "", left: "", right: "1_red_output" };
+	        tile_engine[16] = { name: "tile_engine_16", score: 7, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "2_red_input", bottom_2: "", left: "", right: "2_green_output" };
+	        tile_engine[17] = { name: "tile_engine_17", score: 8, bonus: "", top_1: "2_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_blue_input", right: "2_orange_output" };
+	        tile_engine[18] = { name: "tile_engine_18", score: 7, bonus: "orange", top_1: "2_blue_input", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_orange_input", right: "2_red_output" };
+	        tile_engine[19] = { name: "tile_engine_19", score: 11, bonus: "", top_1: "", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_red_output", right: "1_blue_output" };
+	        tile_engine[20] = { name: "tile_engine_20", score: 9, bonus: "", top_1: "", top_2: "", bottom_1: "2_red_input", bottom_2: "", left: "2_green_input", right: "1_blue_output" };
+	        tile_engine[21] = { name: "tile_engine_21", score: 3, bonus: "red", top_1: "", top_2: "1_blue_output", bottom_1: "", bottom_2: "", left: "3_red_input", right: "" };
+	        tile_engine[22] = { name: "tile_engine_22", score: 10, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "", bottom_2: "1_green_output", left: "3_orange_input", right: "" };
+	        tile_engine[23] = { name: "tile_engine_23", score: 5, bonus: "", top_1: "", top_2: "3_red_output", bottom_1: "2_orange_input", bottom_2: "", left: "2_red_input", right: "" };
+	        tile_engine[24] = { name: "tile_engine_24", score: 5, bonus: "", top_1: "", top_2: "", bottom_1: "3_blue_input", bottom_2: "", left: "", right: "black" };
+	        tile_engine[25] = { name: "tile_engine_25", score: 10, bonus: "", top_1: "1_orange_input", top_2: "", bottom_1: "", bottom_2: "black", left: "3_red_input", right: "" };
+	        tile_engine[26] = { name: "tile_engine_26", score: 5, bonus: "", top_1: "1_blue_input", top_2: "", bottom_1: "", bottom_2: "3_orange_output", left: "", right: "" };
+	        tile_engine[27] = { name: "tile_engine_27", score: 6, bonus: "", top_1: "", top_2: "", bottom_1: "1_orange_input", bottom_2: "", left: "3_blue_input", right: "3_green_output" };
+	        tile_engine[28] = { name: "tile_engine_28", score: 6, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "", left: "2_green_input", right: "black" };
+	        tile_engine[29] = { name: "tile_engine_29", score: 7, bonus: "", top_1: "2_green_input", top_2: "", bottom_1: "3_red_input", bottom_2: "", left: "", right: "1_red_output" };
+	        tile_engine[30] = { name: "tile_engine_30", score: 4, bonus: "", top_1: "3_green_input", top_2: "", bottom_1: "", bottom_2: "", left: "", right: "1_red_output" };
+	        tile_engine[31] = { name: "tile_engine_31", score: 7, bonus: "", top_1: "", top_2: "2_orange_output", bottom_1: "1_orange_input", bottom_2: "", left: "3_green_input", right: "" };
+	        tile_engine[32] = { name: "tile_engine_32", score: 6, bonus: "blue", top_1: "3_green_input", top_2: "", bottom_1: "1_blue_input", bottom_2: "", left: "", right: "1_orange_output" };
+	        tile_engine[33] = { name: "tile_engine_33", score: 9, bonus: "", top_1: "1_orange_input", top_2: "", bottom_1: "1_blue_input", bottom_2: "", left: "", right: "2_orange_output" };
+	        tile_engine[34] = { name: "tile_engine_34", score: 1, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "", left: "3_orange_input", right: "3_green_output" };
+	        tile_engine[35] = { name: "tile_engine_35", score: 10, bonus: "", top_1: "2_blue_input", top_2: "", bottom_1: "2_green_input", bottom_2: "", left: "", right: "1_orange_output" };
+	        tile_engine[36] = { name: "tile_engine_36", score: 6, bonus: "", top_1: "", top_2: "", bottom_1: "2_orange_input", bottom_2: "", left: "1_green_input", right: "3_red_output" };
+	        tile_engine[37] = { name: "tile_engine_37", score: 11, bonus: "", top_1: "1_green_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_orange_input", right: "black" };
+	        tile_engine[38] = { name: "tile_engine_38", score: 9, bonus: "", top_1: "2_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "1_green_input", right: "2_orange_output" };
+	        tile_engine[39] = { name: "tile_engine_39", score: 6, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "1_blue_input", right: "3_green_output" };
+	        tile_engine[40] = { name: "tile_engine_40", score: 3, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "", left: "3_blue_input", right: "2_red_output" };
+	        tile_engine[41] = { name: "tile_engine_41", score: 6, bonus: "", top_1: "", top_2: "2_blue_output", bottom_1: "3_orange_input", bottom_2: "", left: "1_blue_input", right: "" };
+	        tile_engine[42] = { name: "tile_engine_42", score: 5, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "", left: "2_orange_input", right: "1_orange_output" };
+	        tile_engine[43] = { name: "tile_engine_43", score: 6, bonus: "", top_1: "3_blue_input", top_2: "", bottom_1: "", bottom_2: "", left: "3_red_input", right: "1_red_output" };
+	        tile_engine[44] = { name: "tile_engine_44", score: 8, bonus: "", top_1: "2_green_input", top_2: "", bottom_1: "", bottom_2: "1_green_output", left: "2_red_input", right: "" };
+	        tile_engine[45] = { name: "tile_engine_45", score: 4, bonus: "", top_1: "", top_2: "2_green_output", bottom_1: "1_green_input", bottom_2: "", left: "", right: "" };
+	        tile_engine[46] = { name: "tile_engine_46", score: 7, bonus: "", top_1: "2_orange_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_blue_input", right: "2_green_output" };
+	        tile_engine[47] = { name: "tile_engine_47", score: 10, bonus: "", top_1: "", top_2: "", bottom_1: "1_blue_input", bottom_2: "", left: "2_green_input", right: "2_red_output" };
+	        tile_engine[48] = { name: "tile_engine_48", score: 5, bonus: "", top_1: "", top_2: "3_blue_output", bottom_1: "1_orange_input", bottom_2: "", left: "3_red_input", right: "" };
+	        tile_engine[49] = { name: "tile_engine_49", score: 4, bonus: "", top_1: "3_green_input", top_2: "", bottom_1: "3_red_input", bottom_2: "", left: "", right: "3_orange_output" };
+	        tile_engine[50] = { name: "tile_engine_50", score: 8, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "3_blue_input", bottom_2: "", left: "", right: "black" };
+	        tile_engine[51] = { name: "tile_engine_51", score: 2, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "", left: "2_green_input", right: "3_blue_output" };
+	        tile_engine[52] = { name: "tile_engine_52", score: 14, bonus: "", top_1: "1_orange_input", top_2: "", bottom_1: "1_blue_input", bottom_2: "", left: "2_green_input", right: "black" };
+	        tile_engine[53] = { name: "tile_engine_53", score: 9, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "", bottom_2: "1_blue_output", left: "1_green_input", right: "" };
+	        tile_engine[54] = { name: "tile_engine_54", score: 5, bonus: "", top_1: "", top_2: "", bottom_1: "2_orange_input", bottom_2: "", left: "", right: "2_blue_output" };
+	        // console.log(tile_engine);
 			for (var i = 0; i < $(".wrap_tile img").length; i++) {
 				if ($(".wrap_tile img")[i].id) {
 					if ($(".wrap_tile img").eq(i).hasClass("saved")) {
@@ -285,31 +630,148 @@
 					}
 				}
 			}
-			console.log(complete[0].tileName);
-			if (complete.length > 0) {
-				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { "complete": complete }, function(data) {
-					if (data.result === "성공") {
-						alert("배치 완료! " + data.score + "점 획득");
-						location.reload();
-					} else {
-						//alert(data.result);
-						console.log(data.needTile);
-						for (var i = 0; i < data.needTile.length; i++) {
-							var row = data.needTile[i].row;
-							var col = data.needTile[i].col;
-	                        var color = data.needTile[i].type.split("_")[1];
-	                        $(".board #td_" + row + "_" + col).addClass(color);
-	                        if (data.needTile[i].type === "black") {
-	                        	$(".board #td_" + row + "_" + col).addClass("black");
+			for (var j = 0; j < complete.length; j++) {
+                if (complete[j].name.split("tile_energy_")[1]) {
+                	energyType = complete[j].name.split("tile_energy_")[1];
+                	row = complete[j].row;
+                    col = complete[j].col;
+                    energyTile.push({
+                    	row: row - 1, col: col, type: energyType, direction: 0 
+                    });
+                    energyTile.push({
+                    	row: row, col: col - 1, type: energyType, direction: 3
+                    });
+                    energyTile.push({
+                    	row: row, col: col + 1, type: energyType, direction: 1
+                    });
+                    energyTile.push({
+                    	row: row + 1 ,col: col, type: energyType, direction: 2
+                    });
+                } else if (complete[j].name.split("tile_engine_")[1]) {
+                    //엔진의 번호를 engineAttr에 담음
+                    engineNum = complete[j].name.split("tile_engine_")[1];
+                    engineAttr = tile_engine[engineNum];
+                    row = complete[j].row;
+                    col = complete[j].col;
+                    rotate = complete[j].rotate;
+                    //항목 : posType = ["top_1", "top_2", "bottom_1", "bottom_2", "left", "right"];
+                    for (var i = 0; i < posType.length; i++) {
+                        if (engineAttr[posType[i]] !== "") {
+                        	typeIO = engineAttr[posType[i]].split("_")[2];
+                        	if (typeIO === "output" || engineAttr[posType[i]] === "black") {
+	                        	if (rotate === 0) {
+			                        posTypeColNum = [0, 1, 0, 1, -1, 2];
+			                        posTypeRowNum = [-1, -1, 1, 1, 0, 0];
+			                        posTypeDirection = [2, 2, 0, 0, 1, 3];
+			                    } else if (rotate === 1) {
+			                        posTypeColNum = [1, 1, -1, -1, 0, 0];
+			                        posTypeRowNum = [0, 1, 0, 1, -1, 2];
+			                        posTypeDirection = [3, 3, 1, 1, 2, 0];
+			                    } else if (rotate === 2) {
+			                        posTypeColNum = [1, 0, 1, 0, 2, -1];
+			                        posTypeRowNum = [1, 1, -1, -1, 0, 0];
+			                        posTypeDirection = [0, 0, 2, 2, 3, 1];
+			                     } else if (rotate === 3) {
+			                        posTypeColNum = [-1, -1, 1, 2, 0, 0];
+			                        posTypeRowNum = [1, 0, 1, 1, 2, -1];
+			                        posTypeDirection = [1, 1, 3, 3, 0, 2];
+			                    }
+	                        	posTypeDirection[i] = (posTypeDirection[i] + 2) % 4;
+	                        	if (engineAttr[posType[i]] === "black") {
+	                        		energyTile.push({
+				                    	row: row + posTypeRowNum[i],
+		                            	col: col + posTypeColNum[i],
+		                            	type: engineAttr[posType[i]],
+		                            	direction: posTypeDirection[i],
+		                            	engine_output: engineAttr[posType[i]]
+				                    });
+				                    needTile.push({
+				                    	row: row + posTypeRowNum[i],
+		                            	col: col + posTypeColNum[i],
+		                            	type: engineAttr[posType[i]],
+		                            	direction: posTypeDirection[i],
+		                            	engine_output: engineAttr[posType[i]]
+				                    });
+	                        	} else {
+	                        		energyTile.push({
+				                    	row: row + posTypeRowNum[i],
+		                            	col: col + posTypeColNum[i],
+		                            	type: engineAttr[posType[i]].split("_")[1],
+		                            	direction: posTypeDirection[i],
+		                            	engine_output: engineAttr[posType[i]]
+				                    });
+				                    needTile.push({
+				                    	row: row + posTypeRowNum[i],
+		                            	col: col + posTypeColNum[i],
+		                            	type: engineAttr[posType[i]].split("_")[1],
+		                            	direction: posTypeDirection[i],
+		                            	engine_output: engineAttr[posType[i]]
+				                    });
+	                        	}
+	                        } else {
+	                        	if (rotate === 0) {
+			                        posTypeColNum = [0, 1, 0, 1, 0, 1];
+			                        posTypeRowNum = [0, 0, 0, 0, 0, 0];
+			                        posTypeDirection = [2, 2, 0, 0, 1, 1];
+			                    } else if (rotate === 1) {
+			                        posTypeColNum = [0, 0, 0, 0, 0, 0];
+			                        posTypeRowNum = [0, 1, 0, 1, 0, 1];
+			                        posTypeDirection = [3, 3, 1, 1, 2, 2];
+			                    } else if (rotate === 2) {
+			                        posTypeColNum = [1, 0, 1, 0, 1, 0];
+			                        posTypeRowNum = [0, 0, 0, 0, 0, 0];
+			                        posTypeDirection = [0, 0, 2, 2, 3, 3];
+			                    } else if (rotate === 3) {
+			                        posTypeColNum = [0, 0, 0, 0, 0, 0];
+			                        posTypeRowNum = [1, 0, 1, 0, 1, 0];
+			                        posTypeDirection = [1, 1, 3, 3, 0, 0];
+			                    }
+		                        needTile.push({ 
+	                            	row: row + posTypeRowNum[i],
+	                            	col: col + posTypeColNum[i],
+	                            	type: engineAttr[posType[i]],
+	                            	direction: posTypeDirection[i]
+	                            });	
 	                        }
-						}
-						$(".drag").drop(function(ev, dd) {
-							$(".board td").attr("class", "");
-						});
-					}
-				}, "json");	
+                        }
+                    }
+                }
+            }
+            match(complete, needTile, energyTile);
+            result = connect(complete, needTile, energyTile, result);
+		    console.log("최종 result", result);
+			if (result === needTile.length && result !== 0) {
+				console.log("성공");
+				var score = tile_engine[engineNum].score - complete.length + 1;
+				$(".board h3 span").text("획득 가능 스코어 : " + score + "점");
+				
 			} else {
-				alert("에너지가 필요합니다.");
+				console.log("실패");
+			}
+
+
+			for (var i = 0; i < energyTile.length; i++) {
+				row = energyTile[i].row;
+				col = energyTile[i].col;
+                color = energyTile[i].type;
+                if (energyTile[i].direction === 0) directionLetter = "↑";
+                else if (energyTile[i].direction === 1) directionLetter = "→";
+                else if (energyTile[i].direction === 2) directionLetter = "↓";
+                else if (energyTile[i].direction === 3) directionLetter = "←";
+                else {
+                	energyTile[i].direction = "";
+                	directionLetter = "";
+                }
+                $(".board #td_" + row + "_" + col).addClass(color).append("<p>"/* + energyTile[i].direction + "<br />" */+ directionLetter + "</p>");
+			}
+			console.log("complete", complete);
+            console.log("energyTile", energyTile);
+            console.log("needTile", needTile);
+		}
+		$("body").keydown(function (e) {
+			if (e.keyCode == 13) {
+				$(".board td p").remove();
+				checkTile();
 			}
 		});
 	});
