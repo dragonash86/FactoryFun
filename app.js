@@ -194,6 +194,61 @@ app.post('/roomCreat', function(req, res) {
             select_board: "아직",
             round: 1
         });
+        room.tile_engine[0] = { name: "tile_engine_0", score: 8, bonus: "", top_1: "", top_2: "", bottom_1: "2_blue_input", bottom_2: "", left: "2_red_input", right: "black" };
+        room.tile_engine[1] = { name: "tile_engine_1", score: 9, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_green_input", right: "black" };
+        room.tile_engine[2] = { name: "tile_engine_2", score: 5, bonus: "", top_1: "", top_2: "", bottom_1: "3_blue_input", bottom_2: "", left: "2_red_input", right: "2_blue_output" };
+        room.tile_engine[3] = { name: "tile_engine_3", score: 7, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "1_green_output", left: "1_red_input", right: "" };
+        room.tile_engine[4] = { name: "tile_engine_4", score: 12, bonus: "", top_1: "", top_2: "", bottom_1: "1_orange_input", bottom_2: "", left: "2_blue_input", right: "" };
+        room.tile_engine[5] = { name: "tile_engine_5", score: 9, bonus: "", top_1: "1_green_input", top_2: "", bottom_1: "1_red_input", bottom_2: "", left: "1_orange_input", right: "3_blue_output" };
+        room.tile_engine[6] = { name: "tile_engine_6", score: 8, bonus: "", top_1: "3_blue_input", top_2: "", bottom_1: "1_red_input", bottom_2: "", left: "1_green_input", right: "3_orange_output" };
+        room.tile_engine[7] = { name: "tile_engine_7", score: 8, bonus: "", top_1: "3_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_orange_input", right: "1_blue_output" };
+        room.tile_engine[8] = { name: "tile_engine_8", score: 7, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "", right: "black" };
+        room.tile_engine[9] = { name: "tile_engine_9", score: 7, bonus: "", top_1: "", top_2: "", bottom_1: "1_blue_input", bottom_2: "", left: "3_green_input", right: "black" };
+        room.tile_engine[10] = { name: "tile_engine_10", score: 6, bonus: "green", top_1: "2_red_input", top_2: "", bottom_1: "3_green_input", bottom_2: "", left: "", right: "black" };
+        room.tile_engine[11] = { name: "tile_engine_11", score: 4, bonus: "", top_1: "2_blue_input", top_2: "", bottom_1: "3_green_input", bottom_2: "", left: "", right: "3_red_output" };
+        room.tile_engine[12] = { name: "tile_engine_12", score: 11, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "2_blue_input", bottom_2: "", left: "1_orange_input", right: "2_green_output" };
+        room.tile_engine[13] = { name: "tile_engine_13", score: 13, bonus: "", top_1: "1_blue_input", top_2: "", bottom_1: "1_red_input", bottom_2: "", left: "", right: "black" };
+        room.tile_engine[14] = { name: "tile_engine_14", score: 10, bonus: "", top_1: "1_orange_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_blue_input", right: "1_red_output" };
+        room.tile_engine[15] = { name: "tile_engine_15", score: 5, bonus: "all", top_1: "1_blue_input", top_2: "", bottom_1: "1_orange_input", bottom_2: "", left: "", right: "1_red_output" };
+        room.tile_engine[16] = { name: "tile_engine_16", score: 7, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "2_red_input", bottom_2: "", left: "", right: "2_green_output" };
+        room.tile_engine[17] = { name: "tile_engine_17", score: 8, bonus: "", top_1: "2_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_blue_input", right: "2_orange_output" };
+        room.tile_engine[18] = { name: "tile_engine_18", score: 7, bonus: "orange", top_1: "2_blue_input", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_orange_input", right: "2_red_output" };
+        room.tile_engine[19] = { name: "tile_engine_19", score: 11, bonus: "", top_1: "", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_red_output", right: "1_blue_output" };
+        room.tile_engine[20] = { name: "tile_engine_20", score: 9, bonus: "", top_1: "", top_2: "", bottom_1: "2_red_input", bottom_2: "", left: "2_green_input", right: "1_blue_output" };
+        room.tile_engine[21] = { name: "tile_engine_21", score: 3, bonus: "red", top_1: "", top_2: "1_blue_output", bottom_1: "", bottom_2: "", left: "3_red_input", right: "" };
+        room.tile_engine[22] = { name: "tile_engine_22", score: 10, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "", bottom_2: "1_green_output", left: "3_orange_input", right: "" };
+        room.tile_engine[23] = { name: "tile_engine_23", score: 5, bonus: "", top_1: "", top_2: "3_red_output", bottom_1: "2_orange_input", bottom_2: "", left: "2_red_input", right: "" };
+        room.tile_engine[24] = { name: "tile_engine_24", score: 5, bonus: "", top_1: "", top_2: "", bottom_1: "3_blue_input", bottom_2: "", left: "", right: "black" };
+        room.tile_engine[25] = { name: "tile_engine_25", score: 10, bonus: "", top_1: "1_orange_input", top_2: "", bottom_1: "", bottom_2: "black", left: "3_red_input", right: "" };
+        room.tile_engine[26] = { name: "tile_engine_26", score: 5, bonus: "", top_1: "1_blue_input", top_2: "", bottom_1: "", bottom_2: "3_orange_output", left: "", right: "" };
+        room.tile_engine[27] = { name: "tile_engine_27", score: 6, bonus: "", top_1: "", top_2: "", bottom_1: "1_orange_input", bottom_2: "", left: "3_blue_input", right: "3_green_output" };
+        room.tile_engine[28] = { name: "tile_engine_28", score: 6, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "", left: "2_green_input", right: "black" };
+        room.tile_engine[29] = { name: "tile_engine_29", score: 7, bonus: "", top_1: "2_green_input", top_2: "", bottom_1: "3_red_input", bottom_2: "", left: "", right: "1_red_output" };
+        room.tile_engine[30] = { name: "tile_engine_30", score: 4, bonus: "", top_1: "3_green_input", top_2: "", bottom_1: "", bottom_2: "", left: "", right: "1_red_output" };
+        room.tile_engine[31] = { name: "tile_engine_31", score: 7, bonus: "", top_1: "", top_2: "2_orange_output", bottom_1: "1_orange_input", bottom_2: "", left: "3_green_input", right: "" };
+        room.tile_engine[32] = { name: "tile_engine_32", score: 6, bonus: "blue", top_1: "3_green_input", top_2: "", bottom_1: "1_blue_input", bottom_2: "", left: "", right: "1_orange_output" };
+        room.tile_engine[33] = { name: "tile_engine_33", score: 9, bonus: "", top_1: "1_orange_input", top_2: "", bottom_1: "1_blue_input", bottom_2: "", left: "", right: "2_orange_output" };
+        room.tile_engine[34] = { name: "tile_engine_34", score: 1, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "", left: "3_orange_input", right: "3_green_output" };
+        room.tile_engine[35] = { name: "tile_engine_35", score: 10, bonus: "", top_1: "2_blue_input", top_2: "", bottom_1: "2_green_input", bottom_2: "", left: "", right: "1_orange_output" };
+        room.tile_engine[36] = { name: "tile_engine_36", score: 6, bonus: "", top_1: "", top_2: "", bottom_1: "2_orange_input", bottom_2: "", left: "1_green_input", right: "3_red_output" };
+        room.tile_engine[37] = { name: "tile_engine_37", score: 11, bonus: "", top_1: "1_green_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_orange_input", right: "black" };
+        room.tile_engine[38] = { name: "tile_engine_38", score: 9, bonus: "", top_1: "2_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "1_green_input", right: "2_orange_output" };
+        room.tile_engine[39] = { name: "tile_engine_39", score: 6, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "1_blue_input", right: "3_green_output" };
+        room.tile_engine[40] = { name: "tile_engine_40", score: 3, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "", left: "3_blue_input", right: "2_red_output" };
+        room.tile_engine[41] = { name: "tile_engine_41", score: 6, bonus: "", top_1: "", top_2: "2_blue_output", bottom_1: "3_orange_input", bottom_2: "", left: "1_blue_input", right: "" };
+        room.tile_engine[42] = { name: "tile_engine_42", score: 5, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "", left: "2_orange_input", right: "1_orange_output" };
+        room.tile_engine[43] = { name: "tile_engine_43", score: 6, bonus: "", top_1: "3_blue_input", top_2: "", bottom_1: "", bottom_2: "", left: "3_red_input", right: "1_red_output" };
+        room.tile_engine[44] = { name: "tile_engine_44", score: 8, bonus: "", top_1: "2_green_input", top_2: "", bottom_1: "", bottom_2: "1_green_output", left: "2_red_input", right: "" };
+        room.tile_engine[45] = { name: "tile_engine_45", score: 4, bonus: "", top_1: "", top_2: "2_green_output", bottom_1: "1_green_input", bottom_2: "", left: "", right: "" };
+        room.tile_engine[46] = { name: "tile_engine_46", score: 7, bonus: "", top_1: "2_orange_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_blue_input", right: "2_green_output" };
+        room.tile_engine[47] = { name: "tile_engine_47", score: 10, bonus: "", top_1: "", top_2: "", bottom_1: "1_blue_input", bottom_2: "", left: "2_green_input", right: "2_red_output" };
+        room.tile_engine[48] = { name: "tile_engine_48", score: 5, bonus: "", top_1: "", top_2: "3_blue_output", bottom_1: "1_orange_input", bottom_2: "", left: "3_red_input", right: "" };
+        room.tile_engine[49] = { name: "tile_engine_49", score: 4, bonus: "", top_1: "3_green_input", top_2: "", bottom_1: "3_red_input", bottom_2: "", left: "", right: "3_orange_output" };
+        room.tile_engine[50] = { name: "tile_engine_50", score: 8, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "3_blue_input", bottom_2: "", left: "", right: "black" };
+        room.tile_engine[51] = { name: "tile_engine_51", score: 2, bonus: "", top_1: "", top_2: "", bottom_1: "", bottom_2: "", left: "2_green_input", right: "3_blue_output" };
+        room.tile_engine[52] = { name: "tile_engine_52", score: 14, bonus: "", top_1: "1_orange_input", top_2: "", bottom_1: "1_blue_input", bottom_2: "", left: "2_green_input", right: "black" };
+        room.tile_engine[53] = { name: "tile_engine_53", score: 9, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "", bottom_2: "1_blue_output", left: "1_green_input", right: "" };
+        room.tile_engine[54] = { name: "tile_engine_54", score: 5, bonus: "", top_1: "", top_2: "", bottom_1: "2_orange_input", bottom_2: "", left: "", right: "2_blue_output" };
         room.save(function(err) {
             if (err) {
                 res.send('<script>alert("에러남");location.href="/join";</script>');
@@ -392,18 +447,9 @@ app.post('/giveUp', function(req, res) {
 });
 app.post('/ajaxSaveTile', function(req, res) {
     if (req.user) {
-        Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
-           
-            Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery }, function(err) {});
-            var incQuery = { round: 1 };
-            var incKeyScore = "player." + memberValue + ".score";
-            incQuery[incKeyScore] = parseInt(engineAttr.score - countScore.length + 1);
-            console.log(engineAttr.score,"engineAttr.score");
-            console.log(countScore.length,"countScore.length");
-            console.log(incQuery,"incQuery");
-            Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.select_engine': "아직" }, $inc: incQuery }, function(err) {
-                res.send({ result: "성공", score: incQuery[incKeyScore] });
-            });
+        var score = parseInt(req.body.score);
+        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': score, round : 1 }, $set: { 'player.$.select_engine': "아직" } }, function(err) {
+            res.send({ result: "성공" });
         });
     } else {
         res.render('login');

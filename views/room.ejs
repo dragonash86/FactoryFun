@@ -300,6 +300,11 @@
 			                if (energyTileRow === row && energyTileCol === col && energyTileDirection === (rotate + 2) % 4 && energyTileType !== "black") {
 			        			result ++;
 			        		}
+			            } else if (name === "tile_black") {
+			            	console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType);
+			                if (energyTileRow === row && energyTileCol === col && energyTileDirection === (rotate + 2) % 4 && energyTileType === "black") {
+			        			result ++;
+			        		}
 			            } else {
 			            	for (var i = 0; i < needTile.length; i++ ) {
 			            		// console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType, needTile[i].type.split("_")[1]);
@@ -735,13 +740,11 @@
 			var result = checkTile();
 			var success = result[0];
 			var score = result[1];
-			console.log(success);
-			console.log(score);
 			if (success === "성공") {
 				console.log("성공");
 				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { "score": score },function(data) {
 					if (data.result === "성공") {
-						alert("배치 완료! " + data.score + "점 획득");
+						alert("배치 완료! " + score + "점 획득");
 						location.reload();
 					} else {
 						//alert(data.result);
