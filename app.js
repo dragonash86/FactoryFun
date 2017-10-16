@@ -213,7 +213,7 @@ app.post('/roomCreat', function(req, res) {
         room.tile_engine[16] = { name: "tile_engine_16", score: 7, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "2_red_input", bottom_2: "", left: "", right: "2_green_output" };
         room.tile_engine[17] = { name: "tile_engine_17", score: 8, bonus: "", top_1: "2_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_blue_input", right: "2_orange_output" };
         room.tile_engine[18] = { name: "tile_engine_18", score: 7, bonus: "orange", top_1: "2_blue_input", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_orange_input", right: "2_red_output" };
-        room.tile_engine[19] = { name: "tile_engine_19", score: 11, bonus: "", top_1: "", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_red_output", right: "1_blue_output" };
+        room.tile_engine[19] = { name: "tile_engine_19", score: 11, bonus: "", top_1: "", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_red_input", right: "1_blue_output" };
         room.tile_engine[20] = { name: "tile_engine_20", score: 9, bonus: "", top_1: "", top_2: "", bottom_1: "2_red_input", bottom_2: "", left: "2_green_input", right: "1_blue_output" };
         room.tile_engine[21] = { name: "tile_engine_21", score: 3, bonus: "red", top_1: "", top_2: "1_blue_output", bottom_1: "", bottom_2: "", left: "3_red_input", right: "" };
         room.tile_engine[22] = { name: "tile_engine_22", score: 10, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "", bottom_2: "1_green_output", left: "3_orange_input", right: "" };
@@ -437,7 +437,7 @@ app.post('/selectEngine', function(req, res) {
 app.post('/giveUp', function(req, res) {
     if (req.user) {
         Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': -5, round : 1 }, $set: { 'player.$.select_engine': "아직" } }, function(err) {
-            Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick }}, 'player.score': { $lt : 0 } }, { $set: { 'player.$.score': 1 } }, function(err) {
+            Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick }}, 'player.score': { $lt : 1 } }, { $set: { 'player.$.score': 1 } }, function(err) {
                 res.redirect('/room?roomId=' + req.query.roomId);  
             });    
         });
@@ -448,8 +448,43 @@ app.post('/giveUp', function(req, res) {
 app.post('/ajaxSaveTile', function(req, res) {
     if (req.user) {
         var score = parseInt(req.body.score);
+        var complete = req.body.complete;
+        var engineNum, row, col, rotate, tileValue, indexValue, memberValue, setTileKey, setRotateKey, incKeyTile;
+        var setQuery = {};
+        var incQuery = {};
+        for (var j = 0; j < complete.length; j++) {
+            //받아온 배열을 _engine_으로 자르고 엔진의 번호를 구함. 
+            if (complete[j].name.split("tile_engine_")[1]) {
+                //엔진의 번호를 engineAttr에 담음
+                engineNum = complete[j].name.split("tile_engine_")[1];
+            }
+            rotate = parseInt(complete[j].rotate);
+            row = parseInt(complete[j].row);
+            col = parseInt(complete[j].col);
+            tileValue = complete[j].name;
+            savedValue = complete[j].new;
+            indexValue = 10 * (row - 1) + col;
+            memberValue = 0;
+            // for (var i = 0; i < roomValue.member.length; i++) {
+            //     if (roomValue.member[i] === req.user.user_nick) memberValue = i;
+            // }
+            setTileKey = "player." + memberValue + ".build." + indexValue + ".tile";
+            setRotateKey = "player." + memberValue + ".build." + indexValue + ".rotate";
+            setQuery[setTileKey] = tileValue;
+            if (rotate > 0) setQuery[setRotateKey] = rotate;
+            incKeyTile = "player." + memberValue + "." + tileValue;
+            if (savedValue === "no") {
+                incQuery[incKeyTile] = 0;
+            } else {
+                incQuery[incKeyTile] = -1;
+            }
+        }
+        console.log(incQuery);
+        console.log(setQuery);
         Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': score, round : 1 }, $set: { 'player.$.select_engine': "아직" } }, function(err) {
-            res.send({ result: "성공" });
+            Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery }, function(err) {
+                res.send({ result: "성공" });
+            });
         });
     } else {
         res.render('login');

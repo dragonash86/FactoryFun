@@ -122,7 +122,7 @@
 		<div class="wrap_tile">
 			<ul>
 				<% for (var m = 0; m < room.player[k].tile_white; m++) { %>
-				<li><img src="/images/tile_white.jpg" class="drag tile rotate_0" alt="tile_white" /></li>
+				<li><img src="/images/tile_white.jpg" class="drag tile rotate_3" alt="tile_white" /></li>
 				<% } %>
 				<% for (var o = 0; o < room.player[k].tile_energy_blue; o++) { %>
 				<li><img src="/images/tile_energy_blue.jpg" class="drag tile rotate_0" alt="tile_energy_blue" /></li>
@@ -141,7 +141,7 @@
 				<% } %>
 				<li>
 					<% for (var t = 0; t < room.tile_black; t++) { %>
-					<img src="/images/tile_black.jpg" class="drag tile tile_black rotate_0" alt="tile_black" />
+					<img src="/images/tile_black.jpg" class="drag tile tile_black rotate_3" alt="tile_black" />
 					<% } %>
 				</li>
 				<li>
@@ -181,7 +181,7 @@
 					for (var t = 0; t < room.player[0].build.length; t++) {
 						if (room.player[0].build[t].tile !== "") { 
 				%>
-							<li><img src="/images/<%= room.player[0].build[t].tile %>.jpg" class="drag tile saved pos_<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %> rotate_<%= room.player[0].build[t].rotate %>" id="<%= room.player[0].build[t].row %>-<%= room.player[0].build[t].col %>" alt="<%= room.player[0].build[t].tile %>" /></li>
+							<li><img src="/images/<%= room.player[0].build[t].tile %>.jpg" class="drag tile saved pos_<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %> rotate_<%= room.player[0].build[t].rotate %>" id="<%= room.player[0].build[t].row %>@<%= room.player[0].build[t].col %>" alt="<%= room.player[0].build[t].tile %>" /></li>
 				<% 		}
 					}
 				%>
@@ -247,6 +247,8 @@
 			if (x > 0 && x < 11 && y > 0 && y < 11) {
 				$(this).attr("id", (x + "@" + y));
 			}
+			$(".board td").attr("class", "");
+			$(".board td p").remove();
 		});
 		if ($(".saved").length > 0) {
 			for (var i = 0; i < $(".saved").length; i++) {
@@ -273,10 +275,6 @@
 				$(this).removeClass("rotate_3").addClass("rotate_0");
 			}
 		});
-		$(".drag").drop(function(ev, dd) {
-			$(".board td").attr("class", "");
-			$(".board td p").remove();
-		});
 		function connect(complete, needTile, energyTile, result) {
 			var energyTileRow, energyTileCol, energyTileRotate, energyTileType, energyTileDirection, row, col, rotate, name;
 			for (var m = 0; m < complete.length; m++) {
@@ -291,7 +289,6 @@
 		            energyTileRotate = energyTile[n].rotate;
 		            energyTileType = energyTile[n].type;
 		            energyTileDirection = energyTile[n].direction;
-		            energyTileInputOrOutput = energyTile[n].type.split("_")[2];
 		            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
 		            //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
 		            if (energyTileRow === row && energyTileCol === col) {
@@ -306,9 +303,20 @@
 			        			result ++;
 			        		}
 			            } else {
-			            	for (var i = 0; i < needTile.length; i++ ) {
+			            	for (var i = 0; i < needTile.length; i++) {
 			            		// console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType, needTile[i].type.split("_")[1]);
 			            		if (energyTileRow === needTile[i].row && energyTileCol === needTile[i].col && energyTileDirection === needTile[i].direction && energyTileType === needTile[i].type.split("_")[1]) {
+			            			for (var j = 0; j < energyTile.length; j++) {
+			            				if (energyTile[j].type.split("_")[0] || energyTile[j].type.split("_")[1] || needTile[i].type.split("_")[0] || needTile[i].type.split("_")[1]) {
+			            					console.log("energyTile[j].engine_output", energyTile[j].type.split("_")[0] + energyTile[j].type.split("_")[1], needTile[i].type.split("_")[0] + needTile[i].type.split("_")[1]);
+			            					if (energyTile[j].type.split("_")[0] + energyTile[j].type.split("_")[1] === needTile[i].type.split("_")[0] + needTile[i].type.split("_")[1]) {
+			            						// console.log("energyTile[j].engine_outputs!!!", energyTile[j].type.split("_")[0], energyTile[j].type, needTile[i].type, needTile[i].type);
+				            					result ++;
+				            				}
+			            				// } else {
+			            					// continue;
+			            				}
+			            			}
 			            			result ++;
 			            		}
 			            	}
@@ -332,7 +340,6 @@
 		            energyTileRotate = energyTile[n].rotate;
 		            energyTileType = energyTile[n].type;
 		            energyTileDirection = energyTile[n].direction;
-		            energyTileInputOrOutput = energyTile[n].type.split("_")[2];
 		            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
 		            //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
 		            if (energyTileRow === row && energyTileCol === col) {
@@ -523,7 +530,7 @@
 			var tile_engine = [];
 			var complete = [];
 			var energyTile = [];
-			var engineNum, engineAttr, row, col, rotate, needTileRow, needTileCol, needTileRotate, needTileType, needTileInputOrOutput, directionLetter, typeIO;
+			var engineNum, engineAttr, row, col, rotate, needTileRow, needTileCol, needTileRotate, needTileType, directionLetter, typeIO;
 			var result = 0;
 			tile_engine[0] = { name: "tile_engine_0", score: 8, bonus: "", top_1: "", top_2: "", bottom_1: "2_blue_input", bottom_2: "", left: "2_red_input", right: "black" };
 	        tile_engine[1] = { name: "tile_engine_1", score: 9, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_green_input", right: "black" };
@@ -544,7 +551,7 @@
 	        tile_engine[16] = { name: "tile_engine_16", score: 7, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "2_red_input", bottom_2: "", left: "", right: "2_green_output" };
 	        tile_engine[17] = { name: "tile_engine_17", score: 8, bonus: "", top_1: "2_red_input", top_2: "", bottom_1: "", bottom_2: "", left: "2_blue_input", right: "2_orange_output" };
 	        tile_engine[18] = { name: "tile_engine_18", score: 7, bonus: "orange", top_1: "2_blue_input", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_orange_input", right: "2_red_output" };
-	        tile_engine[19] = { name: "tile_engine_19", score: 11, bonus: "", top_1: "", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_red_output", right: "1_blue_output" };
+	        tile_engine[19] = { name: "tile_engine_19", score: 11, bonus: "", top_1: "", top_2: "", bottom_1: "1_green_input", bottom_2: "", left: "2_red_input", right: "1_blue_output" };
 	        tile_engine[20] = { name: "tile_engine_20", score: 9, bonus: "", top_1: "", top_2: "", bottom_1: "2_red_input", bottom_2: "", left: "2_green_input", right: "1_blue_output" };
 	        tile_engine[21] = { name: "tile_engine_21", score: 3, bonus: "red", top_1: "", top_2: "1_blue_output", bottom_1: "", bottom_2: "", left: "3_red_input", right: "" };
 	        tile_engine[22] = { name: "tile_engine_22", score: 10, bonus: "", top_1: "1_red_input", top_2: "", bottom_1: "", bottom_2: "1_green_output", left: "3_orange_input", right: "" };
@@ -584,9 +591,9 @@
 			for (var i = 0; i < $(".wrap_tile img").length; i++) {
 				if ($(".wrap_tile img")[i].id) {
 					if ($(".wrap_tile img").eq(i).hasClass("saved")) {
-						complete.push({ name: $(".wrap_tile img")[i].alt, row: parseInt($(".wrap_tile img")[i].id.split("@")[0]), col: parseInt($(".wrap_tile img")[i].id.split("@")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "no" });
+						complete.push({ row: parseInt($(".wrap_tile img")[i].id.split("@")[0]), col: parseInt($(".wrap_tile img")[i].id.split("@")[1]), name: $(".wrap_tile img")[i].alt, direction: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "no" });
 					} else {
-						complete.push({ name: $(".wrap_tile img")[i].alt, row: parseInt($(".wrap_tile img")[i].id.split("@")[0]), col: parseInt($(".wrap_tile img")[i].id.split("@")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "yes" });
+						complete.push({ row: parseInt($(".wrap_tile img")[i].id.split("@")[0]), col: parseInt($(".wrap_tile img")[i].id.split("@")[1]), name: $(".wrap_tile img")[i].alt, direction: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "yes" });
 					}
 				}
 			}
@@ -697,10 +704,10 @@
                     }
                 }
             }
+            console.log(needTile);
             match(complete, needTile, energyTile);
             result = connect(complete, needTile, energyTile, result);
 		    console.log("최종 result", result);
-
 			for (var i = 0; i < energyTile.length; i++) {
 				row = energyTile[i].row;
 				col = energyTile[i].col;
@@ -713,19 +720,24 @@
                 	energyTile[i].direction = "";
                 	directionLetter = "";
                 }
-                $(".board #td_" + row + "_" + col).addClass(color).append("<p>"/* + energyTile[i].direction + "<br />" */+ directionLetter + "</p>");
+                $(".board #td_" + row + "_" + col).addClass(color).append("<p>" + directionLetter + "</p>");
 			}
 			console.log("complete", complete);
             console.log("energyTile", energyTile);
             console.log("needTile", needTile);
             var success;
 			if (result === needTile.length && result !== 0) {
-				var score = tile_engine[engineNum].score - complete.length + 1;
+				console.log("성공");
+				var saved = $(".saved").length;
+				console.log(saved);
+				var score = tile_engine[engineNum].score - complete.length + 1 - saved;//점수 손봐야함
 				success = "성공";
 				$(".board h3 span").text("획득 가능 점수 : " + score + "점");
-				return [success, score];
+				return [success, score, complete];
 			} else {
+				console.log("실패");
 				success = "실패";
+				$(".board h3 span").text("");
 				return success;
 			}
 		}
@@ -740,27 +752,13 @@
 			var result = checkTile();
 			var success = result[0];
 			var score = result[1];
+			var complete = result[2];
 			if (success === "성공") {
 				console.log("성공");
-				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { "score": score },function(data) {
+				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { "score": score, "complete": complete },function(data) {
 					if (data.result === "성공") {
 						alert("배치 완료! " + score + "점 획득");
 						location.reload();
-					} else {
-						//alert(data.result);
-						console.log(data.needTile);
-						for (var i = 0; i < data.needTile.length; i++) {
-							var row = data.needTile[i].row;
-							var col = data.needTile[i].col;
-							var color = data.needTile[i].type.split("_")[1];
-							$(".board #td_" + row + "_" + col).addClass(color);
-							if (data.needTile[i].type === "black") {
-								$(".board #td_" + row + "_" + col).addClass("black");
-							}
-						}
-						$(".drag").drop(function(ev, dd) {
-							$(".board td").attr("class", "");
-						});
 					}
 				}, "json");	
 			}
