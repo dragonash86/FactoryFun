@@ -330,10 +330,8 @@
 					                    	row: rowC,
 			                            	col: colC,
 			                            	type: energyTileType,
-			                            	name : nameC
+			                            	name: nameC
 					                    });
-						            } else if (row === energyTileRow && col === energyTileCol && nameC.split("tile_engine_")[1] < 55 && parseInt(energyTileEO.split("_")[0]) >= 1 && direction === energyTileDirection) {
-						            	console.log(energyTileRow,row,energyTileCol, col ,nameC , parseInt(energyTileEO.split("_")[0]) , energyTileDirection , directionC, direction)
 						            }
 						        }
 				            }
@@ -341,8 +339,30 @@
 			        }
 			    }
 			}
+			for (var m = 0; m < needTile.length; m++) {
+		        row = needTile[m].row;
+		        col = needTile[m].col;
+		        type = needTile[m].type;
+		        direction = needTile[m].direction;
+		        for (var n = 0; n < energyTile.length; n++) {
+		            energyTileRow = energyTile[n].row;
+		            energyTileCol = energyTile[n].col;
+		            energyTileType = energyTile[n].type;
+		            energyTileDirection = energyTile[n].direction;
+		            energyTileEO = energyTile[n].engine_output;
+		        	if (energyTileEO && row === energyTileRow && col === energyTileCol && parseInt(energyTileEO.split("_")[0]) >= type.split("_")[0] && (direction + 2) % 4  === energyTileDirection) {
+		        		solve.push({
+	                    	row: row,
+                        	col: col,
+                        	type: energyTileType,
+                        	bonus: type.split("_")[0] * 5
+	                    });
+	                    console.log(energyTileRow,row,energyTileCol, col ,nameC , parseInt(energyTileEO.split("_")[0]) , energyTileDirection , directionC, direction)
+		            }
+			    }
+			}
 			console.log("solve", solve);
-			return solve.length;
+			return solve;
 		}
 		function match(complete, needTile, energyTile) {
 			var energyTileRow, energyTileCol, energyTileType, energyTileDirection, row, col, rotate, name;
@@ -713,8 +733,8 @@
                 }
             }
             match(complete, needTile, energyTile);
-            result = connect(complete, needTile, energyTile, result);
-		    console.log("최종 result", result);
+            solve = connect(complete, needTile, energyTile, result);
+		    console.log("최종 result", solve.length);
 			for (var i = 0; i < energyTile.length; i++) {
 				row = energyTile[i].row;
 				col = energyTile[i].col;
@@ -733,12 +753,20 @@
             console.log("energyTile", energyTile);
             console.log("needTile", needTile);
             var success;
-			if (result === needTile.length && result !== 0) {
+			if (solve.length === needTile.length && solve.length !== 0) {
+				function bonusScore() { 
+					for (var i = 0; i < solve.length; i++) {
+						if (solve[i].bonus > 0) {
+							return solve[i].bonus;
+						}
+					}
+				}
+				var bonus_score = bonusScore();
 				console.log("성공");
 				var saved = $(".saved").length;
 				var score = tile_engine[engineNum].score - complete.length + 1 - saved;//점수 손봐야함
 				success = "성공";
-				$(".board h3 span").text("획득 가능 점수 : " + score + "점");
+				$(".board h3 span").text("획득 가능 점수 : " + score + "점 (보너스 + " + bonus_score + "점)");
 				return [success, score, complete];
 			} else {
 				console.log("실패");
