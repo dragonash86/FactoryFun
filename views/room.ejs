@@ -32,7 +32,7 @@
 		<% } if (room.admin === user.user_nick && room.member.length === 1 && room.start !== "진행 중") { %>
 		<form action="/startRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="싱글플레이" /></form>
 		<% } if (room.admin === user.user_nick && room.start !== "진행 중") { %>
-		<form action="/deleteRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="방폭" /></form>
+		<form action="/deleteRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="나가기" /></form>
 		<% } %>
 	<% } else if (room.select_board === "아직") { %>
 	<% for (var i = 0; i < room.player.length; i++) {
@@ -277,6 +277,7 @@
 		});
 		function connect(complete, needTile, energyTile, result) {
 			var energyTileRow, energyTileCol, energyTileRotate, energyTileType, energyTileDirection, row, col, rotate, name;
+			var solve = [];
 			for (var m = 0; m < complete.length; m++) {
 		        row = complete[m].row;
 		        col = complete[m].col;
@@ -295,36 +296,59 @@
 						if (name === "tile_white") {
 			            	// console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType);
 			                if (energyTileRow === row && energyTileCol === col && energyTileDirection === (rotate + 2) % 4 && energyTileType !== "black") {
-			        			result ++;
+			        			// result ++;
+			        			solve.push({
+			                    	row: energyTileRow,
+	                            	col: energyTileCol,
+	                            	type: energyTileType,
+	                            	name : name
+			                    });
+			        			console.log("result", result);
 			        		}
 			            } else if (name === "tile_black") {
-			            	console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType);
+			            	// console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType);
 			                if (energyTileRow === row && energyTileCol === col && energyTileDirection === (rotate + 2) % 4 && energyTileType === "black") {
-			        			result ++;
+			        			// result ++;
+			        			solve.push({
+			                    	row: energyTileRow,
+	                            	col: energyTileCol,
+	                            	type: energyTileType,
+	                            	name : name
+			                    });
+			        			console.log("result", result);
 			        		}
 			            } else {
 			            	for (var i = 0; i < needTile.length; i++) {
 			            		// console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType, needTile[i].type.split("_")[1]);
 			            		if (energyTileRow === needTile[i].row && energyTileCol === needTile[i].col && energyTileDirection === needTile[i].direction && energyTileType === needTile[i].type.split("_")[1]) {
-			            			for (var j = 0; j < energyTile.length; j++) {
-			            				if (energyTile[j].type.split("_")[0] || energyTile[j].type.split("_")[1] || needTile[i].type.split("_")[0] || needTile[i].type.split("_")[1]) {
-			            					console.log("energyTile[j].engine_output", energyTile[j].type.split("_")[0] + energyTile[j].type.split("_")[1], needTile[i].type.split("_")[0] + needTile[i].type.split("_")[1]);
-			            					if (energyTile[j].type.split("_")[0] + energyTile[j].type.split("_")[1] === needTile[i].type.split("_")[0] + needTile[i].type.split("_")[1]) {
-			            						// console.log("energyTile[j].engine_outputs!!!", energyTile[j].type.split("_")[0], energyTile[j].type, needTile[i].type, needTile[i].type);
-				            					result ++;
-				            				}
-			            				// } else {
-			            					// continue;
-			            				}
-			            			}
-			            			result ++;
+			            			//일단 보류 급한거부터
+			            			// for (var j = 0; j < energyTile.length; j++) {
+			            			// 	if (energyTile[j].type.split("_")[0] || energyTile[j].type.split("_")[1] || needTile[i].type.split("_")[0] || needTile[i].type.split("_")[1]) {
+			            			// 		console.log("energyTile[j].engine_output", energyTile[j].type.split("_")[0] + energyTile[j].type.split("_")[1], needTile[i].type.split("_")[0] + needTile[i].type.split("_")[1]);
+			            			// 		if (energyTile[j].type.split("_")[0] + energyTile[j].type.split("_")[1] === needTile[i].type.split("_")[0] + needTile[i].type.split("_")[1]) {
+			            			// 			// console.log("energyTile[j].engine_outputs!!!", energyTile[j].type.split("_")[0], energyTile[j].type, needTile[i].type, needTile[i].type);
+				            		// 			result ++;
+				            		// 		}
+			            			// 	// } else {
+			            			// 		// continue;
+			            			// 	}
+			            			// }
+			            			// result ++;
+			            			solve.push({
+			                    	row: energyTileRow,
+	                            	col: energyTileCol,
+	                            	type: energyTileType,
+	                            	name : name
+			                    });
+			            			console.log("result", result);
 			            		}
 			            	}
 			            }
 			        }
 			    }
 			}
-			return result;
+			console.log("solve", solve);
+			return solve.length;
 		}
 		function match(complete, needTile, energyTile) {
 			var energyTileRow, energyTileCol, energyTileRotate, energyTileType, energyTileDirection, row, col, rotate, name;
@@ -603,7 +627,7 @@
                 	row = complete[j].row;
                     col = complete[j].col;
                     energyTile.push({
-                    	row: row - 1, col: col, type: energyType, direction: 0 
+                    	row: row - 1, col: col, type: energyType, direction: 0
                     });
                     energyTile.push({
                     	row: row, col: col - 1, type: energyType, direction: 3
@@ -704,7 +728,6 @@
                     }
                 }
             }
-            console.log(needTile);
             match(complete, needTile, energyTile);
             result = connect(complete, needTile, energyTile, result);
 		    console.log("최종 result", result);
@@ -729,7 +752,6 @@
 			if (result === needTile.length && result !== 0) {
 				console.log("성공");
 				var saved = $(".saved").length;
-				console.log(saved);
 				var score = tile_engine[engineNum].score - complete.length + 1 - saved;//점수 손봐야함
 				success = "성공";
 				$(".board h3 span").text("획득 가능 점수 : " + score + "점");
@@ -759,6 +781,8 @@
 					if (data.result === "성공") {
 						alert("배치 완료! " + score + "점 획득");
 						location.reload();
+					} else if (data.result === "실패") {
+						alert("배치 실패 :" + data.text);
 					}
 				}, "json");	
 			}
