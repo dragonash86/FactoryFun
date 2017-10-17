@@ -276,74 +276,68 @@
 			}
 		});
 		function connect(complete, needTile, energyTile, result) {
-			var energyTileRow, energyTileCol, energyTileRotate, energyTileType, energyTileDirection, row, col, rotate, name;
+			var energyTileRow, energyTileCol, energyTileType, energyTileDirection, row, col, rotate, name, rowC, colC, rotateC, nameC, directionC, energyTileEO;
 			var solve = [];
-			for (var m = 0; m < complete.length; m++) {
-		        row = complete[m].row;
-		        col = complete[m].col;
-		        rotate = complete[m].rotate;
-		        name = complete[m].name;
-		        // console.log("test111", needTile.length);
+			for (var p = 0; p < energyTile.length; p++) {
+				energyTileRow = energyTile[p].row;
+	            energyTileCol = energyTile[p].col;
+	            energyTileType = energyTile[p].type;
+	            energyTileDirection = energyTile[p].direction;
+				energyTileEO = energyTile[p].engine_output;
+	            if (energyTileEO) {
+                    needTile.push({
+                    	row: energyTileRow,
+                    	col: energyTileCol,
+                    	type: energyTileType,
+                    	direction: energyTileDirection,
+                    	engine_output: energyTileEO
+                    });
+	            }
+			}
+			for (var m = 0; m < needTile.length; m++) {
+		        row = needTile[m].row;
+		        col = needTile[m].col;
+		        type = needTile[m].type;
+		        direction = needTile[m].direction;
 		        for (var n = 0; n < energyTile.length; n++) {
 		            energyTileRow = energyTile[n].row;
 		            energyTileCol = energyTile[n].col;
-		            energyTileRotate = energyTile[n].rotate;
 		            energyTileType = energyTile[n].type;
 		            energyTileDirection = energyTile[n].direction;
-		            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
-		            //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
+		            energyTileEO = energyTile[n].engine_output;
+		            // console.log(energyTileRow, row, energyTileCol, col, energyTileType, name, energyTileDirection, rotate);
+		            // console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (direction + 2) % 4, energyTileType, type);
 		            if (energyTileRow === row && energyTileCol === col) {
-						if (name === "tile_white") {
-			            	// console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType);
-			                if (energyTileRow === row && energyTileCol === col && energyTileDirection === (rotate + 2) % 4 && energyTileType !== "black") {
-			        			// result ++;
-			        			solve.push({
-			                    	row: energyTileRow,
-	                            	col: energyTileCol,
-	                            	type: energyTileType,
-	                            	name : name
-			                    });
-			        			console.log("result", result);
-			        		}
-			            } else if (name === "tile_black") {
-			            	// console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType);
-			                if (energyTileRow === row && energyTileCol === col && energyTileDirection === (rotate + 2) % 4 && energyTileType === "black") {
-			        			// result ++;
-			        			solve.push({
-			                    	row: energyTileRow,
-	                            	col: energyTileCol,
-	                            	type: energyTileType,
-	                            	name : name
-			                    });
-			        			console.log("result", result);
-			        		}
-			            } else {
-			            	for (var i = 0; i < needTile.length; i++) {
-			            		// console.log(energyTileRow, row, energyTileCol, col, energyTileDirection, (rotate + 2) % 4, energyTileType, needTile[i].type.split("_")[1]);
-			            		if (energyTileRow === needTile[i].row && energyTileCol === needTile[i].col && energyTileDirection === needTile[i].direction && energyTileType === needTile[i].type.split("_")[1]) {
-			            			//일단 보류 급한거부터
-			            			// for (var j = 0; j < energyTile.length; j++) {
-			            			// 	if (energyTile[j].type.split("_")[0] || energyTile[j].type.split("_")[1] || needTile[i].type.split("_")[0] || needTile[i].type.split("_")[1]) {
-			            			// 		console.log("energyTile[j].engine_output", energyTile[j].type.split("_")[0] + energyTile[j].type.split("_")[1], needTile[i].type.split("_")[0] + needTile[i].type.split("_")[1]);
-			            			// 		if (energyTile[j].type.split("_")[0] + energyTile[j].type.split("_")[1] === needTile[i].type.split("_")[0] + needTile[i].type.split("_")[1]) {
-			            			// 			// console.log("energyTile[j].engine_outputs!!!", energyTile[j].type.split("_")[0], energyTile[j].type, needTile[i].type, needTile[i].type);
-				            		// 			result ++;
-				            		// 		}
-			            			// 	// } else {
-			            			// 		// continue;
-			            			// 	}
-			            			// }
-			            			// result ++;
-			            			solve.push({
-			                    	row: energyTileRow,
-	                            	col: energyTileCol,
-	                            	type: energyTileType,
-	                            	name : name
-			                    });
-			            			console.log("result", result);
-			            		}
-			            	}
-			            }
+	            		if (energyTileDirection === direction && energyTileType === type.split("_")[1]) {
+	            			solve.push({
+		                    	row: energyTileRow,
+                            	col: energyTileCol,
+                            	type: energyTileType
+		                    });
+	            		}
+	            		if (solve.length !== needTile.length) {
+	            			for (var o = 0; o < complete.length; o++) {
+						        rowC = complete[o].row;
+						        colC = complete[o].col;
+						        nameC = complete[o].name;
+						        directionC = complete[o].direction;
+						        if (energyTileEO) {
+						        	// console.log(parseInt(energyTileEO.split("_")[0]));
+						        	// console.log(energyTileRow,row,energyTileCol, col ,nameC , parseInt(energyTileEO.split("_")[0]) , energyTileDirection , directionC, direction)
+						        	// console.log(nameC.split("tile_engine_")[1] < 55);
+						        	if (row === rowC && col === colC && nameC === "tile_white" && energyTileDirection === (directionC + 2) % 4) {
+					        			solve.push({
+					                    	row: rowC,
+			                            	col: colC,
+			                            	type: energyTileType,
+			                            	name : nameC
+					                    });
+						            } else if (row === energyTileRow && col === energyTileCol && nameC.split("tile_engine_")[1] < 55 && parseInt(energyTileEO.split("_")[0]) >= 1 && direction === energyTileDirection) {
+						            	console.log(energyTileRow,row,energyTileCol, col ,nameC , parseInt(energyTileEO.split("_")[0]) , energyTileDirection , directionC, direction)
+						            }
+						        }
+				            }
+	            		}
 			        }
 			    }
 			}
@@ -351,7 +345,7 @@
 			return solve.length;
 		}
 		function match(complete, needTile, energyTile) {
-			var energyTileRow, energyTileCol, energyTileRotate, energyTileType, energyTileDirection, row, col, rotate, name;
+			var energyTileRow, energyTileCol, energyTileType, energyTileDirection, row, col, rotate, name;
 			for (var m = 0; m < complete.length; m++) {
 		        row = complete[m].row;
 		        col = complete[m].col;
@@ -361,7 +355,6 @@
 		        for (var n = 0; n < energyTile.length; n++) {
 		            energyTileRow = energyTile[n].row;
 		            energyTileCol = energyTile[n].col;
-		            energyTileRotate = energyTile[n].rotate;
 		            energyTileType = energyTile[n].type;
 		            energyTileDirection = energyTile[n].direction;
 		            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
@@ -674,24 +667,15 @@
 		                            	col: col + posTypeColNum[i],
 		                            	type: engineAttr[posType[i]],
 		                            	direction: posTypeDirection[i],
-		                            	engine_output: engineAttr[posType[i]]
 				                    });
 				                    needTile.push({
 				                    	row: row + posTypeRowNum[i],
 		                            	col: col + posTypeColNum[i],
 		                            	type: engineAttr[posType[i]],
 		                            	direction: posTypeDirection[i],
-		                            	engine_output: engineAttr[posType[i]]
 				                    });
 	                        	} else {
 	                        		energyTile.push({
-				                    	row: row + posTypeRowNum[i],
-		                            	col: col + posTypeColNum[i],
-		                            	type: engineAttr[posType[i]].split("_")[1],
-		                            	direction: posTypeDirection[i],
-		                            	engine_output: engineAttr[posType[i]]
-				                    });
-				                    needTile.push({
 				                    	row: row + posTypeRowNum[i],
 		                            	col: col + posTypeColNum[i],
 		                            	type: engineAttr[posType[i]].split("_")[1],

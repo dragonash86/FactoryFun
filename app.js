@@ -425,20 +425,17 @@ app.post('/ajaxSaveTile', function(req, res) {
         Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
             var complete = req.body.complete;
             // var solve = req.body.solve;
-            // console.log(complete);
             function nowRoundTile() { 
                 for (var i = 0; i < complete.length; i++) {
+                    console.log(complete[i].name);
+                    console.log(roomValue.player[0].tile_engine[roomValue.round - 1].name);
                     if (complete[i].name === roomValue.player[0].tile_engine[roomValue.round - 1].name) {
-                        console.log("현재 라운드 타일 있음");
                         return true;
-                    } else {
-                        console.log("현재 라운드 타일 없음");
-                        return false;
                     }
                 }
             }
             var nowRoundTileCheck = nowRoundTile();
-            if (nowRoundTileCheck === false) {
+            if (nowRoundTileCheck !== true) {
                 res.send({ result: "실패", text: "현재 라운드 타일이 없습니다." });
             } else {
                 var score = parseInt(req.body.score);
