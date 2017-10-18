@@ -109,6 +109,14 @@ h3{padding:20px 0}
 .board .wrap_tile .tile_way_5{top:587px;left:790px}
 .board .wrap_tile .tile_way_6{top:587px;left:860px}
 .board .wrap_tile .tile_black{top:727px;left:790px}
+.board .score{position:absolute;display:block;z-index:100;width:25px;height:25px;background-size:25px 25px;-webkit-animation:animate ease-in-out 1s}
+.board .score_5{background-image:url("../images/score_5.jpg")}
+.board .score_10{background-image:url("../images/score_10.jpg")}
+.board .score_15{background-image:url("../images/score_15.jpg")}
+@-webkit-keyframes animate{
+   from{-webkit-transform:scale(4) rotate(0deg)}
+   to{-webkit-transform:scale(1) rotate(360deg)}
+}
 #player_board .empty{float:left;position:relative;width:70px;height:70px;border:1px solid #272822}
 #player_board .empty span{position:absolute;top:-2px;left:2px;font-size:10px}
 #player_board .none{border:0}

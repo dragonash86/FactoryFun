@@ -181,7 +181,7 @@
 					for (var t = 0; t < room.player[0].build.length; t++) {
 						if (room.player[0].build[t].tile !== "") { 
 				%>
-							<li><img src="/images/<%= room.player[0].build[t].tile %>.jpg" class="drag tile saved pos_<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %> rotate_<%= room.player[0].build[t].rotate %>" id="<%= room.player[0].build[t].row %>@<%= room.player[0].build[t].col %>" alt="<%= room.player[0].build[t].tile %>" /></li>
+							<li><img src="/images/<%= room.player[0].build[t].tile %>.jpg" class="drag tile saved pos_<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %> rotate_<%= room.player[0].build[t].rotate %>" id="<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %>" alt="<%= room.player[0].build[t].tile %>" /></li>
 				<% 		}
 					}
 				%>
@@ -245,10 +245,11 @@
 			var x = ((parseInt($(this).css("top")) - posTop) / posValue + 1);
 			var y = ((parseInt($(this).css("left")) - posLeft) / posValue + 1);
 			if (x > 0 && x < 11 && y > 0 && y < 11) {
-				$(this).attr("id", (x + "@" + y));
+				$(this).attr("id", (x + "_" + y));
 			}
 			$(".board td").attr("class", "");
 			$(".board td p").remove();
+			$("td .score").remove();
 		});
 		if ($(".saved").length > 0) {
 			for (var i = 0; i < $(".saved").length; i++) {
@@ -628,9 +629,9 @@
 			for (var i = 0; i < $(".wrap_tile img").length; i++) {
 				if ($(".wrap_tile img")[i].id) {
 					if ($(".wrap_tile img").eq(i).hasClass("saved")) {
-						complete.push({ row: parseInt($(".wrap_tile img")[i].id.split("@")[0]), col: parseInt($(".wrap_tile img")[i].id.split("@")[1]), name: $(".wrap_tile img")[i].alt, direction: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "no" });
+						complete.push({ row: parseInt($(".wrap_tile img")[i].id.split("_")[0]), col: parseInt($(".wrap_tile img")[i].id.split("_")[1]), name: $(".wrap_tile img")[i].alt, direction: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "no" });
 					} else {
-						complete.push({ row: parseInt($(".wrap_tile img")[i].id.split("@")[0]), col: parseInt($(".wrap_tile img")[i].id.split("@")[1]), name: $(".wrap_tile img")[i].alt, direction: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "yes" });
+						complete.push({ row: parseInt($(".wrap_tile img")[i].id.split("_")[0]), col: parseInt($(".wrap_tile img")[i].id.split("_")[1]), name: $(".wrap_tile img")[i].alt, direction: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), rotate: parseInt($(".wrap_tile img")[i].className.split("rotate_")[1]), new: "yes" });
 					}
 				}
 			}
@@ -752,21 +753,29 @@
 			console.log("complete", complete);
             console.log("energyTile", energyTile);
             console.log("needTile", needTile);
-            var success;
 			if (solve.length === needTile.length && solve.length !== 0) {
+				console.log("성공");
 				function bonusScore() { 
+					var solve_bonus = [];
+					var bonus_score;
 					for (var i = 0; i < solve.length; i++) {
 						if (solve[i].bonus > 0) {
-							return solve[i].bonus;
+							solve_bonus.push(solve[i]);
+							bonus_score = solve[i].bonus;
+							$("table #td_" + solve[i].row + "_" + solve[i].col).append("<span class='score score_" + solve[i].bonus + "'></span>");
+							// $("table .score").attr("style", "top:"+ $(".wrap_tile #" + solve[i].row + "_" + solve[i].col).offset().top +"px;left:"+ $(".wrap_tile #" + solve[i].row + "_" + solve[i].col).offset().left +"px");
 						}
 					}
+					console.log(solve_bonus);
+					// $("#" + solve_bonus.row + "_" + solve_bonus.col).addClass("asd");
+					return bonus_score;
 				}
 				var bonus_score = bonusScore();
-				console.log("성공");
 				var saved = $(".saved").length;
 				var score = tile_engine[engineNum].score - complete.length + 1 - saved;//점수 손봐야함
 				success = "성공";
 				$(".board h3 span").text("획득 가능 점수 : " + score + "점 (보너스 + " + bonus_score + "점)");
+
 				return [success, score, complete];
 			} else {
 				console.log("실패");
@@ -777,6 +786,7 @@
 		}
 		$("body").keydown(function (e) {
 			if (e.keyCode == 13) {
+				$(".wrap_tile span").remove();
 				$(".board td p").remove();
 				checkTile();
 			}
