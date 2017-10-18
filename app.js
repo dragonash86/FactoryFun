@@ -427,8 +427,6 @@ app.post('/ajaxSaveTile', function(req, res) {
             // var solve = req.body.solve;
             function nowRoundTile() { 
                 for (var i = 0; i < complete.length; i++) {
-                    console.log(complete[i].name);
-                    console.log(roomValue.player[0].tile_engine[roomValue.round - 1].name);
                     if (complete[i].name === roomValue.player[0].tile_engine[roomValue.round - 1].name) {
                         return true;
                     }

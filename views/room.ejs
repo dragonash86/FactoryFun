@@ -323,9 +323,6 @@
 						        nameC = complete[o].name;
 						        directionC = complete[o].direction;
 						        if (energyTileEO) {
-						        	// console.log(parseInt(energyTileEO.split("_")[0]));
-						        	// console.log(energyTileRow,row,energyTileCol, col ,nameC , parseInt(energyTileEO.split("_")[0]) , energyTileDirection , directionC, direction)
-						        	// console.log(nameC.split("tile_engine_")[1] < 55);
 						        	if (row === rowC && col === colC && nameC === "tile_white" && energyTileDirection === (directionC + 2) % 4) {
 					        			solve.push({
 					                    	row: rowC,
@@ -334,6 +331,13 @@
 			                            	name: nameC
 					                    });
 						            }
+						        } else if (row === rowC && col === colC && nameC === "tile_black" && energyTileDirection === (directionC + 2) % 4) {
+				        			solve.push({
+				                    	row: rowC,
+		                            	col: colC,
+		                            	type: energyTileType,
+		                            	name: nameC
+				                    });
 						        }
 				            }
 	            		}
@@ -351,15 +355,19 @@
 		            energyTileType = energyTile[n].type;
 		            energyTileDirection = energyTile[n].direction;
 		            energyTileEO = energyTile[n].engine_output;
-		        	if (energyTileEO && row === energyTileRow && col === energyTileCol && parseInt(energyTileEO.split("_")[0]) >= type.split("_")[0] && (direction + 2) % 4  === energyTileDirection) {
-		        		solve.push({
-	                    	row: row,
-                        	col: col,
-                        	type: energyTileType,
-                        	bonus: type.split("_")[0] * 5
-	                    });
-	                    console.log(energyTileRow,row,energyTileCol, col ,nameC , parseInt(energyTileEO.split("_")[0]) , energyTileDirection , directionC, direction)
-		            }
+		            if (energyTileEO && energyTileEO && row === energyTileRow && col === energyTileCol) {
+			        	// if (parseInt(energyTileEO.split("_")[0]) >= type.split("_")[0] && (direction + 2) % 4  === energyTileDirection) {
+			        	if (parseInt(energyTileEO.split("_")[0]) >= type.split("_")[0] && direction === energyTileDirection) {
+			        		console.log(energyTileRow,row,energyTileCol, col , energyTileEO, parseInt(energyTileEO.split("_")[0]), type.split("_")[0], energyTileDirection ,direction);
+			        		solve.push({
+		                    	row: row,
+	                        	col: col,
+	                        	type: energyTileType,
+	                        	bonus: type.split("_")[0] * 5
+		                    });
+		                    // console.log(energyTileRow,row,energyTileCol, col , parseInt(energyTileEO.split("_")[0]) , type.split("_")[0], energyTileDirection ,(direction + 2) % 4, directionC);
+			            }
+			        }
 			    }
 			}
 			console.log("solve", solve);
@@ -548,9 +556,49 @@
 			                    });
                         	} else continue;
 		                } else if (name === "tile_way_5") {
-		                    continue;
+	                		if (energyTileDirection === 0) {
+	                            energyTile[n].row --;
+	                        } else if (energyTileDirection === 1) {
+	                            energyTile[n].col ++;
+	                        } else if (energyTileDirection === 2) {
+	                            energyTile[n].row ++;
+	                        } else if (energyTileDirection === 3) {
+	                            energyTile[n].col --;
+	                        } else continue;
 		                } else if (name === "tile_way_6") {
-		                    continue;
+		                	if (energyTileDirection === 0) {
+	                            if (rotate === 0 || rotate === 2) {
+	                        		energyTile[n].direction = 1;
+	                            	energyTile[n].col ++;
+	                        	} else if (rotate === 1 || rotate === 3) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                        	} else continue;
+	                        } else if (energyTileDirection === 1) {
+	                        	if (rotate === 0 || rotate === 2) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                        	} else if (rotate === 1 || rotate === 3) {
+	                        		energyTile[n].direction = 2;
+	                            	energyTile[n].row ++;
+	                        	} else continue;
+	                        } else if (energyTileDirection === 2) {
+	                            if (rotate === 0 || rotate === 2) {
+	                        		energyTile[n].direction = 3;
+	                            	energyTile[n].col --;
+	                        	} else if (rotate === 1 || rotate === 3) {
+	                        		energyTile[n].direction = 1;
+	                            	energyTile[n].col ++;
+	                        	} else continue;
+	                        } else if (energyTileDirection === 3) {
+	                            if (rotate === 1 || rotate === 3) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].row --;
+	                        	} else if (rotate === 0 || rotate === 2) {
+	                        		energyTile[n].direction = 2;
+	                            	energyTile[n].row ++;
+	                        	} else continue;
+	                        } else continue;
 		                } else continue;
 		            }
 		            if (energyTileRow === row && energyTileCol === col) {
@@ -640,18 +688,10 @@
                 	energyType = complete[j].name.split("tile_energy_")[1];
                 	row = complete[j].row;
                     col = complete[j].col;
-                    energyTile.push({
-                    	row: row - 1, col: col, type: energyType, direction: 0
-                    });
-                    energyTile.push({
-                    	row: row, col: col - 1, type: energyType, direction: 3
-                    });
-                    energyTile.push({
-                    	row: row, col: col + 1, type: energyType, direction: 1
-                    });
-                    energyTile.push({
-                    	row: row + 1 ,col: col, type: energyType, direction: 2
-                    });
+                    energyTile.push({row: row - 1, col: col, type: energyType, direction: 0});
+                    energyTile.push({row: row, col: col - 1, type: energyType, direction: 3});
+                    energyTile.push({row: row, col: col + 1, type: energyType, direction: 1});
+                    energyTile.push({row: row + 1 ,col: col, type: energyType, direction: 2});
                 } else if (complete[j].name.split("tile_engine_")[1]) {
                     //엔진의 번호를 engineAttr에 담음
                     engineNum = complete[j].name.split("tile_engine_")[1];
@@ -762,20 +802,20 @@
 						if (solve[i].bonus > 0) {
 							solve_bonus.push(solve[i]);
 							bonus_score = solve[i].bonus;
-							$("table #td_" + solve[i].row + "_" + solve[i].col).append("<span class='score score_" + solve[i].bonus + "'></span>");
-							// $("table .score").attr("style", "top:"+ $(".wrap_tile #" + solve[i].row + "_" + solve[i].col).offset().top +"px;left:"+ $(".wrap_tile #" + solve[i].row + "_" + solve[i].col).offset().left +"px");
+							$("#td_" + solve[i].row + "_" + solve[i].col).append("<span class='score score_" + solve[i].bonus + "'></span>");
 						}
 					}
-					console.log(solve_bonus);
-					// $("#" + solve_bonus.row + "_" + solve_bonus.col).addClass("asd");
 					return bonus_score;
 				}
 				var bonus_score = bonusScore();
 				var saved = $(".saved").length;
 				var score = tile_engine[engineNum].score - complete.length + 1 - saved;//점수 손봐야함
 				success = "성공";
-				$(".board h3 span").text("획득 가능 점수 : " + score + "점 (보너스 + " + bonus_score + "점)");
-
+				if (bonus_score > 0) {
+					$(".board h3 span").text("획득 가능 점수 : " + score + "점 (보너스 + " + bonus_score + "점)");
+				} else {
+					$(".board h3 span").text("획득 가능 점수 : " + score + "점");	
+				}
 				return [success, score, complete];
 			} else {
 				console.log("실패");
@@ -806,7 +846,7 @@
 					} else if (data.result === "실패") {
 						alert("배치 실패 :" + data.text);
 					}
-				}, "json");	
+				}, "json");
 			}
 		});
 	});
