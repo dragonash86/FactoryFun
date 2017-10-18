@@ -99,7 +99,12 @@
 			<div class="box">
 				<h3 class="player<%= i %>"><%= room.player[i].nick %></h3>
 				<ul>
-					<li>점수 : <%= room.player[i].score %></li>
+					<li>
+						점수 : <%= room.player[i].score %>
+						<% if (room.player[i].bonus > 0) { %>
+						(+<%= room.player[i].bonus %>)
+						<% } %>
+					</li>
 				</ul>
 			</div>
 		<% } %>
@@ -673,7 +678,6 @@
 	        tile_engine[52] = { name: "tile_engine_52", score: 14, bonus: "", top_1: "1_orange_input", top_2: "", bottom_1: "1_blue_input", bottom_2: "", left: "2_green_input", right: "black" };
 	        tile_engine[53] = { name: "tile_engine_53", score: 9, bonus: "", top_1: "3_orange_input", top_2: "", bottom_1: "", bottom_2: "1_blue_output", left: "1_green_input", right: "" };
 	        tile_engine[54] = { name: "tile_engine_54", score: 5, bonus: "", top_1: "", top_2: "", bottom_1: "2_orange_input", bottom_2: "", left: "", right: "2_blue_output" };
-	        // console.log(tile_engine);
 			for (var i = 0; i < $(".wrap_tile img").length; i++) {
 				if ($(".wrap_tile img")[i].id) {
 					if ($(".wrap_tile img").eq(i).hasClass("saved")) {
@@ -816,7 +820,7 @@
 				} else {
 					$(".board h3 span").text("획득 가능 점수 : " + score + "점");	
 				}
-				return [success, score, complete];
+				return [success, score, complete, bonus_score];
 			} else {
 				console.log("실패");
 				success = "실패";
@@ -837,9 +841,10 @@
 			var success = result[0];
 			var score = result[1];
 			var complete = result[2];
+			var bonus = result[3];
 			if (success === "성공") {
 				console.log("성공");
-				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { "score": score, "complete": complete },function(data) {
+				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { "score": score, "bonus": bonus, "complete": complete },function(data) {
 					if (data.result === "성공") {
 						alert("배치 완료! " + score + "점 획득");
 						location.reload();

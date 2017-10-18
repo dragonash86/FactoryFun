@@ -343,7 +343,8 @@ app.post('/startRoom', function(req, res) {
                     tile_energy_green: 1,
                     tile_energy_orange: 1,
                     tile_energy_red: 1,
-                    score: 2
+                    score: 2,
+                    bonus: 0
                 } } }, function(err) {});
             }
             res.redirect('/room?roomId=' + req.query.roomId);
@@ -424,6 +425,7 @@ app.post('/ajaxSaveTile', function(req, res) {
     if (req.user) {
         Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
             var complete = req.body.complete;
+            var bonus = req.body.bonus;
             // var solve = req.body.solve;
             function nowRoundTile() { 
                 for (var i = 0; i < complete.length; i++) {
@@ -469,7 +471,8 @@ app.post('/ajaxSaveTile', function(req, res) {
                 }
                 // console.log(incQuery);
                 // console.log(setQuery);
-                Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': score, round : 1 }, $set: { 'player.$.select_engine': "아직" } }, function(err) {
+                console.log(bonus);
+                Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': score, 'player.$.bonus': bonus, round: 1 }, $set: { 'player.$.select_engine': "아직" } }, function(err) {
                     Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery }, function(err) {
                         Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $push: { 'player.$.round': complete } }, function(err) {
                             res.send({ result: "성공" });    
