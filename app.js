@@ -425,7 +425,7 @@ app.post('/ajaxSaveTile', function(req, res) {
     if (req.user) {
         Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
             var complete = req.body.complete;
-            var bonus = parseInt(req.body.bonus);
+            var bonusTile = parseInt(req.body.bonus);
             // var solve = req.body.solve;
             function nowRoundTile() { 
                 for (var i = 0; i < complete.length; i++) {
@@ -471,10 +471,10 @@ app.post('/ajaxSaveTile', function(req, res) {
                 }
                 // console.log(incQuery);
                 // console.log(setQuery);
-                console.log(bonus);
+                console.log(bonusTile);
                 Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery }, function(err) {
                     Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $push: { 'player.$.round': complete } }, function(err) {
-                        if (bonus > 0) {
+                        if (bonusTile.bonus > 0) {
                             Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': score, 'player.$.bonus': bonus, round: 1 }, $set: { 'player.$.select_engine': "아직" } }, function(err) {
                                 res.send({ result: "성공" });
                             });

@@ -798,35 +798,56 @@
             console.log("energyTile", energyTile);
             console.log("needTile", needTile);
 			if (solve.length === needTile.length && solve.length !== 0) {
+				success = "성공";
 				console.log("성공");
-				function bonusScore() { 
+				function bonusScore() {
 					var solve_bonus = [];
-					var bonus_score;
+					var bonus_score = 0;
 					for (var i = 0; i < solve.length; i++) {
 						if (solve[i].bonus > 0) {
-							solve_bonus.push(solve[i]);
-							bonus_score = solve[i].bonus;
 							$("#td_" + solve[i].row + "_" + solve[i].col).append("<span class='score score_" + solve[i].bonus + "'></span>");
+							solve_bonus.push(solve[i]);
+							bonus_score = bonus_score + solve[i].bonus;
 						}
 					}
-					return bonus_score;
+					return [solve_bonus, bonus_score];
 				}
-				var bonus_score = bonusScore();
-				var saved = $(".saved").length;
-				var score = tile_engine[engineNum].score - complete.length + 1 - saved;//점수 손봐야함
-				success = "성공";
-				if (bonus_score > 0) {
-					$(".board h3 span").text("획득 가능 점수 : " + score + "점 (보너스 + " + bonus_score + "점)");
+				var solve_bonus = bonusScore();
+				var scoreTile = [];
+				var score_engine;
+				for (var i = 0; i < complete.length; i++) {
+					if (complete[i].new === "yes") {
+						scoreTile.push({
+	                    	row: complete[i].row,
+	                    	col: complete[i].col,
+	                    	name: complete[i].name,
+	                    	rotate: complete[i].rotate
+	                    });
+	                    if (complete[i].name.split("tile_engine_")[1]) {
+		                	score_engine = tile_engine[complete[i].name.split("tile_engine_")[1]].score;
+		                }
+					}
+					
+				}
+				console.log("scoreTile", scoreTile);
+				var score = score_engine - scoreTile.length + 1;
+				if (score_engine === undefined) {
+					$(".board h3 span").text("타일을 놔주세요.");
 				} else {
-					$(".board h3 span").text("획득 가능 점수 : " + score + "점");	
+					if (solve_bonus[1] > 0) {
+						$(".board h3 span").text("획득 가능 점수 : " + score + "점 (보너스 + " + solve_bonus[1] + "점)");
+					} else {
+						$(".board h3 span").text("획득 가능 점수 : " + score + "점");
+					}
 				}
-				return [success, score, complete, bonus_score];
+				return [success, score, complete, solve_bonus];
+				console.log(solve_bonus);
 			} else {
-				console.log("실패");
 				success = "실패";
 				$(".board h3 span").text("");
 				return success;
 			}
+
 		}
 		$("body").keydown(function (e) {
 			if (e.keyCode == 13) {
