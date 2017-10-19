@@ -75,21 +75,18 @@
 		}
 	%>
 	<div>
-		<% 
-			for (var i = 0; i < room.player.length; i++) {
-                var count = 0;
-                if (room.player[i].board !== "아직") {
-                    count = count + 1;
-                    var yet = room.member.length - count;
-                    if (count === room.member.length) {
-                    	
-        %>
-        <script>location.href = "";</script>
-        <% 
-                    }
-                }
-            }
-		%>
+		<% for (var i = 0; i < room.player.length; i++) { %>
+    	<%
+    		var count = 0;
+        	if (room.player[i].board !== "아직") {
+        		count = count + 1;
+            	var yet = room.member.length - count;
+    	%>
+    			<% if (count === room.member.length) { %>
+                	<script>location.href = "";</script>
+        		<% } %> 
+           	<% } %>
+        <% } %>
 		<p class="t_c p_t_20">아직 <%= yet %>명이 판떼기를 안골랐습니다.</p>
 		<a href="" class="btn">새로고침</a>
 	</div>
@@ -114,12 +111,7 @@
 			<li class="remain">남은 엔진 : <% for (var i = 0; i < room.player[0].rest_engine; i++) { %><span class="ball"><%= i+1 %></span><% } %><li>
 		</ul>
 		<% } else { %>
-		<ul class="rank">
-			<% for (var i = 1; i <= room.player.length; i++)  { %>
-			<!-- <li><%= i %>등 : <%= room.player[i - 1].nick %></li> -->
-			<% } %>
-			<li>게임 종료</li>
-		</ul>
+		<p class="rank">게임 종료</p>
 		<% } %>
 	</div>
 	<div class="board">
@@ -188,14 +180,11 @@
 				<% if (room.player[0].select_engine !== "아직") { %>
 				<li><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.jpg" class="drag tile_engine selected_engine rotate_0" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></li>
 				<% } %>
-				<% 
-					for (var t = 0; t < room.player[0].build.length; t++) {
-						if (room.player[0].build[t].tile !== "") { 
-				%>
-							<li><img src="/images/<%= room.player[0].build[t].tile %>.jpg" class="drag tile saved pos_<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %> rotate_<%= room.player[0].build[t].rotate %>" id="<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %>" alt="<%= room.player[0].build[t].tile %>" /></li>
-				<% 		}
-					}
-				%>
+				<% for (var t = 0; t < room.player[0].build.length; t++) { %>
+					<% if (room.player[0].build[t].tile !== "") { %>
+						<li><img src="/images/<%= room.player[0].build[t].tile %>.jpg" class="drag tile saved pos_<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %> rotate_<%= room.player[0].build[t].rotate %>" id="<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %>" alt="<%= room.player[0].build[t].tile %>" /></li>
+					<% } %>
+				<% } %>
 			</ul>
 		</div>
 		<div class="board_tile"></div>
@@ -864,7 +853,6 @@
 			var score = result[1];
 			var complete = result[2];
 			var bonus = result[3];
-			console.log(bonus);
 			if (success === "성공") {
 				console.log("성공");
 				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { "score": score, "bonus": bonus, "complete": complete },function(data) {
