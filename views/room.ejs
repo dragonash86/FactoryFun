@@ -108,16 +108,22 @@
 				</ul>
 			</div>
 		<% } %>
+		<% if (room.round !== 11) { %>
 		<ul>
 			<li>라운드 : <%= room.round %><li>
-			<li>남은 엔진 : <% for (var i = 0; i < room.player[0].rest_engine; i++) { %><span class="ball"><%= i+1 %></span><% } %><li>
+			<li class="remain">남은 엔진 : <% for (var i = 0; i < room.player[0].rest_engine; i++) { %><span class="ball"><%= i+1 %></span><% } %><li>
 		</ul>
-		<% if (room.round === 11) { %>
-			게임 끝
+		<% } else { %>
+		<ul class="rank">
+			<% for (var i = 1; i <= room.player.length; i++)  { %>
+			<!-- <li><%= i %>등 : <%= room.player[i - 1].nick %></li> -->
+			<% } %>
+			<li>게임 종료</li>
+		</ul>
 		<% } %>
 	</div>
 	<div class="board">
-		<% if (room.player[0].select_engine === "아직") { %>
+		<% if (room.player[0].select_engine === "아직" && room.round !== 11) { %>
 		<div class="select_engine">
 			<a href="#n"><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.jpg" id="<% if (room.player[0].tile_engine[room.round -1].bonus !== "") %><%= room.player[0].tile_engine[room.round -1].bonus %>" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></a>
 			<form method="post" class="layer_start"><input type="submit" value="선택" /></form>
@@ -247,14 +253,15 @@
 		});
 		$(".drag").drop(function(ev, dd) {
 			$(this).attr("id", "");
-			var x = ((parseInt($(this).css("top")) - posTop) / posValue + 1);
-			var y = ((parseInt($(this).css("left")) - posLeft) / posValue + 1);
+			// console.log("$(this)", $(this));
+			var x = (parseInt($(this).css("top")) - posTop) / posValue + 1;
+			var y = (parseInt($(this).css("left")) - posLeft) / posValue + 1;
 			if (x > 0 && x < 11 && y > 0 && y < 11) {
 				$(this).attr("id", (x + "_" + y));
+				console.log("ev,dd", ev,dd);
 			}
 			$(".board td").attr("class", "");
-			$(".board td p").remove();
-			$("td .score").remove();
+			$(".board td p, td .score").remove();
 		});
 		if ($(".saved").length > 0) {
 			for (var i = 0; i < $(".saved").length; i++) {
@@ -827,21 +834,15 @@
 		                	score_engine = tile_engine[complete[i].name.split("tile_engine_")[1]].score;
 		                }
 					}
-					
 				}
 				console.log("scoreTile", scoreTile);
 				var score = score_engine - scoreTile.length + 1;
 				if (score_engine === undefined) {
 					$(".board h3 span").text("타일을 놔주세요.");
 				} else {
-					if (solve_bonus[1] > 0) {
-						$(".board h3 span").text("획득 가능 점수 : " + score + "점 (보너스 + " + solve_bonus[1] + "점)");
-					} else {
-						$(".board h3 span").text("획득 가능 점수 : " + score + "점");
-					}
+					$(".board h3 span").text("획득 가능 점수 : " + score + "점");
 				}
 				return [success, score, complete, solve_bonus];
-				console.log(solve_bonus);
 			} else {
 				success = "실패";
 				$(".board h3 span").text("");
@@ -863,6 +864,7 @@
 			var score = result[1];
 			var complete = result[2];
 			var bonus = result[3];
+			console.log(bonus);
 			if (success === "성공") {
 				console.log("성공");
 				$.post("/ajaxSaveTile?roomId=<%= room._id %>", { "score": score, "bonus": bonus, "complete": complete },function(data) {

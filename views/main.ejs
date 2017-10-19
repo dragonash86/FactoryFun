@@ -34,6 +34,24 @@
 			<% } %>
 			<li class="last"><form action="/roomCreat" method="post"><input type="submit" value="방만들기" /></form></li>
 		</ul>
+		<% for (i = 0; i < room.length; i++) { %>
+			<% if (room[i].round === 11) { %>
+				<h2>종료된 게임</h2>
+				<ul class="list">
+					<li>
+						<a href="/room?roomId=<%= room[i]._id %>">
+							<ul>
+								<li><%= room[i].name %></li>
+								<li>방장 : <%= room[i].admin %></li>
+								<li>참여인원 : <%= room[i].member.length %>/<%= room[i].maxMember %></li>
+								<li>게임 종료</li>
+							</ul>
+						</a>
+					</li>
+				</ul>
+			<% } %>
+		<% } %>
+		
 	</div>
     <script>
 	</script>
