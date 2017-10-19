@@ -363,7 +363,7 @@
 		            if (energyTileEO && energyTileEO && row === energyTileRow && col === energyTileCol) {
 			        	// if (parseInt(energyTileEO.split("_")[0]) >= type.split("_")[0] && (direction + 2) % 4  === energyTileDirection) {
 			        	if (parseInt(energyTileEO.split("_")[0]) >= type.split("_")[0] && direction === energyTileDirection) {
-			        		console.log(energyTileRow,row,energyTileCol, col , energyTileEO, parseInt(energyTileEO.split("_")[0]), type.split("_")[0], energyTileDirection ,direction);
+			        		// console.log(energyTileRow,row,energyTileCol, col , energyTileEO, parseInt(energyTileEO.split("_")[0]), type.split("_")[0], energyTileDirection ,direction);
 			        		solve.push({
 		                    	row: row,
 	                        	col: col,
@@ -849,7 +849,7 @@
 						alert("배치 완료! " + score + "점 획득");
 						location.reload();
 					} else if (data.result === "실패") {
-						alert("배치 실패 :" + data.text);
+						alert("배치 실패 : " + data.text);
 					}
 				}, "json");
 			}
