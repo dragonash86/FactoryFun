@@ -245,10 +245,78 @@
 			// console.log("$(this)", $(this)); 가끔 id 못가져오는 버그 해결을 위해 일단 주석
 			var x = (parseInt($(this).css("top")) - posTop) / posValue + 1;
 			var y = (parseInt($(this).css("left")) - posLeft) / posValue + 1;
-			if (x > 0 && x < 11 && y > 0 && y < 11) {
-				$(this).attr("id", (x + "_" + y));
-				// console.log("ev,dd", ev,dd); 가끔 id 못가져오는 버그 해결을 위해 일단 주석
+			if ($(".board_a_classic")) {
+				if (x > 0 && x < 10 && y > 0 && y < 10) {
+					$(this).attr("id", (x + "_" + y));
+					if (x === 8 && y === 1 || x === 9 && y === 1 || x === 9 && y === 2 || x === 4 && y === 5) {
+						$(this).attr("id", "");
+					}
+				}
+			} else if ($(".board_b_classic")) {
+				if (x > 0 && x < 10 && y > 0 && y < 10) {
+					$(this).attr("id", (x + "_" + y));
+					if (x === 1 && y === 1 || x === 1 && y === 2 || x === 9 && y === 1 || x === 5 && y === 4) {
+						$(this).attr("id", "");
+					}
+				}
+			} else if ($(".board_c_classic")) {
+				if (x > 0 && x < 9 && y > 0 && y < 11) {
+					$(this).attr("id", (x + "_" + y));
+					if (x === 8 && y === 1 || x === 8 && y === 2 || x === 4 && y === 6) {
+						$(this).attr("id", "");
+					}
+				}
+			} else if ($(".board_d_classic")) {
+				if (x > 0 && x < 9 && y > 0 && y < 11) {
+					$(this).attr("id", (x + "_" + y));
+					if (x === 1 && y === 1 || x === 2 && y === 1 || x === 5 && y === 5) {
+						$(this).attr("id", "");
+					}
+				}
+			} else if ($(".board_e_classic")) {
+				if (x > 0 && x < 10 && y > 0 && y < 10) {
+					$(this).attr("id", (x + "_" + y));
+					if (x === 9 && y === 1 || x === 9 && y === 2 || x === 9 && y === 3 || x === 5 && y === 5) {
+						$(this).attr("id", "");
+					}
+				}
+			} else if ($(".board_a_expert")) {
+				if (x > 0 && x < 10 && y > 0 && y < 10) {
+					$(this).attr("id", (x + "_" + y));
+					if (x === 3 && y === 3 || x === 3 && y === 7 || x === 7 && y === 3 || x === 7 && y === 7) {
+						$(this).attr("id", "");
+					}
+				}
+			} else if ($(".board_b_expert")) {
+				if (x > 0 && x < 9 && y > 0 && y < 11) {
+					$(this).attr("id", (x + "_" + y));
+					if (x === 1 && y === 5 || x === 2 && y === 5 || x === 3 && y === 5) {
+						$(this).attr("id", "");
+					}
+				}
+			} else if ($(".board_c_expert")) {
+				if (x > 0 && x < 10 && y > 0 && y < 10) {
+					$(this).attr("id", (x + "_" + y));
+					if (x === 1 && y === 5 || x === 2 && y === 5 || x === 8 && y === 5 || x === 9 && y === 5) {
+						$(this).attr("id", "");
+					}
+				}
+			} else if ($(".board_d_expert")) {
+				if (x > 0 && x < 10 && y > 0 && y < 10) {
+					$(this).attr("id", (x + "_" + y));
+					if (x === 1 && y === 5 || x === 2 && y === 5 || x === 3 && y === 5 || x === 4 && y === 5) {
+						$(this).attr("id", "");
+					}
+				}
+			} else if ($(".board_e_expert")) {
+				if (x > 0 && x < 9 && y > 0 && y < 11) {
+					$(this).attr("id", (x + "_" + y));
+					if (x === 3 && y === 6 || x === 6 && y === 3 || x === 6 && y === 8) {
+						$(this).attr("id", "");
+					}
+				}
 			}
+			// console.log("ev,dd", ev,dd); 가끔 id 못가져오는 버그 해결을 위해 일단 주석
 			$(".board td").attr("class", "");
 			$(".board td p, td .score").remove();
 		});
