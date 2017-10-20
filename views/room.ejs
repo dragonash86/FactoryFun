@@ -189,7 +189,7 @@
 		</div>
 		<div class="board_tile"></div>
 		<h3><%= room.member[k] %><% var board = room.player[k].board.replace('board_', 'Type ').replace('_', ' ').toUpperCase(); %>(<%= board %>)<span></span></h3>
-		<table class="<%= room.player[0].board %>">
+		<table class="mine <%= room.player[0].board %>">
 			<% for (var i = 1; i <= 10; i++) { %>
 			<tr>
 				<% for (var j = 1; j <= 10; j++) { %>
@@ -245,70 +245,70 @@
 			// console.log("$(this)", $(this)); 가끔 id 못가져오는 버그 해결을 위해 일단 주석
 			var x = (parseInt($(this).css("top")) - posTop) / posValue + 1;
 			var y = (parseInt($(this).css("left")) - posLeft) / posValue + 1;
-			if ($(".board_a_classic")) {
+			if ($(".mine").hasClass("board_a_classic")) {
 				if (x > 0 && x < 10 && y > 0 && y < 10) {
 					$(this).attr("id", (x + "_" + y));
 					if (x === 8 && y === 1 || x === 9 && y === 1 || x === 9 && y === 2 || x === 4 && y === 5) {
 						$(this).attr("id", "");
 					}
 				}
-			} else if ($(".board_b_classic")) {
+			} else if ($(".mine").hasClass("board_b_classic")) {
 				if (x > 0 && x < 10 && y > 0 && y < 10) {
 					$(this).attr("id", (x + "_" + y));
-					if (x === 1 && y === 1 || x === 1 && y === 2 || x === 9 && y === 1 || x === 5 && y === 4) {
+					if (x === 1 && y === 1 || x === 1 && y === 2 || x === 9 && y === 1 || x === 5 && y === 5) {
 						$(this).attr("id", "");
 					}
 				}
-			} else if ($(".board_c_classic")) {
+			} else if ($(".mine").hasClass("board_c_classic")) {
 				if (x > 0 && x < 9 && y > 0 && y < 11) {
 					$(this).attr("id", (x + "_" + y));
 					if (x === 8 && y === 1 || x === 8 && y === 2 || x === 4 && y === 6) {
 						$(this).attr("id", "");
 					}
 				}
-			} else if ($(".board_d_classic")) {
+			} else if ($(".mine").hasClass("board_d_classic")) {
 				if (x > 0 && x < 9 && y > 0 && y < 11) {
 					$(this).attr("id", (x + "_" + y));
 					if (x === 1 && y === 1 || x === 2 && y === 1 || x === 5 && y === 5) {
 						$(this).attr("id", "");
 					}
 				}
-			} else if ($(".board_e_classic")) {
+			} else if ($(".mine").hasClass("board_e_classic")) {
 				if (x > 0 && x < 10 && y > 0 && y < 10) {
 					$(this).attr("id", (x + "_" + y));
 					if (x === 9 && y === 1 || x === 9 && y === 2 || x === 9 && y === 3 || x === 5 && y === 5) {
 						$(this).attr("id", "");
 					}
 				}
-			} else if ($(".board_a_expert")) {
+			} else if ($(".mine").hasClass("board_a_expert")) {
 				if (x > 0 && x < 10 && y > 0 && y < 10) {
 					$(this).attr("id", (x + "_" + y));
 					if (x === 3 && y === 3 || x === 3 && y === 7 || x === 7 && y === 3 || x === 7 && y === 7) {
 						$(this).attr("id", "");
 					}
 				}
-			} else if ($(".board_b_expert")) {
+			} else if ($(".mine").hasClass("board_b_expert")) {
 				if (x > 0 && x < 9 && y > 0 && y < 11) {
 					$(this).attr("id", (x + "_" + y));
 					if (x === 1 && y === 5 || x === 2 && y === 5 || x === 3 && y === 5) {
 						$(this).attr("id", "");
 					}
 				}
-			} else if ($(".board_c_expert")) {
+			} else if ($(".mine").hasClass("board_c_expert")) {
 				if (x > 0 && x < 10 && y > 0 && y < 10) {
 					$(this).attr("id", (x + "_" + y));
 					if (x === 1 && y === 5 || x === 2 && y === 5 || x === 8 && y === 5 || x === 9 && y === 5) {
 						$(this).attr("id", "");
 					}
 				}
-			} else if ($(".board_d_expert")) {
+			} else if ($(".mine").hasClass("board_d_expert")) {
 				if (x > 0 && x < 10 && y > 0 && y < 10) {
 					$(this).attr("id", (x + "_" + y));
 					if (x === 1 && y === 5 || x === 2 && y === 5 || x === 3 && y === 5 || x === 4 && y === 5) {
 						$(this).attr("id", "");
 					}
 				}
-			} else if ($(".board_e_expert")) {
+			} else if ($(".mine").hasClass("board_e_expert")) {
 				if (x > 0 && x < 9 && y > 0 && y < 11) {
 					$(this).attr("id", (x + "_" + y));
 					if (x === 3 && y === 6 || x === 6 && y === 3 || x === 6 && y === 8) {
@@ -328,6 +328,8 @@
 				});
 				if ($(".saved").eq(i).attr("alt").split("_")[0] + "_" + $(".saved").eq(i).attr("alt").split("_")[1] === "tile_engine") {
 					$(".saved").eq(i).removeClass("tile").addClass("tile_engine");
+				} else if ($(".saved").eq(i).attr("alt").split("_")[0] + "_" + $(".saved").eq(i).attr("alt").split("_")[1] === "tile_option") {
+					$(".saved").eq(i).removeClass("tile").addClass("tile_option");
 				}
 			}
 			$(".saved").fadeIn();
@@ -449,14 +451,11 @@
 		        col = complete[m].col;
 		        rotate = complete[m].rotate;
 		        name = complete[m].name;
-		        // console.log("test111", needTile.length);
 		        for (var n = 0; n < energyTile.length; n++) {
 		            energyTileRow = energyTile[n].row;
 		            energyTileCol = energyTile[n].col;
 		            energyTileType = energyTile[n].type;
 		            energyTileDirection = energyTile[n].direction;
-		            //필요한 타일의 row 값과 col 값을 구해서 유저가 던진 데이터와 비교 함 
-		            //위치값 매칭이 됐다면 그게 충족되는 값인지 체크
 		            if (energyTileRow === row && energyTileCol === col) {
 		                if (name === "tile_way_1") {
 		            		if (rotate === energyTileDirection) {
@@ -626,6 +625,56 @@
 	                        	} else if (rotate === 0 || rotate === 2) {
 	                        		energyTile[n].direction = 2;
 	                            	energyTile[n].row ++;
+	                        	} else continue;
+	                        } else continue;
+		                } else if (name === "tile_option") {
+		                	if (energyTileDirection === 0) {
+	                            if (rotate === 0 || rotate === 2) {
+	                        		energyTile[n].direction = 0;
+	                            	energyTile[n].col ++;
+	                            	energyTile[n].row --;
+	                            	for (var m = 0; m < energyTile.length; m++) {
+	                            		if (energyTile[m].col === energyTile[n].col && energyTile[m].row === energyTile[n].row + 1) {
+	                            			energyTile[m].col --;
+	                            			energyTile[m].row --;
+	                            		}
+	                            	}
+	                        	} else continue;
+	                        } else if (energyTileDirection === 1) {
+	                        	if (rotate === 1 || rotate === 3) {
+	                        		energyTile[n].direction = 1;
+	                        		energyTile[n].col ++;
+	                            	energyTile[n].row ++;
+	                            	for (var m = 0; m < energyTile.length; m++) {
+	                            		if (energyTile[m].col === energyTile[n].col - 1 && energyTile[m].row === energyTile[n].row) {
+	                            			energyTile[m].col ++;
+	                            			energyTile[m].row --;
+	                            		}
+	                            	}
+	                        	} else continue;
+	                        } else if (energyTileDirection === 2) {
+	                            if (rotate === 0 || rotate === 2) {
+	                        		energyTile[n].direction = 2;
+	                            	energyTile[n].col ++;
+	                            	energyTile[n].row ++;
+	                            	for (var m = 0; m < energyTile.length; m++) {
+	                            		if (energyTile[m].col === energyTile[n].col && energyTile[m].row === energyTile[n].row - 1) {
+	                            			energyTile[m].col --;
+	                            			energyTile[m].row ++;
+	                            		}
+	                            	}
+	                        	} else continue;
+	                        } else if (energyTileDirection === 3) {
+	                            if (rotate === 1 || rotate === 3) {
+	                        		energyTile[n].direction = 3;
+	                        		energyTile[n].col --;
+	                            	energyTile[n].row ++;
+	                            	for (var m = 0; m < energyTile.length; m++) {
+	                            		if (energyTile[m].col === energyTile[n].col + 1 && energyTile[m].row === energyTile[n].row) {
+	                            			energyTile[m].col --;
+	                            			energyTile[m].row --;
+	                            		}
+	                            	}
 	                        	} else continue;
 	                        } else continue;
 		                } else continue;
@@ -870,12 +919,21 @@
 					}
 				}
 				console.log("scoreTile", scoreTile);
-				var score = score_engine - scoreTile.length + 1;
+				var double_cost = 0;
+				for (var i = 0; i < scoreTile.length; i++) {
+					if (scoreTile[i].name === "tile_way_5" || scoreTile[i].name === "tile_way_6" || scoreTile[i].name === "tile_option") {
+						double_cost += double_cost - 1;
+					}
+				}
+				var tile_cost = scoreTile.length + double_cost + 1;
 				if (score_engine === undefined) {
 					$(".board h3 span").text("새 기계를 설치하세요.");
 				} else {
-					$(".board h3 span").text("획득 가능 점수 : " + score + "점");
+					$(".board h3 span").text("획득 가능 점수 : " + parseInt(score_engine - tile_cost) + "점 (타일 비용 : " + tile_cost + ")");
+					// var score = 0;
+					var score = score_engine - tile_cost;
 				}
+				console.log("scoreTile.length, double_cost, tile_cost, score_engine, score", scoreTile.length, double_cost, tile_cost, score_engine, score);
 				return [success, score, complete, solve_bonus];
 			} else {
 				success = "실패";
