@@ -413,8 +413,14 @@ app.post('/giveUp', function(req, res) {
     if (req.user) {
         Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': -5, round : 1 }, $set: { 'player.$.select_engine': "아직" } }, function(err) {
             Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick }}, 'player.score': { $lt : 1 } }, { $set: { 'player.$.score': 1 } }, function(err) {
-                res.redirect('/room?roomId=' + req.query.roomId);  
-            });    
+                Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
+                    if (roomValue.round === 11) {
+                        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.bonus': parseInt(req.query.bonus) } }, function(err) {
+                            res.redirect('/room?roomId=' + req.query.roomId);
+                        });
+                    } else res.redirect('/room?roomId=' + req.query.roomId);
+                }); 
+            });
         });
     } else {
         res.render('login');
@@ -424,7 +430,9 @@ app.post('/ajaxSaveTile', function(req, res) {
     if (req.user) {
         Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
             var complete = req.body.complete;
+            var bonus = parseInt(req.body.bonus);
             // var solve = req.body.solve;
+
             function nowRoundTile() { 
                 for (var i = 0; i < complete.length; i++) {
                     if (complete[i].name === roomValue.player[0].tile_engine[roomValue.round - 1].name) {
@@ -471,9 +479,15 @@ app.post('/ajaxSaveTile', function(req, res) {
                 // console.log(setQuery);
                 Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery }, function(err) {
                     Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $push: { 'player.$.round': complete } }, function(err) {
-                        Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': score, round: 1 }, $set: { 'player.$.select_engine': "아직" } }, function(err) {
-                            res.send({ result: "성공" });
-                        });
+                        if (roomValue.round === 10) {
+                            Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': score, 'player.$.bonus': bonus, round: 1 } }, function(err) {
+                                res.send({ result: "성공" });
+                            });
+                        } else {
+                            Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $inc: { 'player.$.score': score, round: 1 }, $set: { 'player.$.select_engine': "아직" } }, function(err) {
+                                res.send({ result: "성공" });
+                            });    
+                        }
                     });
                 });
             }

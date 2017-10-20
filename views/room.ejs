@@ -202,7 +202,7 @@
 		</table>
 		<% if (room.player[0].select_engine !== "아직") { %>
 		<form method="post"><input type="submit" value="배치완료" class="btn complete" /></form>
-		<form action="/giveUp?roomId=<%= room._id %>" method="post"><input type="submit" value="포기하기" class="btn" /></form>
+		<form method="post" id="give_up_submit"><input type="submit" value="포기하기" class="btn give_up" /></form>
 		<% } %>
 	</div>
 	<% } %>
@@ -901,9 +901,9 @@
 							bonus_score = bonus_score + solve[i].bonus;
 						}
 					}
-					return [solve_bonus, bonus_score];
+					return bonus_score;
 				}
-				var solve_bonus = bonusScore();
+				var bonus_score = bonusScore();
 				var score_engine;
 				for (var i = 0; i < complete.length; i++) {
 					if (complete[i].new === "yes") {
@@ -918,6 +918,12 @@
 		                }
 					}
 				}
+				for (var i = 0; i < scoreTile.length; i++) {
+					if (isNaN(scoreTile[i].row)) {
+						console.log(18925789172581, scoreTile[i]);
+						delete scoreTile[i];
+					}
+				}
 				console.log("scoreTile", scoreTile);
 				var double_cost = 0;
 				for (var i = 0; i < scoreTile.length; i++) {
@@ -925,7 +931,7 @@
 						double_cost += double_cost - 1;
 					}
 				}
-				var tile_cost = scoreTile.length + double_cost + 1;
+				var tile_cost = scoreTile.length + double_cost - 1;
 				if (score_engine === undefined) {
 					$(".board h3 span").text("새 기계를 설치하세요.");
 				} else {
@@ -933,14 +939,21 @@
 					// var score = 0;
 					var score = score_engine - tile_cost;
 				}
-				console.log("scoreTile.length, double_cost, tile_cost, score_engine, score", scoreTile.length, double_cost, tile_cost, score_engine, score);
-				return [success, score, complete, solve_bonus];
+				return [success, score, complete, bonus_score];
 			} else {
 				success = "실패";
 				$(".board h3 span").text("연결을 확인하세요.");
 				return success;
 			}
 		}
+		$(".give_up").click(function (e) {
+			e.preventDefault();
+			var result = checkTile();
+			var bonus = result[3];
+			$(".board h3 span").text("");
+			$("#give_up_submit").attr("action","/giveUp?roomId=<%= room._id %>&bonus=" + bonus);
+			$("#give_up_submit").submit();
+		});
 		$("body").keydown(function (e) {
 			if (e.keyCode == 13) {
 				$(".wrap_tile span").remove();
