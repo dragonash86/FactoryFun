@@ -888,6 +888,21 @@
 				}
             }
             var as = relocate();
+            var needTileMod = needTile;
+			for (var i = 0; i < needTileMod.length; i++) {
+				for (var j = 0; j < solve.length; j++) {
+					if (needTileMod[i] !== undefined) {
+						if (solve[j].row === needTileMod[i].row && solve[j].col === needTileMod[i].col) {
+							needTileMod = $.grep(needTileMod, function(value) {
+								return value != needTileMod[i];
+							});
+						}	
+					}
+					
+				}
+			}
+			console.log("needTileMod", needTileMod);
+
 			if (solve.length === needTile.length && solve.length !== 0) {
 				success = "성공";
 				console.log("성공");
@@ -920,12 +935,12 @@
 				}
 				for (var i = 0; i < scoreTile.length; i++) {
 					if (isNaN(scoreTile[i].row)) {
-						console.log(18925789172581, scoreTile[i]);
 						scoreTile = $.grep(scoreTile, function(value) {
 							return value != scoreTile[i];
 						});
 					}
 				}
+				
 				console.log("scoreTile", scoreTile);
 				var double_cost = 0;
 				for (var i = 0; i < scoreTile.length; i++) {
@@ -933,7 +948,7 @@
 						double_cost += double_cost - 1;
 					}
 				}
-				var tile_cost = scoreTile.length + double_cost - 1;
+				var tile_cost = scoreTile.length - double_cost - 1;
 				if (score_engine === undefined) {
 					$(".board h3 span").text("새 기계를 설치하세요.");
 				} else {

@@ -475,8 +475,8 @@ app.post('/ajaxSaveTile', function(req, res) {
                         incQuery[incKeyTile] = -1;
                     }
                 }
-                // console.log(incQuery);
-                // console.log(setQuery);
+                console.log("incQuery", incQuery);
+                console.log("setQuery", setQuery);
                 Room.update({ _id: req.query.roomId }, { $set: setQuery, $inc: incQuery }, function(err) {
                     Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $push: { 'player.$.round': complete } }, function(err) {
                         if (roomValue.round === 10) {
