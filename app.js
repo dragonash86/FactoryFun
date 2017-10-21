@@ -4,15 +4,12 @@ var mongoose = require('mongoose');
 var session = require('express-session');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var NaverStrategy = require('passport-naver').Strategy;
 var app = express();
 var server = require('http').Server(app);
-var Rndld = null;
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json());
 app.use(session({
-    secret: 'FactoryFunFactoryFunFactoryFunFactoryFun',
+    secret: 'FactoryFun',
     resave: false,
     saveUninitialized: true
 }));
@@ -51,16 +48,11 @@ db.on("error", function(err) {
 //서버 시작
 server.listen(3000);
 
-
 //유저전역 스키마 생성
 var userData = mongoose.Schema({
-    user_id: { type: String, unique: true },
+    user_id: { type: String, required: true, unique: true },
     user_pw: { type: String },
-    user_nick: { type: String, unique: true },
-    win: { type: Number },
-    lose: { type: Number },
-    email: { type: String },
-    sns: { type: String },
+    user_nick: { type: String, required: true, unique: true },
     created_at: { type: Date, default: Date.now },
     last_logout: { type: Date }
 });
@@ -77,11 +69,7 @@ app.post('/joinForm', function(req, res) {
     var user = new User({
         user_id: req.body.userId,
         user_pw: req.body.userPw,
-        user_nick: req.body.userNick,
-        win: 0,
-        lose: 0,
-        email: "",
-        sns: ""
+        user_nick: req.body.userNick
     });
     user.save(function(err) {
         if (err) {
@@ -113,15 +101,6 @@ passport.use(new LocalStrategy({ passReqToCallback: true }, function(req, userna
 }));
 app.get('/join_nick', function(req, res) {
     res.render('join_nick', { user: req.user });
-});
-
-app.get('/index', function(req, res) {
-    res.render('index', { user: req.user });
-});
-app.post('/joinNickForm', function(req, res) {
-    User.update({ _id: req.user._id }, { $set: { user_nick: req.body.userNick } }, function(err) {
-        res.render('main', { user: req.user });
-    });
 });
 app.post('/loginForm', passport.authenticate('local', {
     successRedirect: '/',
