@@ -180,9 +180,9 @@
 				<% if (room.player[0].select_engine !== "아직") { %>
 				<li><img src="/images/<%= room.player[0].tile_engine[room.round - 1].name %>.jpg" class="drag tile_engine selected_engine rotate_0" alt="<%= room.player[0].tile_engine[room.round - 1].name %>" /></li>
 				<% } %>
-				<% for (var t = 0; t < room.player[0].build.length; t++) { %>
-					<% if (room.player[0].build[t].tile !== "") { %>
-						<li><img src="/images/<%= room.player[0].build[t].tile %>.jpg" class="drag tile saved pos_<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %> rotate_<%= room.player[0].build[t].rotate %>" id="<%= room.player[0].build[t].row %>_<%= room.player[0].build[t].col %>" alt="<%= room.player[0].build[t].tile %>" /></li>
+				<% if (room.round > 1) { %>
+					<% for (var t = 0; t < room.player[0].round[room.round - 2].length; t++) { %>
+					<li><img src="/images/<%= room.player[0].round[room.round - 2][t].name %>.jpg" class="drag tile saved pos_<%= room.player[0].round[room.round - 2][t].row %>_<%= room.player[0].round[room.round - 2][t].col %> rotate_<%= room.player[0].round[room.round - 2][t].rotate %>" id="<%= room.player[0].round[room.round - 2][t].row %>_<%= room.player[0].round[room.round - 2][t].col %>" alt="<%= room.player[0].round[room.round - 2][t].name %>" /></li>
 					<% } %>
 				<% } %>
 			</ul>
