@@ -94,7 +94,7 @@ h3{padding:20px 0}
 
 /* board */
 .board{display:block;padding:63px 0}
-.board h3{clear:both}
+.board h3{clear:both;height:58px}
 .board h3 span{color:red;padding-left:30px}
 .board table{clear:both;min-width:630px}
 .board td{position:relative;border:1px solid #272822;width:70px;height:70px;text-align:center;color:#fff}
