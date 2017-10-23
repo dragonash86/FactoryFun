@@ -75,9 +75,8 @@ h3{padding:20px 0}
 /* 게임 */
 .room{margin:0;padding:20px}
 .room form input{float:left;width:100px;height:100px;cursor:pointer;margin-right:20px}
-.status{clear:left;padding-top:20px}
-.status .remain{min-height:22px}
-.status .rank{height:40px;margin-left:100px}
+.status{clear:left;padding-top:42px}
+.status .rank{height:18px;margin-left:100px}
 .room_info{padding:20px 0}
 .room_info li{padding:5px 0}
 .box{float:left;border:1px solid #272822;margin-right:10px;padding:10px}

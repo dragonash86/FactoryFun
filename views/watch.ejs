@@ -18,7 +18,6 @@
 		<% if (room.round !== 11) { %>
 		<ul>
 			<li>라운드 : <%= room.round %><li>
-			<li class="remain">남은 엔진 : <% for (var i = 0; i < room.player[0].rest_engine; i++) { %><span class="ball"><%= i+1 %></span><% } %><li>
 		</ul>
 		<% } else { %>
 			<p class="rank">게임 종료</p>
