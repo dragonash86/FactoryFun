@@ -265,6 +265,19 @@ app.get('/room', function(req, res) {
         res.render('login');
     }
 });
+app.get('/watch', function(req, res) {
+    if (req.user) {
+        if (req.query.roomId != null) {
+            Room.findOne({ _id: req.query.roomId }, function(err, roomValue) {
+                res.render('watch', { room: roomValue, user: req.user });
+            });
+        } else {
+            res.send('<script>alert("잘못된 요청");location.href="/main";</script>');
+        }
+    } else {
+        res.render('login');
+    }
+});
 //참가하기
 app.post('/joinRoom', function(req, res) {
     if (req.user) {

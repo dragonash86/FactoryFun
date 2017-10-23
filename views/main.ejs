@@ -6,7 +6,11 @@
 		<% for (i = 0; i < room.length; i++) { %>
 			<% if (room[i].round < 11) { %>
 				<li>
+					<% if (room[i].member[0] === user.user_nick) { %>
 					<a href="/room?roomId=<%= room[i]._id %>">
+					<% } else { %>
+					<a href="/watch?roomId=<%= room[i]._id %>">
+					<% } %>
 						<ul>
 							<li><%= room[i].name %></li>
 							<li>방장 : <%= room[i].admin %></li>
@@ -24,9 +28,13 @@
         <ul class="list">
         <% for (i = 0; i < room.length; i++) { %>
             <% for (j = 0; j < room[i].member.length; j++) { %>
-                <% if (user.user_nick === room[i].member[j]) { %>
+                <% if (user.user_nick === room[i].member[j] && room[i].round < 11) { %>
             	<li>
-                	<a href="/room?roomId=<%= room[i]._id %>">
+                	<% if (room[i].member[0] === user.user_nick) { %>
+					<a href="/room?roomId=<%= room[i]._id %>">
+					<% } else { %>
+					<a href="/watch?roomId=<%= room[i]._id %>">
+					<% } %>
 	                    <ul>
 	                        <li><%= room[i].name %></li>
 	                        <li>방장 : <%= room[i].admin %></li>
@@ -42,9 +50,13 @@
 		<h2>종료된 게임</h2>
 		<ul class="list">
 		<% for (i = 0; i < room.length; i++) { %>
-			<% if (room[i].round === 11) { %>			
+			<% if (room[i].round === 11) { %>
 			<li>
+				<% if (room[i].member[0] === user.user_nick) { %>
 				<a href="/room?roomId=<%= room[i]._id %>">
+				<% } else { %>
+				<a href="/watch?roomId=<%= room[i]._id %>">
+				<% } %>
 					<ul>
 						<li><%= room[i].name %></li>
 						<li>방장 : <%= room[i].admin %></li>
