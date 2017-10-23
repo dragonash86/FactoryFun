@@ -151,7 +151,7 @@ h3{padding:20px 0}
 .select_board li a.on img{border:2px solid #7D2232}
 .layer_start{display:none;position:absolute}
 .layer_start input{background:rgba(0,0,0,.5);color:#fff;border:0;cursor:pointer;width:100px;height:100px;font-size:30px}
-
+.board_b_expert,.board_c_classic,.board_d_classic,.board_e_expert{min-width:700px !important}
 .board_a_classic tr:nth-child(8) td:nth-child(1),.board_a_classic tr:nth-child(9) td:nth-child(1),.board_a_classic tr:nth-child(9) td:nth-child(2){border:0}
 .board_a_classic tr:nth-child(8) td:nth-child(1) span,.board_a_classic tr:nth-child(9) td:nth-child(1) span,.board_a_classic tr:nth-child(4) td:nth-child(5) span,.board_a_classic tr:nth-child(9) td:nth-child(2) span,.board_a_classic tr:nth-child(10),.board_a_classic td:nth-child(10){display:none}
 .board_a_classic tr:nth-child(4) td:nth-child(5){background:#c7c7c7}
