@@ -24,7 +24,7 @@
 		}
    	%>
 	<% if (room.member.length !== room.maxMember && count === 0) { %>
-	<form action="/joinRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="참가하기" /></form>
+	<!-- <form action="/joinRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="참가하기" /></form> -->
 	<% } else if (count !== 0 && room.admin !== user.user_nick) { %>
 	<form action="/leaveRoom?roomId=<%= room._id %>" method="post"><input type="submit" value="나가기" /></form>
 	<% } if (room.admin === user.user_nick && room.member.length > 1 && room.start !== "진행 중") { %>
