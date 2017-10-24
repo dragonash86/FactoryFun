@@ -48,7 +48,7 @@ db.on("error", function(err) {
     console.log("DB ERROR :", err);
 });
 //서버 시작
-server.listen(3000);
+server.listen(8443);
 
 //유저전역 스키마 생성
 var userData = mongoose.Schema({
