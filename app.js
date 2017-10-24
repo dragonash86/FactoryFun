@@ -355,7 +355,7 @@ app.post('/selectBoard', function(req, res) {
             } else {
                 Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': req.query.board } }, function(err) {});
             }
-            var num = new [];
+            var num = [];
             var randEngine = [];
             for (var i = 0; i < 10; i++) {
                 num[i] = shuffleRandom(55)[i];
