@@ -355,10 +355,16 @@ app.post('/selectBoard', function(req, res) {
             } else {
                 Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.board': req.query.board } }, function(err) {});
             }
-            var num = new Array();
-            var randEngine = new Array();
+            var num = new [];
+            var randEngine = [];
             for (var i = 0; i < 10; i++) {
-                num[i] = shuffleRandom(54)[i];
+                num[i] = shuffleRandom(55)[i];
+                for (var j = 0; j < i; j++){
+                    if (num[i] === num[j]) {
+                        i = i - 1;
+                        break;
+                    }
+                }
                 randEngine[i] = roomValue.tile_engine[num[i]];
             }
             Room.update({ _id: req.query.roomId, player: { $elemMatch: { nick: req.user.user_nick } } }, { $set: { 'player.$.tile_engine': randEngine } }, function(err) {
@@ -450,7 +456,7 @@ function dateToYYYYMMDDMMSS(date) {
     return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
 }
 function shuffleRandom(n) {
-    var ar = new Array();
+    var ar = [];
     var temp;
     var rnum;
     for (var i = 0; i < n; i++) {
