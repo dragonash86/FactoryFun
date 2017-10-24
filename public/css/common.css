@@ -88,7 +88,7 @@ h3{padding:20px 0}
 .select_engine{position:absolute;top:300px;left:0;right:0;z-index:250;border:2px solid #000;background:#fff;padding:20px;margin: 0 80px}
 .select_engine ul{text-align:center}
 .select_engine li{display:inline-block;margin:0 15px}
-.select_engine form{top:58px}
+.select_engine form{top:78px}
 .select_engine input{width:140px !important;height:70px !important}
 .select_engine h3{text-align:center;padding-top:0;padding-bottom:20px}
 
