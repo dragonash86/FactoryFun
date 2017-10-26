@@ -350,7 +350,14 @@
 					}
 				}
 			}
-			// console.log("ev,dd", ev,dd); 가끔 id 못가져오는 버그 해결을 위해 일단 주석
+			if ($(this).hasClass("tile_engine") || $(this).hasClass("tile_option")) {
+				$(this).parent().attr("class", "");
+				if (parseInt($(this).css("transform").split(",")[5]) === 35) {
+					$(this).parent().addClass("disable_" + (parseInt($(this)[0].id.split('_')[0]) + 1) + '_' + $(this)[0].id.split('_')[1]);
+				} else {
+					$(this).parent().addClass("disable_" + $(this)[0].id.split('_')[0] + '_' + (parseInt($(this)[0].id.split('_')[1]) + 1));
+				}
+			}
 			$(".board td").attr("class", "");
 			$(".board td p, td .score").remove();
 		});
@@ -379,6 +386,14 @@
 				$(this).removeClass("rotate_2");
 			} else if ($(this).hasClass("rotate_3")) {
 				$(this).removeClass("rotate_3").addClass("rotate_0");
+			}
+			if ($(this).hasClass("tile_engine") || $(this).hasClass("tile_option")) {
+				$(this).parent().attr("class", "");
+				if (parseInt($(this).css("transform").split(",")[5]) === 35) {
+					$(this).parent().addClass("disable_" + (parseInt($(this)[0].id.split('_')[0]) + 1) + '_' + $(this)[0].id.split('_')[1]);
+				} else {
+					$(this).parent().addClass("disable_" + $(this)[0].id.split('_')[0] + '_' + (parseInt($(this)[0].id.split('_')[1]) + 1));
+				}
 			}
 		});
 		function connect(complete, needTile, energy, result) {
@@ -946,7 +961,33 @@
 				}
 			}
 			console.log("needTileMod", needTileMod);
-			if (solve.length === needTile.length && solve.length !== 0) {
+			function overlapCount() {
+				var value = 0;
+				var disable = [];
+				for (var j = 0; j < $(".wrap_tile li").length; j++) {
+					if($(".wrap_tile li")[j].className !== "") {
+						disable.push($(".wrap_tile li")[j].className);
+					}
+					for (var k = 0; k < disable.length; k++) {
+						if (disable[k] === disable[k + 1]) {
+							console.log("타일끼리 겹침");
+							value += 1;
+						}
+					}
+					for (var i = 0; i < complete.length; i++) {
+						// console.log("qwdqwud8qwfiqhwfi",complete[i].row , parseInt($(".wrap_tile li")[j].className.split("_")[1]) , complete[i].col , parseInt($(".wrap_tile li")[j].className.split("_")[2]))
+						if (complete[i].row === parseInt($(".wrap_tile li")[j].className.split("_")[1]) && complete[i].col === parseInt($(".wrap_tile li")[j].className.split("_")[2])) {
+							console.log("겹침")
+							value += 1;
+						}
+					}
+				}
+				console.log("value", value);
+				return value;
+			}
+			var overlap = overlapCount();
+			console.log("overlap", overlap);
+			if (solve.length === needTile.length && solve.length !== 0 && overlap === 0) {
 				success = "성공";
 				console.log("성공");
 				function bonusScore() {

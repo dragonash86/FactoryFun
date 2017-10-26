@@ -137,7 +137,7 @@ h3{padding:20px 0}
 .layer_action{display:none;position:absolute;border:1px solid #272822;background:#fff;padding:10px}
 .layer_action a{display:inline-block;border:1px solid #272822;text-align:center;padding:5px;margin:10px auto 0}
 .layer_action.show{display:block}
-
+.rotate_0{transform:rotate(0deg)} /* 타일 rotate 추출하기 위해 필요 */
 .rotate_1{transform:rotate(90deg)}
 .rotate_2{transform:rotate(180deg)}
 .rotate_3{transform:rotate(270deg)}
