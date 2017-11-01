@@ -85,12 +85,15 @@ h3{padding:20px 0}
 .player1{color:#0000FF}
 .ball{display:inline-block;border:1px solid #34C91C;background:#34C91C;border-radius:15px;width:22px;height:22px;font-size:13px;vertical-align:1px;text-align:center;margin:0 3px;padding-right:2px}
 
-.select_engine{position:absolute;top:300px;left:0;right:0;z-index:250;border:2px solid #000;background:#fff;padding:20px;margin: 0 80px}
+.select_engine{position:absolute;top:300px;left:0;right:0;z-index:250;border:2px solid #000;background:#fff;padding:20px;margin:0 80px}
 .select_engine ul{text-align:center}
 .select_engine li{display:inline-block;margin:0 15px}
 .select_engine form{top:78px}
 .select_engine input{width:140px !important;height:70px !important}
 .select_engine h3{text-align:center;padding-top:0;padding-bottom:20px}
+.select_energy{position:absolute;top:180px;left:0;right:0;z-index:250;border:2px solid #000;background:#fff;padding:20px;margin:0 0px}
+.select_energy img{width:70px !important}
+.select_energy .on img{border:2px solid #000}
 
 /* board */
 .board{display:block;padding:63px 0}

@@ -264,9 +264,24 @@
 			e.preventDefault();
 			$(this).next().fadeIn(200);
 			$(this).next().attr("action","/selectEngine?roomId=<%= room._id %>&engine=" + $(this).find("img").attr("alt") + "&id=" + $(this).find("img").attr("id"));
-			// if () {
-				
-			// }
+			var select_energy;
+			if ($(this).find("img").attr("id") === "all") {
+				select_energy = '<div class="select_energy">';
+				select_energy += '<ul>';
+				select_energy += '<li><a href="#n"><img src="/images/tile_energy_blue.jpg" alt="blue" /></a></li>';
+				select_energy += '<li><a href="#n"><img src="/images/tile_energy_red.jpg" alt="red" /></a></li>';
+				select_energy += '<li><a href="#n"><img src="/images/tile_energy_orange.jpg" alt="orange" /></a></li>';
+				select_energy += '<li><a href="#n"><img src="/images/tile_energy_green.jpg" alt="green" /></a></li>';
+				select_energy += '</ul>';
+				select_energy += '</div>';
+				$(".select_engine").append(select_energy);
+				$(".select_energy a").click(function(e) {
+					$(".select_energy a").removeClass("on");
+					$(this).addClass("on");
+					e.preventDefault();
+					$(".select_engine form").attr("action","/selectEngine?roomId=<%= room._id %>&engine=" + $(".select_engine a").find("img").attr("alt") + "&id=" + $(this).find("img").attr("alt"));
+				});
+			}
 		});
 		var posTop = 307;
 		var posLeft = 20;
