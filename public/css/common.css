@@ -188,3 +188,34 @@ h3{padding:20px 0}
 
 .board_e_expert tr:nth-child(3) td:nth-child(6) span,.board_e_expert tr:nth-child(6) td:nth-child(3) span,.board_e_expert tr:nth-child(6) td:nth-child(8) span,.board_e_expert tr:nth-child(9),.board_e_expert tr:nth-child(10){display:none}
 .board_e_expert tr:nth-child(3) td:nth-child(6),.board_e_expert tr:nth-child(6) td:nth-child(3),.board_e_expert tr:nth-child(6) td:nth-child(8){background:#c7c7c7}
+
+.board_view{padding:30px}
+.board_view table{border-collapse:collapse;border-spacing:0;width:100%;display:table;border-top:1px solid #111}
+.board_view th{line-height:59px;color:#111;border-bottom:1px solid #c1c1c1}
+.board_view td{text-align:center;line-height:21px;padding:20px 10px 18px;color:#555;border-bottom:1px solid #dedede}
+.board_view td:first-child{letter-spacing:0}
+.board_view td a{text-decoration:none;color:#333;display:table-cell;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.board_view td a:hover{text-decoration:underline;}
+.board_view td span{color:#0469af;text-decoration:underline;}
+.board_view td.left,.board_view th.left{text-align:left;}
+.board_view td.left{padding-left:46px;}
+.board_view td.gray{color:#777;}
+.board_view .td_textarea{height:21px;position:relative;display:table;width:100%}
+.board_view .pagination{text-align:center;padding:40px 0 0}
+.board_view .pagination a,.pagination span{display:inline-block;position:relative;min-width:32px;height:32px;line-height:29px;color:#555;text-decoration:none;padding:0 5px;box-sizing:border-box;transition:all 0.3s cubic-bezier(0.215, 0.610, 0.355, 1.000);-webkit-transition:all 0.3s cubic-bezier(0.215, 0.610, 0.355, 1.000);}
+.board_view .pagination a:hover{color:#0077c9;}
+.board_view .pagination span{color:#0077c9 !important;}
+.board_view .pagination a.pre,.pagination a.next,.pagination a.first,.pagination a.last{position:relative;vertical-align:top;border:1px solid #c1c1c1;border-radius:100%;}
+.board_view .pagination a.pre:hover,.pagination a.next:hover,.pagination a.first:hover,.pagination a.last:hover{background-color:#0077c9;border:1px solid #0077c9;}
+.board_view .pagination a em{display:block;overflow:hidden;background:url("../images/spr-btn-pagination.png") no-repeat;text-indent:-9999px;position:absolute;top:10px;width:5px;height:9px}
+.board_view .pagination a.pre{margin:0 12px 0 0}
+.board_view .pagination a.pre em{left:11px;background-position:-40px -27px}
+.board_view .pagination a.next{margin:0 0 0 12px}
+.board_view .pagination a.next em{left:13px;background-position:-6px -27px}
+.board_view .pagination a.first em{width:11px;left:8px;background-position:-6px -6px}
+.board_view .pagination a.last em{width:11px;left:10px;background-position:-6px -48px}
+.board_view .pagination a.first:hover em{background-position:-29px -6px}
+.board_view .pagination a.last:hover em{background-position:-29px -48px}
+.board_view .pagination a.pre:hover em{background-position:-57px -27px}
+.board_view .pagination a.next:hover em{background-position:-23px -27px}
+.board_view .write_form{display:none}

@@ -1,0 +1,133 @@
+<% include include/header.ejs %>
+<a href="/" class="btn_main">메인</a>
+    <script>
+        $(function(){ // pagination 현재 페이지 활성화 시킴
+            var page = location.href.split("page=")[1]; // url에 page 넘버로 구분
+            var index = page-1; // 0부터 시작이므로 1 빼줌
+
+            if(page == null) { // 메인화면에서는 page 쿼리가 없으므로 빈값일 때
+                $(".pagination a:eq(0)").attr('class', 'current-page');
+            }
+
+            $(".pagination a:eq(" + index + ")").attr('class', 'current-page');
+        });
+
+        function displayWriteForm() {
+            $('.write_form').fadeIn();
+        }
+
+        function cancelWriteForm(option) {
+            if(option == 'cancel') $('.write_form').fadeOut();
+            if(option == 'ok') $('.content_box').fadeOut();
+        }
+
+        function submitContents() {
+            var title = $('#addContentSubject').val();
+            var content = $('#addContents').val();
+            var writer = $('#addContentWriter').val();
+            var password = $('#addContentPassword').val();
+
+            // 새 글 등록 시
+            if(title == '' || content == '' || writer == '' || password == '') {
+                alert("제목과 내용, 작성자 비밀번호 모두 있어야합니다.");
+                return;
+            } else {
+                $('#writeAction').submit();
+            }
+        }
+
+        function searchContent() {
+            if($('#searchWord').val == ''){
+                alert("검색어를 입력해주세요!!!");
+            } else {
+                $('#searchAction').submit();
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="board_view">
+    <table>
+        <tr>
+            <th>No.</th>
+            <th>Title</th>
+            <th>Writer</th>
+            <th>Date</th>
+            <th>Count</th>
+        </tr>
+        <%if(contents.length>0){%>
+        <%var i = 0;%>
+        <%contents.forEach(function(item){%>
+        <%i++;%>
+        <%
+            var fileCnt = '';
+            if(item.fileUp.length != 0) fileCnt = "파일:"+item.fileUp.length;
+        %>
+        <tr>
+            <td class="number"><%=i%></td>
+            <td class="title"><a href="/boards/view?id=<%=item._id%>"><%=item.title%>  [<%=item.comments.length%>]&nbsp;&nbsp;<%=fileCnt%></a></td>
+            <td class="writer"><%=item.writer%></td>
+            <td class="date"><%=dateFormatChange(item.date)%></td>
+            <td class="cnt"><%=item.count%></td>
+        </tr>
+        <%})%>
+        <%} else {%>
+        <tr>
+            <td colspan="5">게시물이 없습니다.</td>
+        </tr>
+        <%}%>
+    </table>
+
+    <div class="pagination">
+        <%
+        if(searchWord != '') {
+            for(var i=1; i<=pagination; i++){
+        %>
+            <a href="/boards/search?searchWord=<%=searchWord%>&page=<%=i%>" class="next-page"><%=i%></a>
+        <%
+            }
+        } else {
+        for(var i=1; i<=pagination; i++){
+        %>
+        <a href="/boards?page=<%=i%>" class="next-page"><%=i%></a>
+        <%}}%>
+    </div>
+
+    <div class="btn_group">
+        <a onclick="displayWriteForm();"><div class="write_btn btn">글쓰기</div></a>
+        <div class="search" style="display:none">
+            <form action="/boards/search" method="get" id="searchAction" name="searchAction">
+                <input type="text" class="search_word" id="searchWord" name="searchWord">
+                <a href="#" onclick="searchContent();"><div class="search_btn btn">검색</div></a>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- new content write form-->
+    <div class="write_form">
+        <form id="writeAction" action="/boards?mode=add" method="post" enctype="multipart/form-data">
+            <input type="text" class="inputSubject" id="addContentSubject" name="addContentSubject" placeholder="제목">
+            <input type="text" class="inputWriter" id="addContentWriter" name="addContentWriter" placeholder="작성자">
+            <input type="password" class="inputPassword" id="addContentPassword" name="addContentPassword" placeholder="비밀번호">
+            <textarea class="textContents" id="addContents" name="addContents" rows="20" cols="80"></textarea>
+            <input type = "file" class="inputFile" id = "UploadFile" name = "UploadFile" multiple>
+        </form>
+        <div id = "new" class="addBtngroup">
+            <a onclick="submitContents();"><div>SUBMIT</div></a>
+            <a onclick="cancelWriteForm('cancel');"><div>CANCEL</div></a>
+        </div>
+    </div>
+    <!-- write form end-->    
+    <%
+    function dateFormatChange(date) {
+        var options = {
+            weekday: "short", year: "numeric", month: "short",
+            day: "numeric", hour: "2-digit", minute: "2-digit"
+        };
+
+        return date.toLocaleTimeString("ko-KR", options);
+    }
+    %>
+
+<% include include/footer.ejs %>

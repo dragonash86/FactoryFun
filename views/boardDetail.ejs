@@ -1,0 +1,246 @@
+<% include include/header.ejs %>
+    <script>
+
+
+        $(function(){
+            var fileUp = '<%=content.fileUp%>';
+            var files = '';
+            var cnt = '';
+            var output = '';
+            if(fileUp != "") {
+                files = fileUp.split(',');
+                cnt = files.length;
+                for (var i = 0; i < cnt; i++) {
+                    output += "<button type='button' onclick=downloadFiles('"+files[i].split(':')[0]+"');>";
+                    output += "<span id='downloadFile'>" + files[i].split(':')[1] + "</span>";
+                    output += "</button>";
+                }
+            } else {
+                output = "파일이 없습니다.";
+            }
+
+            $('.download-file').html(output);
+        });
+
+        function downloadFiles(filepath) {
+            var path = filepath;
+            if(confirm("파일이 다운로드 됩니다.") == true) {
+                location.href = "/boards/download/" + path;
+            }
+        }
+
+        function modifyContents() {
+            // 글 수정 버튼 눌렀을 때 화면 전환 시
+            $('.content_detail').hide();
+            $('.modify_form').show();
+
+            $('.modSubject').val('<%=content.title%>');
+            $('.modWriter').text('<%=content.writer%>');
+            $('.textContents').html('<%=content.contents%>');
+        }
+
+        function checkPW(inputPassword){
+            var result = '';
+
+            $.ajax({
+                url: '/boards/password/?id=<%=content._id%>',
+                async: false,
+                success: function(password) {
+                    if(inputPassword == password) result = true;
+                    else result = false;
+                }
+            });
+            return result;
+        }
+
+        function modifySubmitContents() {
+            // 글 수정후 db 저장 시 비번 확인 후 맞으면 수정으로 submit
+            var title = $('#modContentSubject').val();
+            var content = $('#modContents').val();
+            var inputPassword = $('#modContentPassword').val();
+
+            var chkpw = checkPW(inputPassword);
+
+            if(chkpw == true) {
+                if (title == '' || content == '') {
+                    alert("제목과 내용 모두 있어야합니다.");
+                    return;
+                } else {
+                    $('#modifyAction').submit();
+                }
+            } else {
+                alert("글 작성 시 입력한 비밀 번호를 입력해주세요");
+                return;
+            }
+        }
+
+        function cancelForm(option) {
+            if(option == 'modify') {
+                // 수정하다 취소시
+                $('.content_detail').show();
+                $('.modify_form').hide();
+            } else {
+                $('.delete_confirm').hide();
+            }
+
+        }
+        function deleteContents() {
+            // 글 삭제시 비번 확인 후 맞으면 삭제로 submit
+            $('.delete_confirm').show();
+        }
+
+        function deleteConfirm() {
+            var inputPassword = $('#delPassword').val();
+            var chkpw = checkPW(inputPassword);
+
+            if(chkpw == true) {
+                location.href='/boards/delete?id=<%=content._id%>';
+            } else {
+                alert("글 작성 시 입력한 비밀 번호를 입력해주세요");
+                return;
+            }
+        }
+
+        function changePage(page) {
+            $.get('/boards/reply?id=<%=content._id%>&page='+page+"&max=<%=content.comments.length%>", function(replyList) {
+                var output = '';
+                for(var i=0;i<replyList.length;i++) {
+                    output += '<div class="reply_content"><div class="reply_info">'+replyList[i].name+' / '+ dateFormatChangeScript(replyList[i].date)+'</div>';
+                    output += '<div class="reply_text">'+replyList[i].memo.replace(/\\r\\n/gi, " ")+'</div></div>';
+                }
+
+                $('.reply_list').html(output);
+            });
+
+            $.ajax({
+                url: '/boards/reply?id=<%=content._id%>&page='+page+"&max=<%=content.comments.length%>",
+                type: "get",
+                success: function(data) {
+                    var output = '';
+                    for(var i=0;i<data.length;i++) {
+                        output += '<div class="reply_content"><div class="reply_info">'+data[i].name+' / '+ dateFormatChangeScript(data[i].date)+'</div>';
+                        output += '<div class="reply_text">'+data[i].memo.replace(/\\r\\n/gi, " ")+'</div></div>';
+                    }
+
+                    $('.reply_list').html(output);
+                }
+            });
+        }
+
+        function dateFormatChangeScript(date) {
+            var newdate = new Date(date);
+
+            var options = {
+                weekday: "short", year: "numeric", month: "short",
+                day: "numeric", hour: "2-digit", minute: "2-digit"
+            };
+
+            return newdate.toLocaleTimeString("ko-KR", options);
+        }
+    </script>
+</head>
+<body>
+<div class="board_view">
+    <div class="content_box">
+        <!-- content box-->
+        <div class="content_detail">
+            <div class="content-title"><%=content.title%></div>
+            <div class="content-info">
+                <%=dateFormatChange(content.date)%> / <%=content.writer%>
+            </div>
+            <div class="content-text">
+                <%=content.contents%>
+            </div>
+            <div class="download-file">
+            </div>
+            <div class="addBtngroup" style="margin-left:450px;">
+                <a onclick="modifyContents();">수정</a>
+                <a onclick="deleteContents();">삭제</a>
+                <a href="/boards">확인</a>
+            </div>
+        </div>
+        <!-- content box end -->
+
+        <!-- 혁신의 끝을 달리는 옆에서 달아주는 댓글 창-->
+        <div class="reply">
+            <div class="reply_list">
+                <%if(content.comments.length>0){%>
+                <%var commentsList = content.comments;%>
+                <%for(var i=0; i<commentsList.length; i++){%>
+                <%if(i<5){%>
+                <div class="reply_content">
+                    <div class="reply_info"><%=commentsList[i].name%> / <%=dateFormatChange(commentsList[i].date)%></div>
+                    <div class="reply_text"><%=commentsList[i].memo%></div>
+                </div>
+                <%}%>
+                <%}%>
+                <%} else {%>
+                <div class="reply_content">
+                    <div class="reply_info">댓글이 없습니다</div>
+                </div>
+                <%}%>
+           </div>
+
+            <!-- 댓글 페이징 -->
+            <div class="reply_pagination">
+                <ul>
+                    <%
+                    for(var i=1; i<=replyPage; i++){
+                    %>
+                    <a href="#" onclick="changePage(<%=i%>);"><li><%=i%></li></a>
+                    <%}%>
+                </ul>
+            </div>
+            <!-- 댓글 페이징 끝-->
+            <div class="reply_form">
+                <form id="replyAction" action="/boards/reply" method="post">
+                    <div class="reply_writer">
+                        <input type="text" class="replyWriter" id="replyWriter" name="replyWriter" placeholder="댓글작성자">
+                    </div>
+                    <div class="reply_comment">
+                        <textarea class="replyComment" id="replyComment" name="replyComment" rows="3" cols="30"></textarea>
+                    </div>
+                    <input type="hidden" name="replyId" id="replyId" value="<%=content._id%>">
+                    <button type="submit">댓글 작성</button>
+                </form>
+            </div>
+        </div>
+        <!-- end -->
+
+        <!-- modify content form-->
+        <div class="modify_form">
+            <form id="modifyAction" action="/boards/?mode=modify" method="post"> <!-- 경로 설정 /: 이거 뭔가 해야징-->
+                <input type="text" class="modSubject" id="modContentSubject" name="modContentSubject" placeholder="제목">
+                <input type="password" class="inputPassword" id="modContentPassword" name="modContentPassword" placeholder="비밀번호">
+                <span class="modWriter" id="modContentWriter" name="modContentWriter"></span>
+                <textarea class="textContents" id="modContents" name="modContents" rows="20" cols="80"></textarea>
+                <input type="hidden" id="modId" name="modId" value="<%=content._id%>">
+            </form>
+            <div class="addBtngroup" style="margin-left:520px;">
+                <a onclick="modifySubmitContents();">SUBMIT</a>
+                <a onclick="cancelForm('modify');">CANCEL</a>
+            </div>
+        </div>
+        <!-- modify form end-->
+    </div>
+    <!-- delete confirm window -->
+    <div class="delete_confirm">
+        <h1>비밀 번호를 입력하면 글이 삭제됩니다</h1>
+        <input type="password" id="delPassword" name="delPassword">
+        <button onclick="deleteConfirm();">삭제</button>
+        <button onclick="cancelForm('delete');">취소</button>
+    </div>
+    <!-- end -->
+
+    <%
+    function dateFormatChange(date) {
+        var options = {
+            weekday: "short", year: "numeric", month: "short",
+            day: "numeric", hour: "2-digit", minute: "2-digit"
+        };
+
+        return date.toLocaleTimeString("ko-KR", options);
+    }
+    %>
+
+<% include include/footer.ejs %>

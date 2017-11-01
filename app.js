@@ -7,6 +7,9 @@ var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 var app = express();
 var server = require('http').Server(app);
+var routes = require('./board/routes/index');
+var boards = require('./board/routes/contents');
+app.use('/boards', boards);
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
