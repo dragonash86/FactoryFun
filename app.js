@@ -11,6 +11,7 @@ var routes = require('./board/routes/index');
 var boards = require('./board/routes/contents');
 app.use('/boards', boards);
 app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: 'FactoryFun',

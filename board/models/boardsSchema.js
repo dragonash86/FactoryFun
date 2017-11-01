@@ -1,6 +1,4 @@
 /*** 게시물 db 스키마 ***/
-
-
 var mongoose = require('mongoose');
 
 var boardSchema = mongoose.Schema({

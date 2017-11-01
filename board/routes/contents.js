@@ -2,7 +2,7 @@ var express = require('express');
 var BoardContents = require('../models/boardsSchema'); //db를 사용하기 위한 변수
 var fs = require('fs');
 var multer = require('multer'); // 파일 저장을 위한  multer
-var upload = multer({ dest: './tmp/' }); // multer 경로 설정, 파일이 업로드 되면 먼저 임시 폴더로 가서 저장됨
+var upload = multer({ dest: './board/tmp/' }); // multer 경로 설정, 파일이 업로드 되면 먼저 임시 폴더로 가서 저장됨
 var router = express.Router();
 
 router.get('/', function(req, res) {
@@ -99,14 +99,13 @@ router.post('/reply', function(req, res) {
     var reply_writer = req.body.replyWriter;
     var reply_comment = req.body.replyComment;
     var reply_id = req.body.replyId;
-
     addComment(reply_id, reply_writer, reply_comment);
-
     res.redirect('/boards/view?id=' + reply_id);
 });
 
 router.get('/reply', function(req, res) {
     // 댓글 ajax로 페이징 하는 부분
+    console.log(1231235555);
     var id = req.param('id');
     var page = req.param('page');
     var max = req.param('max'); // 댓글 총 갯수 확인

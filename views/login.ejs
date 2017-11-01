@@ -15,6 +15,7 @@
 			</fieldset>
 		</form>
     </div>
+	<a href="/boards" class="btn">게시판가기</a>
     <script>
 		$(function() {
 			function validation() {
@@ -30,7 +31,7 @@
 			$("input").keydown(function(key) {
 				if(key.keyCode == 13) validation();
 			});
-			$(".btn").click(function(e) {
+			$(".login .btn").click(function(e) {
 				e.preventDefault();
 				validation();
 			});

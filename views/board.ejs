@@ -3,7 +3,7 @@
     <script>
         $(function(){ // pagination 현재 페이지 활성화 시킴
             var page = location.href.split("page=")[1]; // url에 page 넘버로 구분
-            var index = page-1; // 0부터 시작이므로 1 빼줌
+            var index = page - 1; // 0부터 시작이므로 1 빼줌
 
             if(page == null) { // 메인화면에서는 page 쿼리가 없으므로 빈값일 때
                 $(".pagination a:eq(0)").attr('class', 'current-page');
@@ -13,11 +13,11 @@
         });
 
         function displayWriteForm() {
-            $('.write_form').fadeIn();
+            $('.write').fadeIn();
         }
 
         function cancelWriteForm(option) {
-            if(option == 'cancel') $('.write_form').fadeOut();
+            if(option == 'cancel') $('.write').fadeOut();
             if(option == 'ok') $('.content_box').fadeOut();
         }
 
@@ -48,13 +48,15 @@
 <body>
 <div class="board_view">
     <table>
-        <tr>
-            <th>No.</th>
-            <th>Title</th>
-            <th>Writer</th>
-            <th>Date</th>
-            <th>Count</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Title</th>
+                <th>Writer</th>
+                <th>Date</th>
+                <th>Count</th>
+            </tr>
+        </thead>
         <%if(contents.length>0){%>
         <%var i = 0;%>
         <%contents.forEach(function(item){%>
@@ -63,13 +65,15 @@
             var fileCnt = '';
             if(item.fileUp.length != 0) fileCnt = "파일:"+item.fileUp.length;
         %>
-        <tr>
-            <td class="number"><%=i%></td>
-            <td class="title"><a href="/boards/view?id=<%=item._id%>"><%=item.title%>  [<%=item.comments.length%>]&nbsp;&nbsp;<%=fileCnt%></a></td>
-            <td class="writer"><%=item.writer%></td>
-            <td class="date"><%=dateFormatChange(item.date)%></td>
-            <td class="cnt"><%=item.count%></td>
-        </tr>
+        <tbody>
+            <tr>
+                <td class="number"><%=i%></td>
+                <td class="title"><a href="/boards/view?id=<%=item._id%>"><%=item.title%> <!--[<%=item.comments.length%>]--></a></td>
+                <td class="writer"><%=item.writer%></td>
+                <td class="date"><%=dateFormatChange(item.date)%></td>
+                <td class="cnt"><%=item.count%></td>
+            </tr>
+        </tbody>
         <%})%>
         <%} else {%>
         <tr>
@@ -77,7 +81,6 @@
         </tr>
         <%}%>
     </table>
-
     <div class="pagination">
         <%
         if(searchWord != '') {
@@ -92,31 +95,35 @@
         <a href="/boards?page=<%=i%>" class="next-page"><%=i%></a>
         <%}}%>
     </div>
-
-    <div class="btn_group">
-        <a onclick="displayWriteForm();"><div class="write_btn btn">글쓰기</div></a>
-        <div class="search" style="display:none">
-            <form action="/boards/search" method="get" id="searchAction" name="searchAction">
-                <input type="text" class="search_word" id="searchWord" name="searchWord">
-                <a href="#" onclick="searchContent();"><div class="search_btn btn">검색</div></a>
-            </form>
-        </div>
-    </div>
-
-
-    <!-- new content write form-->
-    <div class="write_form">
-        <form id="writeAction" action="/boards?mode=add" method="post" enctype="multipart/form-data">
-            <input type="text" class="inputSubject" id="addContentSubject" name="addContentSubject" placeholder="제목">
-            <input type="text" class="inputWriter" id="addContentWriter" name="addContentWriter" placeholder="작성자">
-            <input type="password" class="inputPassword" id="addContentPassword" name="addContentPassword" placeholder="비밀번호">
-            <textarea class="textContents" id="addContents" name="addContents" rows="20" cols="80"></textarea>
-            <input type = "file" class="inputFile" id = "UploadFile" name = "UploadFile" multiple>
+    <a onclick="displayWriteForm();"><div class="write_btn btn">글쓰기</div></a>
+    <div class="search" style="display:none">
+        <form action="/boards/search" method="get" id="searchAction" name="searchAction">
+            <input type="text" class="search_word" id="searchWord" name="searchWord">
+            <a href="#" onclick="searchContent();"><div class="search_btn btn">검색</div></a>
         </form>
-        <div id = "new" class="addBtngroup">
-            <a onclick="submitContents();"><div>SUBMIT</div></a>
-            <a onclick="cancelWriteForm('cancel');"><div>CANCEL</div></a>
-        </div>
+    </div>
+    <!-- new content write form-->
+    <div class="write">
+        <form id="writeAction" action="/boards?mode=add" method="post" enctype="multipart/form-data">
+            <dl class="dl_title">
+                <dt>작성자</dt>
+                <dd><input type="text" class="inputWriter" id="addContentWriter" name="addContentWriter" placeholder="작성자" /></dd>
+            </dl>
+            <dl class="dl_title">
+                <dt>비밀번호</dt>
+                <dd><input type="password" class="inputPassword" id="addContentPassword" name="addContentPassword" placeholder="비밀번호" /></dd>
+            </dl>
+            <dl class="dl_title">
+                <dt>제목</dt>
+                <dd><input type="text" class="inputSubject" id="addContentSubject" name="addContentSubject" placeholder="제목을 입력해주세요." /></dd>
+            </dl>
+            <dl class="dl_cont">
+                <dt>내용</dt>
+                <dd><textarea class="textContents" id="addContents" name="addContents" rows="20" cols="80" placeholder="자세한 정보를 알려주시면 많은 도움이 됩니다." /></textarea></dd>
+            </dl>
+            <a onclick="submitContents()" class="btn">작성</a>
+            <a onclick="cancelWriteForm('cancel');" class="btn">취소</a>
+        </form>
     </div>
     <!-- write form end-->    
     <%

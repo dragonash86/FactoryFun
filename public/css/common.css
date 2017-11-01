@@ -10,6 +10,7 @@ em,address{font-style:normal}
 a,a:link{text-decoration:none;color:#111}
 a:hover{text-decoration:underline}
 hr{display:none}
+input,textarea{font-family:'맑은 고딕',Malgun Gothic,'돋움',dotum,'굴림',gulim,Arial,AppleGothic,verdana,sans-serif,helvetica}
 legend,caption,.blind{position:absolute;top:-9999px;font-size:0;line-height:0}
 label{cursor:pointer}
 *{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}
@@ -192,7 +193,7 @@ h3{padding:20px 0}
 .board_e_expert tr:nth-child(3) td:nth-child(6) span,.board_e_expert tr:nth-child(6) td:nth-child(3) span,.board_e_expert tr:nth-child(6) td:nth-child(8) span,.board_e_expert tr:nth-child(9),.board_e_expert tr:nth-child(10){display:none}
 .board_e_expert tr:nth-child(3) td:nth-child(6),.board_e_expert tr:nth-child(6) td:nth-child(3),.board_e_expert tr:nth-child(6) td:nth-child(8){background:#c7c7c7}
 
-.board_view{padding:30px}
+.board_view{padding:30px;margin-top:80px}
 .board_view table{border-collapse:collapse;border-spacing:0;width:100%;display:table;border-top:1px solid #111}
 .board_view th{line-height:59px;color:#111;border-bottom:1px solid #c1c1c1}
 .board_view td{text-align:center;line-height:21px;padding:20px 10px 18px;color:#555;border-bottom:1px solid #dedede}
@@ -221,4 +222,21 @@ h3{padding:20px 0}
 .board_view .pagination a.last:hover em{background-position:-29px -48px}
 .board_view .pagination a.pre:hover em{background-position:-57px -27px}
 .board_view .pagination a.next:hover em{background-position:-23px -27px}
-.board_view .write_form{display:none}
+.board_view .write{display:none;border-bottom:1px solid #c1c1c1;padding:0 0 30px;margin:0 auto 30px}
+.board_view .write dl{padding-bottom:40px}
+.board_view .write dl:after{display:block;content:"";clear:both;}
+.board_view .write dl dt{display:inline-block;width:160px;font-weight:bold;color:#111;padding:10px 0 0 30px;}
+.board_view .write dl dd{position:relative;display:inline-block;vertical-align:top;width:905px;}
+.board_view .write dl dd label{font-size:14px;color:#acacac;}
+.board_view .write dl dd label.placeholder{position:absolute;top:11px;left:16px;font-size:14px;color:#acacac;cursor:text;}
+.board_view .write dl dd input,.board_view .reply_form input{width:100%;height:40px;font-size:14px;line-height:14px;border:1px solid #dedede;background:#fff;box-sizing:border-box;padding:10px 15px;}
+.board_view .write dl dd .ipt_ps{font-size:14px;color:#999;}
+.board_view .write dd textarea,.board_view .reply_form textarea{width:100%;height:250px;font-size:14px;resize:none;box-sizing:border-box;border:1px solid #dedede;padding:10px 15px}
+.board_view .view_top{border-top:1px solid #111;padding:22px 30px;}
+.board_view .view_top h4{display:inline-block;max-width:940px;font-size:18px;}
+.board_view .view_top span{float:right;color:#777;padding-top:2px;}
+.board_view .view_body{border-top:1px solid #c1c1c1;border-bottom:1px solid #c1c1c1}
+.board_view .view_body .text{padding:60px 30px}
+.board_view .list_btn{display:inline-block;overflow:hidden;width:100%;margin-top:30px}
+.board_view .list_btn .btn{float:right;padding:0 59px}
+.board_view .reply_info{text-align:center;padding:30px}
