@@ -393,7 +393,7 @@
 			}
 			$(".saved").fadeIn();
 		}
-		$(".drag").dblclick(function() {
+		$(".drag").click(function() {
 			if (!$(this).hasClass("rotate_1") && !$(this).hasClass("rotate_2") && !$(this).hasClass("rotate_3")) {
 				$(this).addClass("rotate_1").removeClass("rotate_0");
 			} else if ($(this).hasClass("rotate_1")) {
