@@ -1000,6 +1000,15 @@
 						}
 					}
 				}
+				for (var i = 0; i < complete.length; i++) {
+					// console.log("qwdqwud8qwfiqhwfi",complete[i].row , parseInt($(".wrap_tile li")[j].className.split("_")[1]) , complete[i].col , parseInt($(".wrap_tile li")[j].className.split("_")[2]))
+					for (var j = 0; j < i; j++) {
+						if (complete[i].row === complete[j].row && complete[i].col === complete[j].col) {
+							console.log("음 음 겹침")
+							value += 1;
+						}
+					}
+				}
 				console.log("value", value);
 				return value;
 			}
