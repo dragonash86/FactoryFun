@@ -201,6 +201,7 @@
 				<% if (room.player[i].select_engine !== "아직") { %>
 				<form method="post"><input type="submit" value="배치완료" class="btn complete" /></form>
 				<form method="post"><input type="submit" value="포기하기" class="btn give_up" /></form>
+				<a href="/room?roomId=<%= room._id %>" class="btn">초기화</a>
 				<% } %>
 			<% } %>
 		<% } %>
