@@ -295,7 +295,6 @@
 		});
 		$(".drag").drop(function(ev, dd) {
 			$(this).attr("id", "");
-			// console.log("$(this)", $(this)); 가끔 id 못가져오는 버그 해결을 위해 일단 주석
 			var x = (parseInt($(this).css("top")) - posTop) / posValue + 1;
 			var y = (parseInt($(this).css("left")) - posLeft) / posValue + 1;
 			if ($(".mine").hasClass("board_a_classic")) {
@@ -432,6 +431,14 @@
                     	direction: energyDirection,
                     	engine_output: energyEO
                     });
+	            } else if (energyType === "black") {
+	            	needTile.push({
+                    	row: energyRow,
+                    	col: energyCol,
+                    	type: energyType,
+                    	direction: energyDirection,
+                    	engine_output: "black"
+                    });
 	            }
 			}
 			for (var m = 0; m < needTile.length; m++) {
@@ -445,8 +452,6 @@
 		            energyType = energy[n].type;
 		            energyDirection = energy[n].direction;
 		            energyEO = energy[n].engine_output;
-		            // console.log(energyRow, row, energyCol, col, energyType, name, energyDirection, rotate);
-		            // console.log(energyRow, row, energyCol, col, energyDirection, (direction + 2) % 4, energyType, type);
 		            if (energyRow === row && energyCol === col) {
 	            		if (energyDirection === direction && energyType === type.split("_")[1]) {
 	            			solve.push({
@@ -495,16 +500,13 @@
 		            energyDirection = energy[n].direction;
 		            energyEO = energy[n].engine_output;
 		            if (energyEO && energyEO && row === energyRow && col === energyCol) {
-			        	// if (parseInt(energyEO.split("_")[0]) >= type.split("_")[0] && (direction + 2) % 4  === energyDirection) {
 			        	if (parseInt(energyEO.split("_")[0]) >= type.split("_")[0] && direction === energyDirection) {
-			        		// console.log(energyRow,row,energyCol, col , energyEO, parseInt(energyEO.split("_")[0]), type.split("_")[0], energyDirection ,direction);
 			        		solve.push({
 		                    	row: row,
 	                        	col: col,
 	                        	type: energyType,
 	                        	bonus: type.split("_")[0] * 5
 		                    });
-		                    // console.log(energyRow,row,energyCol, col , parseInt(energyEO.split("_")[0]) , type.split("_")[0], energyDirection ,(direction + 2) % 4, directionC);
 			            }
 			        }
 			    }
@@ -877,12 +879,6 @@
 		                            	type: engineAttr[posType[i]],
 		                            	direction: posTypeDirection[i],
 				                    });
-				                    needTile.push({
-				                    	row: row + posTypeRowNum[i],
-		                            	col: col + posTypeColNum[i],
-		                            	type: engineAttr[posType[i]],
-		                            	direction: posTypeDirection[i],
-				                    });
 	                        	} else {
 	                        		energy.push({
 				                    	row: row + posTypeRowNum[i],
@@ -989,28 +985,22 @@
 					}
 					for (var k = 0; k < disable.length; k++) {
 						if (disable[k] === disable[k + 1]) {
-							console.log("타일끼리 겹침");
 							value += 1;
 						}
 					}
 					for (var i = 0; i < complete.length; i++) {
-						// console.log("qwdqwud8qwfiqhwfi",complete[i].row , parseInt($(".wrap_tile li")[j].className.split("_")[1]) , complete[i].col , parseInt($(".wrap_tile li")[j].className.split("_")[2]))
 						if (complete[i].row === parseInt($(".wrap_tile li")[j].className.split("_")[1]) && complete[i].col === parseInt($(".wrap_tile li")[j].className.split("_")[2])) {
-							console.log("겹침")
 							value += 1;
 						}
 					}
 				}
 				for (var i = 0; i < complete.length; i++) {
-					// console.log("qwdqwud8qwfiqhwfi",complete[i].row , parseInt($(".wrap_tile li")[j].className.split("_")[1]) , complete[i].col , parseInt($(".wrap_tile li")[j].className.split("_")[2]))
 					for (var j = 0; j < i; j++) {
 						if (complete[i].row === complete[j].row && complete[i].col === complete[j].col) {
-							console.log("음 음 겹침")
 							value += 1;
 						}
 					}
 				}
-				console.log("value", value);
 				return value;
 			}
 			var overlap = overlapCount();
