@@ -6,21 +6,16 @@
 		<ul class="list">
 		<% for (i = 0; i < room.length; i++) { %>
 			<% if (room[i].round < 11) { %>
-				<li>
-					<% if (room[i].member[0] === user.user_nick) { %>
-					<a href="/room?roomId=<%= room[i]._id %>">
-					<% } else { %>
-					<a href="/watch?roomId=<%= room[i]._id %>">
-					<% } %>
-						<ul>
-							<li><%= room[i].name %></li>
-							<li>방장 : <%= room[i].admin %></li>
-							<li>참여인원 : <%= room[i].member.length %>/<%= room[i].maxMember %></li>
-							<li><%= room[i].start %></li>
-						</ul>
-					</a>
-				</li>
-
+			<li>
+				<a href="/room?roomId=<%= room[i]._id %>">
+					<ul>
+						<li><%= room[i].name %></li>
+						<li>방장 : <%= room[i].admin %></li>
+						<li>참여인원 : <%= room[i].member.length %>/<%= room[i].maxMember %></li>
+						<li><%= room[i].start %></li>
+					</ul>
+				</a>
+			</li>
 			<% } %>
 		<% } %>
 			<li class="last"><form action="/roomCreat" method="post"><input type="submit" value="방만들기" /></form></li>

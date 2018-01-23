@@ -43,7 +43,7 @@ app.get('/logout', function(req, res) {
     });
 });
 //DB 커넥트
-mongoose.connect("mongodb://yong.netb.co.kr:443/FactoryFun");
+mongoose.connect("mongodb://yong.netb.co.kr:636/FactoryFun");
 var db = mongoose.connection;
 db.once("open", function() {
     console.log("DB connected!");

@@ -1078,7 +1078,7 @@
 				$(".board h3 span").text("다 포기하지마~~~~~");
 				return;
 			} else {
-				$.post("/ajaxGiveUp?roomId=<%= room._id %>", { "bonus": bonus },function(data) {
+				$.post("/ajaxGiveUp?roomId=<%= room._id %>", { "bonus": bonus }, function(data) {
 					if (data.result === "성공") {
 						location.reload();
 					}
